@@ -1,24 +1,24 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {useContext} from 'react';
-import {UserContext} from './ContextPerfil';
+import {UserContext} from '../ContextPerfil';
 
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {StyleSheet, View, Image, Platform, Alert} from 'react-native';
 
-import Home from './screens/Home';
-import Locais from './screens/Locais';
-import Desc from './screens/DescricaoLocais';
-import Perfil from './screens/Perfil';
-import SobreNos from './screens/SobreNos';
-import Itens from './screens/Itens';
-import Dados from './screens/Dados';
-import QrCode from './screens/QrCode';
-import Pontos from './screens/Pontos';
-import TrocarPontos from './screens/TrocarPontos';
-import Dados2 from './screens/Dados2';
-import Dados3 from './screens/Dados3';
-import Editar from './screens/EditarPerfil';
+import Home from '../screens/Home';
+import Locais from '../screens/Locais';
+import Desc from '../screens/DescricaoLocais';
+import Perfil from '../screens/Perfil';
+import SobreNos from '../screens/SobreNos';
+import Itens from '../screens/Itens';
+import Dados from '../screens/Dados';
+import QrCode from '../screens/QrCode';
+import Pontos from '../screens/Pontos';
+import TrocarPontos from '../screens/TrocarPontos';
+import Dados2 from '../screens/Dados2';
+import Dados3 from '../screens/Dados3';
+import Editar from '../screens/EditarPerfil';
 
 const Drawer = createDrawerNavigator();
 
@@ -50,9 +50,9 @@ function Lateral1({navigation}){
 
       <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
      
-      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('./assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
+      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
       
-      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('./assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
+      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
       <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
     listeners={{
@@ -125,9 +125,9 @@ function Lateral2({navigation}){
 
        <Drawer.Screen name="Pontos" component={Pontos} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
      
-      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('./assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
+      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
       
-      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('./assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
+      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
       <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
     listeners={{
@@ -203,11 +203,11 @@ function Lateral3({navigation}){
 
       <Drawer.Screen name="QrCode" component={QrCode} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
      
-      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('./assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
+      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
 
       <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
       
-      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('./assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
+      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
       <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
     listeners={{
@@ -286,9 +286,9 @@ function Lateral4({navigation}){
 
       <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
      
-      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('./assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
+      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
       
-      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('./assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
+      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
       <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
     listeners={{
@@ -363,9 +363,9 @@ function Lateral5({navigation}){
 
       <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
      
-      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('./assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
+      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
       
-      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('./assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
+      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
       <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
     listeners={{
@@ -436,15 +436,15 @@ export default function Rotas() {
       }
     })}>
 
-    <Tab.Screen name="Home" component={Lateral1} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('./assets/home.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}} />
+    <Tab.Screen name="Home" component={Lateral1} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/home.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}} />
 
-    <Tab.Screen name="Pontos" component={Lateral2} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('./assets/pontos.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
+    <Tab.Screen name="Pontos" component={Lateral2} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/pontos.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
       
-      <Tab.Screen name="Qr Code" component={Lateral3} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('./assets/qrcode.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
+      <Tab.Screen name="Qr Code" component={Lateral3} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/qrcode.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
 
-      <Tab.Screen name="Locais" component={Lateral4} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('./assets/locais.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
+      <Tab.Screen name="Locais" component={Lateral4} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/locais.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
 
-      <Tab.Screen name="Perfil" component={Lateral5} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('./assets/perfil.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
+      <Tab.Screen name="Perfil" component={Lateral5} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/perfil.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
     </Tab.Navigator>
   );
 }

@@ -1,8 +1,8 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import Rotas from './Rotas';
-import RotasMercados from './Rotas2';
+import Rotas from './routes/Rotas';
+import RotasMercados from './routes/RotasMercados';
 import TelaInicial from './screens/Inicial'; 
 import Login from './screens/Login';
 import Cadastro from './screens/Cadastro';
