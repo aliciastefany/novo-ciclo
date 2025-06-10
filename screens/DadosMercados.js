@@ -1,0 +1,56 @@
+export const mercados = [
+  {
+    id: 'a1',
+    titulo: 'Kaçula Supermercados',
+    descricao: 'Plásticos, metais, papelão, e mais!',
+    imagem: require('../assets/kacula.jpg'),
+    logo: require('../assets/logo_kacula.png'),
+    e1: 'star', e2: 'star', e3: 'star', e4: 'star', e5: 'star-outline',
+    endereco: 'R. José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
+    link: 'https://www.kacula.com.br/',
+    telefone: '(11) 4701-6181',
+    texto_desc: 'O Kaçula Supermercados é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
+  },
+
+  {
+    id: 'a2',
+    titulo: 'Carrefour Hipermercado',
+    descricao: 'Maior troca de pontos!',
+    imagem: require('../assets/carrefour.jpg'),
+    logo: require('../assets/logo_carrefour.png'),
+    e1: 'star', e2: 'star', e3: 'star', e4: 'star', e5: 'star',
+    endereco: 'Rodovia Régis Bittencourt, 1835 Taboão da Serra, São Paulo - SP, 06768-200',
+    link: 'https://mercado.carrefour.com.br/',
+    telefone: '(11) 3004-2222',
+    texto_desc: 'O Carrefour é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como metal, papel e materiais eletrônicos.',
+  },
+
+  {
+    id: 'a3',
+    titulo: 'Supermercado Porto Seguro',
+    descricao: 'Preços acessíveis!',
+    imagem: require('../assets/portoseguro.jpg'),
+    logo: require('../assets/logo_portoseguro.png'),
+    e1: 'star', e2: 'star', e3: 'star', e4: 'star-outline', e5: 'star-outline',
+    endereco: 'R. Raphael de Marco, 22 - Parque Industrial das Oliveiras, Taboão da Serra - SP, 06765-350',
+    link: 'https://www.portoemcasa.com.br/',
+    telefone: '(11) 4858-3194',
+    texto_desc: 'O Porto Seguro é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como vidro, plástico, papelão e madeira.',
+  },
+
+  {
+    id: 'a4',
+    titulo: 'Assaí Atacadista',
+    descricao: 'Reclagem de papel e papelão!',
+    imagem: require('../assets/assai.jpg'),
+    logo: require('../assets/logo_assai.png'),
+    e1: 'star', e2: 'star', e3: 'star', e4: 'star', e5: 'star-outline',
+    endereco: 'Rod. Régis Bittencourt, 340 - Centro, Taboão da Serra - SP, 06790-240',
+    link: 'https://www.assai.com.br/',
+    telefone: '0800 773 2322',
+    texto_desc: 'O Assaí Atacadista é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel e papelão.',
+
+    //precoTroca: '100',
+    //descPorc: '20% DE DESCONTO EM ALIMENTOS',
+  },
+];
