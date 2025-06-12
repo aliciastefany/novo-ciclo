@@ -2,28 +2,9 @@ import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image,
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {UserContext} from '../ContextPerfil';
 import {useContext} from 'react';
+import { conquistas } from '../data/dadosConquistas';
 
 export default function Perfil({navigation}) {
-
-  const conquistas = [
-    {
-      id: 1,
-      descricao: 'Desde seu login no APP, você já reciclou 27,5 kg de lixo.',
-      imagem: require('../assets/c1.png'),
-    },
-
-    {
-      id: 2,
-      descricao: 'Após 1 ano de uso, você ganhou o selo de usuário verificado.',
-      imagem: require('../assets/c2.png'),
-    },
-
-    {
-      id: 3,
-      descricao: 'Você já adquiriu 275,5 pontos.',
-      imagem: require('../assets/c3.png'),
-    },
-  ];
 
   const {dados} = useContext(UserContext);
 
@@ -74,7 +55,7 @@ export default function Perfil({navigation}) {
 
             <View style={{alignItems: 'center', width: '100%', flex: 1,}}>
               <FlatList 
-                style={{width: '100%', alignItems: 'center', marginVertical: 10}}
+                style={{width: '100%', marginVertical: 10}}
                 contentContainerStyle={{gap: 20}}
                 data={conquistas}
                 keyExtractor={item => item.id}

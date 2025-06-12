@@ -24,37 +24,8 @@ const Drawer = createDrawerNavigator();
 
 const Tab = createBottomTabNavigator();
 
-function Lateral1({navigation}){
-
-  const {setDados} = useContext(UserContext);
-
-  return(
-    <Drawer.Navigator
-    screenOptions={()=>({
-      drawerStyle:{
-        backgroundColor: '#222222',
-        width: 230,
-      },
-
-      drawerLabelStyle:{
-        color: 'white',
-        marginLeft: -5
-      },
-      
-      drawerPosition: "right"
-      })}>
-      
-      <Drawer.Screen name="Home" component={Home} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />  
-      
-      <Drawer.Screen name="Itens" component={Itens} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
-
-      <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
-     
-      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
-      
-      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
-
-      <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
+/* 
+   <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
     listeners={{
     drawerItemPress: (e) => {
       e.preventDefault(); 
@@ -91,6 +62,38 @@ function Lateral1({navigation}){
       }
     },
   }}/>
+*/
+
+
+function Lateral1({navigation}){
+
+  const {setDados} = useContext(UserContext);
+
+  return(
+    <Drawer.Navigator
+    screenOptions={()=>({
+      drawerStyle:{
+        backgroundColor: '#222222',
+        width: 230,
+      },
+
+      drawerLabelStyle:{
+        color: 'white',
+        marginLeft: -5
+      },
+      
+      drawerPosition: "right"
+      })}>
+      
+      <Drawer.Screen name="Home" component={Home} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />  
+      
+      <Drawer.Screen name="Itens" component={Itens} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
+
+      <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
+     
+      <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
+      
+      <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
      <Drawer.Screen name="Descricao Locais" component={Desc} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
 
@@ -128,44 +131,6 @@ function Lateral2({navigation}){
       <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
       
       <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
-
-      <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
-    listeners={{
-    drawerItemPress: (e) => {
-      e.preventDefault(); 
-      if (Platform.OS === 'android') {
-        Alert.alert(
-          'Sair da conta',
-          'Você quer sair da sua conta?',
-          [
-            { text: 'Não', style: 'cancel' },
-            { text: 'Sim', onPress: () => {setDados({
-                  username: 'Pedro_Henrique',
-                  email: 'etectaboaosp@etec.sp.gov.br',
-                  cpf: '015.516.690-47',
-                  senha: 'etec2024',
-                  numero: '11 98457-2561',
-                  usernameMercado: 'Kaçula Supermercados',
-                  emailMercado: 'kaculasuper@gmail.com',
-                  cnpj: '54.839.485/0002-11',
-                  senhaMercado: 'kacula2024',
-                  numeroMercado: '(11) 4701-6181',
-                  descricaoMercado: 'O Kaçula Supermercado é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
-                  site: 'https://www.kacula.com.br/',
-                  enderecoMercado: 'Rua José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
-                  pontos: 275.5,
-                }); 
-                navigation.reset({
-                  routes: [{ name: 'Inicial' }], 
-                }); 
-              }
-            },
-          ],
-          { cancelable: true }
-        );
-      }
-    },
-  }}/>
       <Drawer.Screen name="Itens" component={Itens} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
 
       <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
@@ -208,44 +173,6 @@ function Lateral3({navigation}){
       <Drawer.Screen name="Editar Perfil" component={Editar} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
       
       <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
-
-      <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
-    listeners={{
-    drawerItemPress: (e) => {
-      e.preventDefault(); 
-      if (Platform.OS === 'android') {
-        Alert.alert(
-          'Sair da conta',
-          'Você quer sair da sua conta?',
-          [
-            { text: 'Não', style: 'cancel' },
-            { text: 'Sim', onPress: () => {setDados({
-                  username: 'Pedro_Henrique',
-                  email: 'etectaboaosp@etec.sp.gov.br',
-                  cpf: '015.516.690-47',
-                  senha: 'etec2024',
-                  numero: '11 98457-2561',
-                  usernameMercado: 'Kaçula Supermercados',
-                  emailMercado: 'kaculasuper@gmail.com',
-                  cnpj: '54.839.485/0002-11',
-                  senhaMercado: 'kacula2024',
-                  numeroMercado: '(11) 4701-6181',
-                  descricaoMercado: 'O Kaçula Supermercado é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
-                  site: 'https://www.kacula.com.br/',
-                  enderecoMercado: 'Rua José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
-                  pontos: 275.5,
-                }); 
-                navigation.reset({
-                  routes: [{ name: 'Inicial' }], 
-                }); 
-              }
-            },
-          ],
-          { cancelable: true }
-        );
-      }
-    },
-  }}/>
 
       <Drawer.Screen name="Itens" component={Itens} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
 
@@ -290,44 +217,6 @@ function Lateral4({navigation}){
       
       <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
 
-      <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
-    listeners={{
-    drawerItemPress: (e) => {
-      e.preventDefault(); 
-      if (Platform.OS === 'android') {
-        Alert.alert(
-          'Sair da conta',
-          'Você quer sair da sua conta?',
-          [
-            { text: 'Não', style: 'cancel' },
-            { text: 'Sim', onPress: () => {setDados({
-                  username: 'Pedro_Henrique',
-                  email: 'etectaboaosp@etec.sp.gov.br',
-                  cpf: '015.516.690-47',
-                  senha: 'etec2024',
-                  numero: '11 98457-2561',
-                  usernameMercado: 'Kaçula Supermercados',
-                  emailMercado: 'kaculasuper@gmail.com',
-                  cnpj: '54.839.485/0002-11',
-                  senhaMercado: 'kacula2024',
-                  numeroMercado: '(11) 4701-6181',
-                  descricaoMercado: 'O Kaçula Supermercado é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
-                  site: 'https://www.kacula.com.br/',
-                  enderecoMercado: 'Rua José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
-                  pontos: 275.5,
-                }); 
-                navigation.reset({
-                  routes: [{ name: 'Inicial' }], 
-                }); 
-              }
-            },
-          ],
-          { cancelable: true }
-        );
-      }
-    },
-  }}/>
-
       <Drawer.Screen name="Itens" component={Itens} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
 
       <Drawer.Screen name="Trocar Pontos" component={TrocarPontos} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
@@ -366,44 +255,6 @@ function Lateral5({navigation}){
       <Drawer.Screen name="Dados" component={Dados} options={{headerShown: false, drawerIcon: ()=>(<Image source={require('../assets/icon_dados.png')} style={{width: 55, height: 55}} />)}}/>
       
       <Drawer.Screen name="Sobre Nós" component={SobreNos} options={{headerShown: false, drawerIcon:()=>(<Image source={require('../assets/logo-topo.png')} style={{width: 55, height: 55}} />)}} />
-
-      <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
-    listeners={{
-    drawerItemPress: (e) => {
-      e.preventDefault(); 
-      if (Platform.OS === 'android') {
-        Alert.alert(
-          'Sair da conta',
-          'Você quer sair da sua conta?',
-          [
-            { text: 'Não', style: 'cancel' },
-            { text: 'Sim', onPress: () => {setDados({
-                  username: 'Pedro_Henrique',
-                  email: 'etectaboaosp@etec.sp.gov.br',
-                  cpf: '015.516.690-47',
-                  senha: 'etec2024',
-                  numero: '11 98457-2561',
-                  usernameMercado: 'Kaçula Supermercados',
-                  emailMercado: 'kaculasuper@gmail.com',
-                  cnpj: '54.839.485/0002-11',
-                  senhaMercado: 'kacula2024',
-                  numeroMercado: '(11) 4701-6181',
-                  descricaoMercado: 'O Kaçula Supermercado é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
-                  site: 'https://www.kacula.com.br/',
-                  enderecoMercado: 'Rua José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
-                  pontos: 275.5,
-                }); 
-                navigation.reset({
-                  routes: [{ name: 'Inicial' }], 
-                }); 
-              }
-            },
-          ],
-          { cancelable: true }
-        );
-      }
-    },
-  }}/>
 
       <Drawer.Screen name="Itens" component={Itens} options={{drawerItemStyle: {display: 'none'}, headerShown: false}} />
 

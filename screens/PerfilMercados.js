@@ -2,7 +2,7 @@ import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, 
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {UserContext} from '../ContextPerfil';
 import {useContext} from 'react';
-import {mercados} from './DadosMercados';
+import {mercados} from '../data/dadosMercados';
 
 export default function PerfilMercados({navigation}) {
 

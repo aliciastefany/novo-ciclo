@@ -1,7 +1,28 @@
 import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
 import {useState, useEffect, useContext} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
+import db from '../config/firebase';
+import { collection, addDoc } from "firebase/firestore";
+//import {UserContext} from '../ContextPerfil';
+
+/* 
+if (!email || !cpf || !username || !confsenha || senha === "" || confsenha != senha){
+  Alert.alert(
+    'Não foi possível realizar o cadastro!',
+    'Preencha todos os campos corretamente!',
+    [
+      {
+        text: 'Ok'
+      }
+    ]
+  );
+} else { 
+    salvar();
+  }
+}
+}
+*/
+
 
 export default function Cadastro({navigation}){
 
@@ -23,14 +44,14 @@ export default function Cadastro({navigation}){
     };
   }, []);
 
-  const {dados, setDados} = useContext(UserContext);
-  const [username, setUsername] = useState(dados.username || '');
-  const [email, setEmail] = useState(dados.email || '');
-  const [cpf, setCpf] = useState(dados.cpf || '');
-  const [senha, setSenha] = useState(dados.senha || '');
+  //const {dados, setDados} = useContext(UserContext);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [senha, setSenha] = useState('');
   const [confsenha, setConfsenha] = useState('');
 
-  const salvar = () => {
+  /*const salvar = () => {
     setDados({
       username,
       email,
@@ -38,7 +59,29 @@ export default function Cadastro({navigation}){
       senha,
     });
     navigation.navigate('Login');
-  };
+  }; */
+
+  const realizarCadastro = async () => {
+    try{
+      await addDoc(collection(db, 'usuarios'), {
+        email: email,
+        username: username,
+        cpf: cpf,
+        senha: senha
+      })
+    } 
+    catch(err){
+      Alert.alert(
+        'Não foi possível realizar o cadastro!',
+        'Preencha todos os dados corretamente',
+        [
+          {
+            text: 'Ok'
+          }
+        ]
+      );
+    }
+  }
 
   return(
     <SafeAreaView style={{flex: 1}}>
@@ -78,22 +121,7 @@ export default function Cadastro({navigation}){
                 </View>
 
                 <View style={tecladoVisivel ? {marginTop: 10, width: '100%'} : {marginTop: 23, width: '100%'}} >
-                  <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={()=>{
-                    if (!email || !cpf || !username || !confsenha || senha === "" || confsenha != senha){
-                      Alert.alert(
-                        'Não foi possível realizar o cadastro!',
-                        'Preencha todos os campos corretamente!',
-                        [
-                          {
-                            text: 'Ok'
-                          }
-                        ]
-                      );
-                    } else { 
-                        salvar();
-                      }
-                    }
-                  }>
+                  <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={realizarCadastro}>
                     <Text style={tecladoVisivel ? estilos.txtPeq : estilos.txt}>Cadastrar</Text>
                   </TouchableOpacity>
                 </View>

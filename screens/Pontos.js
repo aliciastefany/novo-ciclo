@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList} from 'react-native';
-import {mercados} from './DadosMercados';
+import {mercados} from '../data/dadosMercados';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {UserContext} from '../ContextPerfil';
 import {useContext} from 'react';

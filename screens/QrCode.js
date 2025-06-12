@@ -16,7 +16,7 @@ export default function QrCode({navigation}) {
         </View>
       </View>
 
-      <ScrollView style={{flex: 1, width: '100%', alignItems: 'center'}}>
+      <ScrollView style={{flex: 1, width: '100%'}}>
         <View style={{alignItems: 'center', width: '100%'}}>
           <View style={{marginTop: 25, paddingLeft: 25, width: '100%'}}>
             <Text style={estilos.txt_tit}>SEU QR CODE</Text>

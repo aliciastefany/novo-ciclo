@@ -1,8 +1,10 @@
+
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Modal, TextInput, TouchableWithoutFeedback} from 'react-native';
-import {mercados} from './DadosMercados';
-import {cuponsKacula} from './Cupons';
+import {mercados} from '../data/dadosMercados';
+import {cuponsKacula} from '../data/dadosCupons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useState} from 'react';
+import Cupons from '../data/dadosCupons';
 
 export default function CuponsMercados({navigation}) {
 
@@ -100,22 +102,7 @@ export default function CuponsMercados({navigation}) {
               style={estilos.flatlist}
               data={cupons}
               renderItem={({item})=>(
-                <TouchableWithoutFeedback onPress={()=>{setBtnRmv(!btnRmv)}}>
-                  <View style={estilos.card_cupom}>
-                    <View style={{alignItems: 'center', marginTop: -20}}>
-                      <Text style={estilos.txt_troca}>Preço de troca: {item.precoTroca} pontos</Text>
-                      <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
-
-                      <View style={estilos.cobrir}>
-                        <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
-                      </View>
-                    </View>
-
-                    <TouchableOpacity style={btnRmv ? estilos.btn_rmv : {display: 'none'}} onPress={() => {remover(item.id)}}>
-                      <MaterialCommunityIcons name='delete' color='white' size={30} />
-                    </TouchableOpacity>
-                  </View>
-                </TouchableWithoutFeedback>
+                <Cupons setBtnRmv={setBtnRmv} btnRmv={btnRmv} onPress={remover(item.id)}/>
               )}
               keyExtractor={item => item.id}
               contentContainerStyle={{gap: 20}}
@@ -226,56 +213,5 @@ const estilos = StyleSheet.create({
     marginVertical: 10, 
     width: '100%', 
     alignItems: 'center'
-  },
-
-  card_cupom:{
-    width: 320,
-    height: 225,
-    alignItems: 'center',
-    borderWidth: 1,
-    justifyContent: 'center',
-    borderRadius: 24
-  },
-
-  img:{
-    width: 250,
-    height: 150,
-  },
-
-  txt_troca:{
-    color: '#31420a',
-    fontSize: 18,
-    fontWeight: 800
-  },
-
-  cobrir:{
-    position: 'absolute',
-    backgroundColor: '#A9C26F',
-    height: 52,
-    width: 120,
-    top: 70,
-    left: 89,
-    alignContent: 'center',
-    paddingLeft: 10,
-    justifyContent: 'center'
-  },
-
-  txt_cobrir:{
-    textAlign: 'center',
-    fontSize: 13,
-    color: 'white',
-    fontWeight: 700
-  },
-
-  btn_rmv:{
-    backgroundColor: '#31420a',
-    borderRadius: 25,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 10,
-    right: 15,
   },
 });

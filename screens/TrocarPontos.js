@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Alert} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {cuponsAssai, cuponsCarrefour, cuponsKacula, cuponsPortoSeguro} from './Cupons';
+import {cuponsAssai, cuponsCarrefour, cuponsKacula, cuponsPortoSeguro} from '../data/dadosCupons';
 import {useState, useContext} from 'react';
 import {UserContext} from '../ContextPerfil';
 
@@ -172,7 +172,7 @@ const estilos = StyleSheet.create({
   flatlist:{
     marginVertical: 10, 
     width: '100%', 
-    alignItems: 'center'
+    //alignItems: 'center'
   },
 
   card_cupom:{

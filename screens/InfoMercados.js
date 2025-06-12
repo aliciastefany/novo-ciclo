@@ -1,7 +1,7 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView} from 'react-native';
 import {UserContext} from '../ContextPerfil';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {mercados} from './DadosMercados';
+import {mercados} from '../data/dadosMercados';
 import {useContext} from 'react';
 
 export default function InfoMercados({route, navigation}) {

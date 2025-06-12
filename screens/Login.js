@@ -1,14 +1,31 @@
 import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
 import {useState, useEffect, useContext} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
+import db from '../config/firebase'
+import {doc, getDocs, collection, query, where} from 'firebase/firestore';
+//import {UserContext} from '../ContextPerfil';
+
+/* if((username != '' && senha != '' && email != '') && (senha === dados.senha && username === dados.username && email === dados.email)){
+      navigation.navigate('Rotas');
+    } else{
+        Alert.alert(
+      'Não foi possível realizar o login!',
+      'Dados inválidos!',
+      [
+        {
+          text: 'Ok'
+        }
+      ]
+    );
+    }
+    }} */
 
 export default function Login({navigation}){
 
   const [senhaOculta, setSenhaOculta] = useState(true);
   const [tecladoVisivel, setTecladoVisivel] = useState(false);
 
-  const {dados} = useContext(UserContext);
+  //const {dados} = useContext(UserContext);
   const [senha, setSenha] = useState('');
   const [username, setUsername] = useState(''); 
   const [email, setEmail] = useState(''); 
@@ -26,6 +43,26 @@ export default function Login({navigation}){
       hideSubscription.remove();
     };
   }, []);
+
+  const realizarLogin = async () => {
+    const docRef = collection(db, 'usuarios');
+    const queryLogin = query(docRef, where('username', '==', username), where('email', '==', email), where('senha', '==', senha));
+    const resultado = await getDocs(queryLogin);
+
+    if (resultado.size > 0){
+      navigation.navigate('Rotas');
+    }else{
+      Alert.alert(
+        'Não foi possível realizar o login!',
+        'Dados incorretos',
+        [
+          {
+            text: 'Ok'
+          }
+        ]
+      );
+    }
+  }
 
   return(
     <SafeAreaView style={{flex: 1}}>
@@ -56,21 +93,7 @@ export default function Login({navigation}){
                 </View>
 
                 <View style={tecladoVisivel ? {marginTop: 10, width: '100%'} : {marginTop: 15, width: '100%'}}>
-                  <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={()=>{
-                      if((username != '' && senha != '' && email != '') && (senha === dados.senha && username === dados.username && email === dados.email)){
-                        navigation.navigate('Rotas');
-                      } else{
-                         Alert.alert(
-                        'Não foi possível realizar o login!',
-                        'Dados inválidos!',
-                        [
-                          {
-                            text: 'Ok'
-                          }
-                        ]
-                      );
-                      }
-                    }}>
+                  <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={realizarLogin}>
                     <Text style={tecladoVisivel ? estilos.txtPeq : estilos.txt}>Login</Text>
                   </TouchableOpacity>
                 </View>
