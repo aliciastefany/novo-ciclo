@@ -10,22 +10,22 @@ export default function Perfil({navigation}) {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
-        <View style={estilos.cabecalho}>
-          <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-            <MaterialCommunityIcons name='menu' size={40} color='black' />
-          </TouchableOpacity>
-        </View>
+      <View style={estilos.cabecalho}>
+        <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
+          <MaterialCommunityIcons name='menu' size={40} color='black' />
+        </TouchableOpacity>
+      </View>
         
       <ScrollView style={{flex: 1}}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
           <View style={estilos.img_fundo}>
             <Image source={require('../assets/fundo_perfil.jpg')} style={estilos.img} />
-          </View>
+        </View>
 
           
-          <View style={estilos.area_perfil}>
-            <Image source={dados.img ? {uri: dados.img} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
-          </View>
+        <View style={estilos.area_perfil}>
+          <Image source={dados.img ? {uri: dados.img} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
+        </View>
 
           <View style={estilos.descricao}>
             <View>

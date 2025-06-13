@@ -1,5 +1,7 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, FlatList} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
+import {membros} from '../data/dadosMembros';
+import MembroEquipe from '../components/MembroEquipe';
 
 export default function SobreNos({navigation}) {
   return (
@@ -38,32 +40,17 @@ export default function SobreNos({navigation}) {
             <View>
               <Text style={estilos.tit_obj1}>Equipe</Text>
             </View>
-
-            <ScrollView style={estilos.area_imgs}>
-              <View style={estilos.cont}>
-                <View style={estilos.campo_imgs}>
-                  <Image source={require('../assets/matheus.jpg')} style={estilos.img} />
-                  <Text style={estilos.txt_eq}>Matheus Ramos Nieto</Text>
-                </View>
-
-                <View style={estilos.campo_imgs}>
-                  <Image source={require('../assets/nicolas.jpg')} style={estilos.img} />
-                  <Text style={estilos.txt_eq}>Nicolas Pimentel de Sousa</Text>
-                </View>
-              </View>
-
-              <View style={[estilos.cont, {marginTop: 12}]}>
-                <View style={estilos.campo_imgs}>
-                  <Image source={require('../assets/pedro.jpg')} style={estilos.img} />
-                  <Text style={estilos.txt_eq}>Pedro Henrique Tabile Piovezani</Text>
-                </View>
-
-                <View style={estilos.campo_imgs}>
-                  <Image source={require('../assets/sabrina.jpg')} style={estilos.img} />
-                  <Text style={estilos.txt_eq}>Sabrina Oliveira Nunes</Text>
-                </View>
-              </View>
-            </ScrollView>
+            <View style={estilos.area_imgs}>
+              <FlatList
+                data={membros}
+                numColumns={2}
+                renderItem={({item})=>(
+                  <MembroEquipe nome={item.nome} imagem={item.imagem}/>
+                )}
+                keyExtractor={item => item.id}
+                contentContainerStyle={{gap: 20, alignItems: 'center'}}
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -121,16 +108,11 @@ const estilos = StyleSheet.create({
   },
 
   area_imgs:{
-    marginTop: 10,
     flex: 1,
-    flexDirection: 'column',
-    marginBottom: 10,
-  },
-
-  cont:{
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    width: '100%'
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 30,
   },
 
   campo_imgs:{

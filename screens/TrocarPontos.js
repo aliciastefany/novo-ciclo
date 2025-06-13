@@ -88,7 +88,7 @@ export default function TrocarPontos({route, navigation}) {
                 </View>
               )}
               keyExtractor={item => item.id}
-              contentContainerStyle={{gap: 20}}
+              contentContainerStyle={{gap: 20, alignItems: 'center'}}
             />
           </View>
         </View>
