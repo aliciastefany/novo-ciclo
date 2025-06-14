@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useEffect, useState} from 'react';
 import * as ImagePicker from 'expo-image-picker';
@@ -35,7 +35,8 @@ export default function EditarPerfil({route}) {
     })
 
     Alert.alert(
-      'Dados Salvos',
+      'Sucesso!',
+      'Os dados foram salvos',
       [
         {
           text: 'Ok'
