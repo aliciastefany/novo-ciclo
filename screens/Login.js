@@ -2,7 +2,7 @@ import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput
 import {useState, useEffect, useContext} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import db from '../config/firebase'
-import {doc, getDocs, collection, query, where} from 'firebase/firestore';
+import {getDocs, collection, query, where} from 'firebase/firestore';
 //import {UserContext} from '../ContextPerfil';
 
 /* if((username != '' && senha != '' && email != '') && (senha === dados.senha && username === dados.username && email === dados.email)){

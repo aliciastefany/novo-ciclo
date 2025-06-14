@@ -1,14 +1,26 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Alert} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {cuponsAssai, cuponsCarrefour, cuponsKacula, cuponsPortoSeguro} from '../data/dadosCupons';
-import {useState, useContext} from 'react';
-import {UserContext} from '../ContextPerfil';
+import {useState, useEffect} from 'react';
+//import {UserContext} from '../ContextPerfil';
+import db from '../config/firebase'
+import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
 
 export default function TrocarPontos({route, navigation}) {
 
   const {mercadosAnt} = route.params;
-  const {dados, setDados} = useContext(UserContext);
-  const [cards, setCards] = useState(275.5);
+  //const {dados, setDados} = useContext(UserContext);
+
+  const [pontos, setPontos] = useState(0); 
+
+  useEffect(() => {
+    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
+      setPontos(doc.data()['pontos']);
+      console.log(pontos);
+    });
+    return () => getPontos();
+  })
+
 
   const exibirCupons = (idMercado) => {
     switch (idMercado) {
@@ -21,6 +33,12 @@ export default function TrocarPontos({route, navigation}) {
   };
 
   const cupons = exibirCupons(mercadosAnt.titulo);
+
+  const alterarPontos = async (novoValor) => {
+    await updateDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), {
+      pontos: novoValor
+    })
+  }
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -69,17 +87,13 @@ export default function TrocarPontos({route, navigation}) {
                     </View>
                   </View>
 
-                  <TouchableOpacity style={estilos.btn_troca} onPress={()=>{
-                    if (cards - item.precoTroca <= 0) {
+                  <TouchableOpacity style={estilos.btn_troca} onPress={() => {
+                    if (pontos < item.precoTroca) {
                       Alert.alert('Não foi possível resgatar cupom!', 'Você não tem pontos suficientes para resgatar esse cupom!');
                     } else {
-                      setCards(prevCards => {
-                      const newCards = prevCards - item.precoTroca;
-                      setDados({
-                        pontos: newCards
-                      });
-                      return newCards;
-                    });
+                      const pontosAtualizados = pontos - item.precoTroca;
+                      setPontos(pontosAtualizados); 
+                      alterarPontos(pontosAtualizados);
                       Alert.alert('Cupom resgatado!', 'Parabéns! Você resgatou esse cupom.');
                     }
                   }}>
@@ -95,7 +109,7 @@ export default function TrocarPontos({route, navigation}) {
 
         <View style={{height: 32,justifyContent: 'center', flexDirection: 'row'}}>
           <Text style={{fontSize: 17}}>Seus pontos: </Text>
-          <Text style={{fontSize: 18, fontWeight: 'bold'}}>{dados.pontos}</Text>
+          <Text style={{fontSize: 18, fontWeight: 'bold'}}>{pontos}</Text>
         </View>
       </View>
 

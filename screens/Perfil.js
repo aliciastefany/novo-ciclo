@@ -2,7 +2,7 @@ import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image,
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {UserContext} from '../ContextPerfil';
 import {useContext} from 'react';
-import { conquistas } from '../data/dadosConquistas';
+import {conquistas} from '../data/dadosConquistas';
 
 export default function Perfil({navigation}) {
 

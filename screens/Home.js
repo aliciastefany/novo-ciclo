@@ -1,13 +1,24 @@
 import {SafeAreaView, Image, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text} from 'react-native';
-import {useState, useContext} from 'react';
+import {useEffect, useState} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
+//import {UserContext} from '../ContextPerfil';
 import CardMaterial from '../components/CardMaterial';
 import {materiais} from '../data/dadosMateriais';
+import db from "../config/firebase";
+import { onSnapshot, doc } from "firebase/firestore";
 
 export default function Home({navigation}){
 
-  const {dados} = useContext(UserContext);
+  //const {dados} = useContext(UserContext);
+
+  const [pontos, setPontos] = useState(0); 
+
+  useEffect(() => {
+    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
+      setPontos(doc.data()['pontos']);
+    });
+    return () => getPontos();
+  })
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -89,7 +100,7 @@ export default function Home({navigation}){
 
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados.pontos}</Text>
+                    <Text style={{fontSize: 18, fontWeight: 700}}>{pontos}</Text>
                     <Text style={{fontWeight: 500}}>pontos</Text>
                   </View>
 

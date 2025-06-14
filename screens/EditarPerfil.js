@@ -1,17 +1,26 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {useContext, useState} from 'react';
-import {UserContext} from '../ContextPerfil';
+import {useEffect, useState} from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import db from '../config/firebase'
+import {doc, setDoc} from 'firebase/firestore';
+//import {UserContext} from '../ContextPerfil';
 
 export default function EditarPerfil({navigation}) {
 
-  const {dados, setDados} = useContext(UserContext);
-  const [username, setUsername] = useState(dados.username || '');
-  const [email, setEmail] = useState(dados.email || '');
-  const [numero, setNumero] = useState(dados.numero || '');
+  /* useEffect(() => {
+    setDoc(doc('db', 'usuarios', 'etectaboaosp@etec.sp.gov.br'), {
+      username: username,
+
+    })
+  }) */
+
+  //const {dados, setDados} = useContext(UserContext);
+  const [username, setUsername] = useState();
+  const [email, setEmail] = useState();
+  const [numero, setNumero] = useState();
   
-  const salvar = () => {
+  /* const salvar = () => {
     setDados({
       username,
       email,
@@ -20,7 +29,7 @@ export default function EditarPerfil({navigation}) {
       pontos: 275.5,
     });
     navigation.navigate('Perfil');
-  };
+  }; */
 
   const [image, setImage] = useState(null);
 

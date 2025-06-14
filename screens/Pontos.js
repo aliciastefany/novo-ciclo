@@ -1,12 +1,24 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList} from 'react-native';
 import {mercados} from '../data/dadosMercados';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
-import {useContext} from 'react';
+import { useState, useEffect } from 'react';
+import db from "../config/firebase";
+import { onSnapshot, doc } from "firebase/firestore";
+//import {UserContext} from '../ContextPerfil';
 
 export default function Pontos({navigation}) {
 
-  const {dados} = useContext(UserContext);
+  //const {dados} = useContext(UserContext);
+  
+  const [pontos, setPontos] = useState(0); 
+
+  useEffect(() => {
+    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
+      setPontos(doc.data()['pontos']);
+    });
+    console.log(pontos);
+    return () => getPontos();
+  })
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -16,7 +28,7 @@ export default function Pontos({navigation}) {
         </View>
         
         <View>
-          <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <MaterialCommunityIcons name='menu' size={40} color='black' />
           </TouchableOpacity>
         </View>
@@ -29,7 +41,7 @@ export default function Pontos({navigation}) {
 
         <View style={estilos.area_cards}>
           <View style={estilos.card_pts}>
-            <Text style={estilos.txt_pts}>{dados.pontos}</Text>
+            <Text style={estilos.txt_pts}>{pontos}</Text>
           </View>
 
           <View style={estilos.card_lixo}>
