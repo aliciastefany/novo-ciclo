@@ -1,12 +1,25 @@
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {UserContext} from '../ContextPerfil';
-import {useContext} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {conquistas} from '../data/dadosConquistas';
+import db from '../config/firebase'
+import {doc, getDoc} from 'firebase/firestore';
 
 export default function Perfil({navigation}) {
 
   const {dados} = useContext(UserContext);
+
+  const [infoUsuario, setInfoUsuario] = useState({});
+
+  useEffect(()=>{
+    const getInfoUsuarios = async () => {
+      const getInfoUsuario = await getDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'))
+      setInfoUsuario(getInfoUsuario.data());
+    }
+    getInfoUsuarios();
+  }, [])
+
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -30,21 +43,23 @@ export default function Perfil({navigation}) {
           <View style={estilos.descricao}>
             <View>
               <Text style={estilos.tit_desc}>Nome do Usuário</Text>
-              <Text style={estilos.txt_desc}>@{dados.username}</Text>
+              <Text style={estilos.txt_desc}>@{infoUsuario.username}</Text>
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Email</Text>
-              <Text style={estilos.txt_desc}>{dados.email}</Text>
+              <Text style={estilos.txt_desc}>{infoUsuario.email}</Text>
             </View>
 
             <View>
-              <Text style={estilos.tit_desc}>Número</Text>
-              <Text style={estilos.txt_desc}>{dados.numero}</Text>
+              <Text style={estilos.tit_desc}>CPF</Text>
+              <Text style={estilos.txt_desc}>{infoUsuario.cpf}</Text>
             </View>
           </View>
 
-          <TouchableOpacity style={estilos.btn_editar} onPress={()=>navigation.navigate('Editar Perfil')}>
+          <TouchableOpacity style={estilos.btn_editar} onPress={()=>navigation.navigate('Editar Perfil', {
+            infoUsuario
+          })}>
             <MaterialCommunityIcons name='pencil' size={35} color='white' />
           </TouchableOpacity>
 

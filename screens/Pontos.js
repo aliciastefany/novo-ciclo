@@ -14,7 +14,7 @@ export default function Pontos({navigation}) {
 
   useEffect(() => {
     const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
-      setPontos(doc.data()['pontos']);
+      setPontos(doc.data().pontos);
     });
     console.log(pontos);
     return () => getPontos();

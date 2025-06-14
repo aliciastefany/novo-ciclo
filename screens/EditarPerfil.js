@@ -3,22 +3,17 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useEffect, useState} from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import db from '../config/firebase'
-import {doc, setDoc} from 'firebase/firestore';
+import {doc, updateDoc, getDoc} from 'firebase/firestore';
 //import {UserContext} from '../ContextPerfil';
 
-export default function EditarPerfil({navigation}) {
+export default function EditarPerfil({route}) {
 
-  /* useEffect(() => {
-    setDoc(doc('db', 'usuarios', 'etectaboaosp@etec.sp.gov.br'), {
-      username: username,
-
-    })
-  }) */
-
+  const {infoUsuario} = route.params;
   //const {dados, setDados} = useContext(UserContext);
-  const [username, setUsername] = useState();
-  const [email, setEmail] = useState();
-  const [numero, setNumero] = useState();
+  const [username, setUsername] = useState(infoUsuario.username);
+  const [email, setEmail] = useState(infoUsuario.email);
+  const [cpf, setCpf] = useState(infoUsuario.cpf);
+  const [image, setImage] = useState(null);
   
   /* const salvar = () => {
     setDados({
@@ -31,7 +26,24 @@ export default function EditarPerfil({navigation}) {
     navigation.navigate('Perfil');
   }; */
 
-  const [image, setImage] = useState(null);
+
+  const salvarInfo = async () => {
+    await updateDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), {
+      username: username,
+      email: email,
+      cpf: cpf
+    })
+
+    Alert.alert(
+      'Dados Salvos',
+      [
+        {
+          text: 'Ok'
+        }
+      ]
+    );
+  }
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -51,7 +63,7 @@ export default function EditarPerfil({navigation}) {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
         <View style={estilos.cabecalho}>
-          <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <MaterialCommunityIcons name='menu' size={40} color='black' />
           </TouchableOpacity>
         </View>
@@ -80,12 +92,12 @@ export default function EditarPerfil({navigation}) {
           </View>
 
            <View>
-            <Text style={estilos.tit_desc}>Número</Text>
-            <TextInput style={estilos.inputs} placeholder='+55 (XX) 9XXXX-XXXX' value={numero} onChangeText={setNumero} />
+            <Text style={estilos.tit_desc}>CPF</Text>
+            <TextInput style={estilos.inputs} placeholder='XXX.XXX.XXX-XX' value={cpf} onChangeText={setCpf} />
           </View>
         </View>
 
-        <TouchableOpacity style={estilos.btn_editar} onPress={salvar}>
+        <TouchableOpacity style={estilos.btn_editar} onPress={salvarInfo}>
           <MaterialCommunityIcons name='content-save' size={35} color='white' />
         </TouchableOpacity>
       </View>
