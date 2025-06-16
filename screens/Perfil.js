@@ -4,20 +4,34 @@ import {UserContext} from '../ContextPerfil';
 import {useState, useEffect, useContext} from 'react';
 import {conquistas} from '../data/dadosConquistas';
 import db from '../config/firebase'
-import {doc, getDoc} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import CuponsDoUsuario from '../components/CuponsDoUsuario';
 
 export default function Perfil({navigation}) {
 
   const {dados} = useContext(UserContext);
 
   const [infoUsuario, setInfoUsuario] = useState({});
+  const [cuponsUsuario, setCuponsUsuario] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const getInfoUsuarios = async () => {
       const getInfoUsuario = await getDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'))
       setInfoUsuario(getInfoUsuario.data());
     }
     getInfoUsuarios();
+  }, [])
+
+  useEffect(() => {
+    const getCupons = async () => {
+      const getCuponsUsuario = await getDocs(collection(db, 'cupons'));
+      const cupons = [];
+      getCuponsUsuario.forEach((doc) => {
+        cupons.push(doc.data());
+      })
+      setCuponsUsuario(cupons);
+    }
+    getCupons();
   }, [])
 
 
@@ -57,7 +71,7 @@ export default function Perfil({navigation}) {
             </View>
           </View>
 
-          <TouchableOpacity style={estilos.btn_editar} onPress={()=>navigation.navigate('Editar Perfil', {
+          <TouchableOpacity style={estilos.btn_editar} onPress={() => navigation.navigate('Editar Perfil', {
             infoUsuario
           })}>
             <MaterialCommunityIcons name='pencil' size={35} color='white' />
@@ -68,7 +82,7 @@ export default function Perfil({navigation}) {
               <Text style={estilos.txt_cqst}>Suas Conquistas</Text>
             </View>
 
-            <View style={{alignItems: 'center', width: '100%', flex: 1,}}>
+            <View style={{alignItems: 'center', width: '100%'}}>
               <FlatList 
                 style={{width: '100%', marginVertical: 10}}
                 contentContainerStyle={{gap: 20}}
@@ -82,9 +96,34 @@ export default function Perfil({navigation}) {
                 )}
               />
             </View>
-          </View>
-          
+          </View> 
         </View>
+        <View estilos={estilos.qrCode}>
+          <View style={{marginLeft: 25}}>
+            <Text style={estilos.txt_cqst}>Seus QR Code</Text>
+          </View>
+
+          <View style={{width: '100%', alignItems: 'center', marginTop: 15}}>
+            <Image source={require('../assets/qrcode_pg.png')} style={estilos.imgQrCode} />
+          </View>
+        </View>
+        <View style={estilos.cupons}>
+          <View style={{marginLeft: 25}}>
+            <Text style={estilos.txt_cqst}>Seus cupons resgatados</Text>
+          </View>
+
+          <View style={{alignItems: 'center', width: '100%'}}>
+            <FlatList 
+              data={cuponsUsuario}
+              style={{width: '100%', marginVertical: 10}}
+              contentContainerStyle={{gap: 20, alignItems: 'center'}}
+              renderItem={({item}) => (
+                <CuponsDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        </View> 
       </ScrollView>
       <View style={{height: 10, bottom: 0}} />
     </SafeAreaView>
@@ -193,5 +232,18 @@ const estilos = StyleSheet.create({
     fontSize: 14,
     color: 'white',
     textAlign: 'justify'
+  },
+  cupons: {
+    marginTop: 15, 
+    width: '100%',
+    flex: 1
+  },
+  qrCode:{
+    width: '100%',
+    alignItems: 'center',
+  },
+  imgQrCode: {
+    width: 200,
+    height: 230
   }
 });

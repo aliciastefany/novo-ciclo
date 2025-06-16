@@ -4,7 +4,7 @@ import {mercados} from '../data/dadosMercados';
 import {cuponsKacula} from '../data/dadosCupons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useState} from 'react';
-import Cupons from '../data/dadosCupons';
+import CuponsDoMercado from '../components/CuponsDoMercado';
 
 export default function CuponsMercados({navigation}) {
 
@@ -102,7 +102,7 @@ export default function CuponsMercados({navigation}) {
               style={estilos.flatlist}
               data={cupons}
               renderItem={({item})=>(
-                <Cupons setBtnRmv={setBtnRmv} btnRmv={btnRmv} onPress={remover(item.id)}/>
+                <CuponsDoMercado setBtnRmv={setBtnRmv} btnRmv={btnRmv} onPress={remover(item.id)}/>
               )}
               keyExtractor={item => item.id}
               contentContainerStyle={{gap: 20}}

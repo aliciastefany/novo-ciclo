@@ -6,11 +6,6 @@ import {mercados} from '../data/dadosMercados';
 
 export default function PerfilMercados({navigation}) {
 
-  const link = () => {
-    const url = mercados.link; 
-    Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
-  };
-
   const {dados} = useContext(UserContext);
   
   return (

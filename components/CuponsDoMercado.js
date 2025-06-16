@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback} from 'react-native';
 
-export default function Cupons({ setBtnRmv, btnRmv, onPress }){
+export default function CuponsDoMercado({ setBtnRmv, btnRmv, onPress }){
     return (
         <TouchableWithoutFeedback onPress={()=>{setBtnRmv(!btnRmv)}}>
             <View style={estilos.card_cupom}>
