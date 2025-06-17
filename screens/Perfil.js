@@ -6,6 +6,7 @@ import {conquistas} from '../data/dadosConquistas';
 import db from '../config/firebase'
 import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
 import CuponsDoUsuario from '../components/CuponsDoUsuario';
+//import { dadosCuponsResgatados } from '../data/dadosCuponsResgatados';
 
 export default function Perfil({navigation}) {
 
@@ -100,7 +101,7 @@ export default function Perfil({navigation}) {
         </View>
         <View estilos={estilos.qrCode}>
           <View style={{marginLeft: 25}}>
-            <Text style={estilos.txt_cqst}>Seus QR Code</Text>
+            <Text style={estilos.txt_cqst}>Seu QR Code</Text>
           </View>
 
           <View style={{width: '100%', alignItems: 'center', marginTop: 15}}>

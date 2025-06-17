@@ -6,6 +6,7 @@ import CardMaterial from '../components/CardMaterial';
 import {materiais} from '../data/dadosMateriais';
 import db from "../config/firebase";
 import { onSnapshot, doc } from "firebase/firestore";
+import Legenda from '../components/Legenda';
 
 export default function Home({navigation}){
 
@@ -70,11 +71,7 @@ export default function Home({navigation}){
                 data={materiais}
                 keyExtractor={(item)=>item.id}
                 renderItem={({item})=>(
-                  <View style={estilos.area_legendas}>
-                    <View style={[estilos.bola_leg, {
-    backgroundColor: `${item.corLegenda}`}]} />
-                    <Text style={estilos.legendas}>{item.titulo}</Text>
-                  </View>
+                  <Legenda corLegenda={item.corLegenda} titulo={item.titulo} />
                 )}
                 contentContainerStyle={{gap: 7}}
               />
@@ -138,7 +135,7 @@ const estilos = StyleSheet.create({
     fontWeight: 700
   },
 
-   opacidade: {
+  opacidade: {
     position: 'absolute',
     top: 0,
     left: 0,
