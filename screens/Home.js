@@ -5,7 +5,7 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import CardMaterial from '../components/CardMaterial';
 import {materiais} from '../data/dadosMateriais';
 import db from "../config/firebase";
-import { onSnapshot, doc } from "firebase/firestore";
+import {onSnapshot, doc} from "firebase/firestore";
 import Legenda from '../components/Legenda';
 
 export default function Home({navigation}){

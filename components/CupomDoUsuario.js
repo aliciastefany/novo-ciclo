@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-export default function CuponsDoUsuario({ precoTroca, nomeMercado }) {
+export default function CupomDoUsuario({ precoTroca, nomeMercado }) {
   return (
     <View style={estilos.card_cupom}>
       <View style={{ alignItems: 'center', marginTop: -20 }}>

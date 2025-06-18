@@ -5,7 +5,7 @@ import {useState, useEffect, useContext} from 'react';
 import {conquistas} from '../data/dadosConquistas';
 import db from '../config/firebase'
 import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
-import CuponsDoUsuario from '../components/CuponsDoUsuario';
+import CupomDoUsuario from '../components/CupomDoUsuario';
 //import { dadosCuponsResgatados } from '../data/dadosCuponsResgatados';
 
 export default function Perfil({navigation}) {
@@ -126,7 +126,7 @@ export default function Perfil({navigation}) {
                 <TouchableOpacity onPress={() => navigation.navigate('Cupom', {
                   idCupom: item.id 
                 })}>
-                  <CuponsDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
+                  <CupomDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
                 </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id}
