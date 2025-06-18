@@ -1,15 +1,15 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-export default function CuponsDoUsuario({ precoTroca, nomeMercado }) {
+export default function CuponsDoUsuario({ precoTroca, nomeMercado, onPress }) {
   return (
-    <View style={estilos.card_cupom}>
+    <TouchableOpacity style={estilos.card_cupom} onPress={onPress}>
       <View style={{ alignItems: 'center', marginTop: -20 }}>
         <Text style={estilos.txt_troca}>Preço de troca: {precoTroca} pontos</Text>
         <Image source={require('../assets/img_cupom.png')} style={estilos.img} />
       </View>
 
       <View style={estilos.nome_mercado}><Text style={estilos.texto_mercado}>{nomeMercado}</Text></View>
-    </View>
+    </TouchableOpacity>
   )
 }
 

@@ -119,7 +119,9 @@ export default function Perfil({navigation}) {
               style={{width: '100%', marginVertical: 10}}
               contentContainerStyle={{gap: 20, alignItems: 'center'}}
               renderItem={({item}) => (
-                <CuponsDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
+                <CuponsDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado} onPress={() => navigation.navigate('Cupons', {
+                  idCupom: item.id 
+                })}/>
               )}
               keyExtractor={(item) => item.id}
             />
