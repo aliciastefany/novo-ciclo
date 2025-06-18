@@ -28,7 +28,11 @@ export default function Perfil({navigation}) {
       const getCuponsUsuario = await getDocs(collection(db, 'cupons'));
       const cupons = [];
       getCuponsUsuario.forEach((doc) => {
-        cupons.push(doc.data());
+        cupons.push({
+          id: doc.id,
+          precoTroca: doc.data().precoTroca,
+          nomeMercado: doc.data().nomeMercado
+        });
       })
       setCuponsUsuario(cupons);
     }
@@ -119,9 +123,11 @@ export default function Perfil({navigation}) {
               style={{width: '100%', marginVertical: 10}}
               contentContainerStyle={{gap: 20, alignItems: 'center'}}
               renderItem={({item}) => (
-                <CuponsDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado} onPress={() => navigation.navigate('Cupons', {
+                <TouchableOpacity onPress={() => navigation.navigate('Cupom', {
                   idCupom: item.id 
-                })}/>
+                })}>
+                  <CuponsDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
+                </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id}
             />

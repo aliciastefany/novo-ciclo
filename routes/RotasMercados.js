@@ -8,7 +8,6 @@ import QrCode from '../screens/QrCodeMercados';
 import Descricao from '../screens/InfoMercados';
 import Perfil from '../screens/PerfilMercados';
 import Cupons from '../screens/CuponsMercados';
-import Cupon from '../screens/Cupon';
 import Editar from '../screens/EditarMercado';
 
 export default function Rotas2() {
@@ -40,8 +39,6 @@ export default function Rotas2() {
       <Tab.Screen name="Cupons" component={Cupons} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
 
       <Tab.Screen name="Editar Mercado" component={Editar} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
-    
-      <Tab.Screen name="Cupon" component={Cupon} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
     
     </Tab.Navigator>
   );
