@@ -104,7 +104,7 @@ function Lateral1() {
 
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
-      <Tab.Screen name="Cupom" component={Cupom} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
+      <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
     </Drawer.Navigator>
   )
@@ -148,7 +148,8 @@ function Lateral2() {
 
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
-      <Tab.Screen name="Cupom" component={Cupom} options={{ headerShown: false, tabBarShowLabel: false, tabBarItemStyle: { display: 'none' } }} />
+      <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
+
     </Drawer.Navigator>
   )
 }
@@ -191,7 +192,7 @@ function Lateral3() {
 
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
-      <Tab.Screen name="Cupom" component={Cupom} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
+      <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
     </Drawer.Navigator>
   )
@@ -235,7 +236,7 @@ function Lateral4() {
 
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
-      <Tab.Screen name="Cupom" component={Cupom} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
+      <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
     </Drawer.Navigator>
   )
@@ -279,7 +280,7 @@ function Lateral5() {
 
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
-      <Tab.Screen name="Cupom" component={Cupom} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
+      <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
     </Drawer.Navigator>
   )

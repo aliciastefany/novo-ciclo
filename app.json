@@ -20,13 +20,22 @@
         "foregroundImage": "./assets/logo_app.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.matt001.novociclo"
     },
     "web": {
       "favicon": "./assets/logo_app.png"
     },
     "plugins": [
       "expo-barcode-scanner"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "193c6cad-2151-4d12-8a90-2fac384821fc"
+      }
+    }
   }
 }
