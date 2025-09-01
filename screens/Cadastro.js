@@ -3,29 +3,9 @@ import {useState, useEffect, useContext} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import db from '../config/firebase';
 import { collection, addDoc } from "firebase/firestore";
-//import {UserContext} from '../ContextPerfil';
-
-/* 
-if (!email || !cpf || !username || !confsenha || senha === "" || confsenha != senha){
-  Alert.alert(
-    'Não foi possível realizar o cadastro!',
-    'Preencha todos os campos corretamente!',
-    [
-      {
-        text: 'Ok'
-      }
-    ]
-  );
-} else { 
-    salvar();
-  }
-}
-}
-*/
-
+import { cadastrarUsuarioRepository } from '../repositories/usuarioRepository';
 
 export default function Cadastro({navigation}){
-
   const [senhaOculta, setSenhaOculta] = useState(true);
   const [senhaOculta2, setSenhaOculta2] = useState(true);
   const [tecladoVisivel, setTecladoVisivel] = useState(false);  
@@ -44,42 +24,27 @@ export default function Cadastro({navigation}){
     };
   }, []);
 
-  //const {dados, setDados} = useContext(UserContext);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [confsenha, setConfsenha] = useState('');
-
-  /*const salvar = () => {
-    setDados({
-      username,
-      email,
-      cpf,
-      senha,
-    });
-    navigation.navigate('Login');
-  }; */
+  const [mensagem, setMensagem] = useState('');
 
   const realizarCadastro = async () => {
+    const dados = {
+      username: username,
+      email: email,
+      senha: senha,
+      cpf: cpf,
+    };
+
     try{
-      await addDoc(collection(db, 'usuarios'), {
-        email: email,
-        username: username,
-        cpf: cpf,
-        senha: senha
-      })
-    } 
-    catch(err){
-      Alert.alert(
-        'Não foi possível realizar o cadastro!',
-        'Preencha todos os dados corretamente',
-        [
-          {
-            text: 'Ok'
-          }
-        ]
-      );
+      await cadastrarUsuarioRepository(dados);
+      setMensagem('asasasasasasa');
+    }
+    catch(erro){
+      setMensagem(erro.code);
     }
   }
 
