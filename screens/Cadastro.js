@@ -1,17 +1,14 @@
-import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
-import {useState, useEffect, useContext} from 'react';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import db from '../config/firebase.js';
-import { collection, addDoc } from "firebase/firestore";
-import { cadastrarUsuarioRepository } from '../repositories/usuarioRepository.js';
-import { auth } from '../config/firebase.js';
+import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
+import { useState, useEffect } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { cadastrarUsuarioRepository } from '../repositories/cadastroUsuarioRepository';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
   const [senhaOculta2, setSenhaOculta2] = useState(true);
   const [tecladoVisivel, setTecladoVisivel] = useState(false);  
 
-   useEffect(() => {
+  useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setTecladoVisivel(true);
     });
@@ -25,6 +22,12 @@ export default function Cadastro({navigation}){
     };
   }, []);
 
+  useEffect(()=>{
+    if(mensagem !== ''){
+      Alert.alert(mensagem);
+    }
+  }, [mensagem]);
+
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
@@ -35,16 +38,22 @@ export default function Cadastro({navigation}){
   const realizarCadastro = async () => {
     const dados = {
       username: username,
-      email: email,
-      senha: senha,
       cpf: cpf,
+      email: email,
+      senha: senha
     };
-
-    try {
-      const idUsuario = await createUserWithEmailAndPassword(auth, dados.email, dados.senha);
-      await setDoc(doc(db, 'usuario', idUsuario.user.uid), dados);
-    } catch(err) {
-        return err.code;
+    
+    try{
+      if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== ''){
+        await cadastrarUsuarioRepository(dados);
+        setMensagem('Cadastro realizado com sucesso!');
+      }
+      else{
+        setMensagem('Preencha todos os campos corretamente!');
+      }
+    }
+    catch(err){
+      setMensagem(`Ocorreu um erro: ${err}`);
     }
   }
 
