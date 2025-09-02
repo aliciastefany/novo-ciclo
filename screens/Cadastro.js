@@ -1,9 +1,10 @@
 import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
 import {useState, useEffect, useContext} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import db from '../config/firebase';
+import db from '../config/firebase.js';
 import { collection, addDoc } from "firebase/firestore";
-import { cadastrarUsuarioRepository } from '../repositories/usuarioRepository';
+import { cadastrarUsuarioRepository } from '../repositories/usuarioRepository.js';
+import { auth } from '../config/firebase.js';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
@@ -39,12 +40,11 @@ export default function Cadastro({navigation}){
       cpf: cpf,
     };
 
-    try{
-      await cadastrarUsuarioRepository(dados);
-      setMensagem('asasasasasasa');
-    }
-    catch(erro){
-      setMensagem(erro.code);
+    try {
+      const idUsuario = await createUserWithEmailAndPassword(auth, dados.email, dados.senha);
+      await setDoc(doc(db, 'usuario', idUsuario.user.uid), dados);
+    } catch(err) {
+        return err.code;
     }
   }
 
