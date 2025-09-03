@@ -2,7 +2,6 @@ import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList}
 import {mercados} from '../data/dadosMercados';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
-import db from "../config/firebase";
 import { onSnapshot, doc } from "firebase/firestore";
 //import {UserContext} from '../ContextPerfil';
 

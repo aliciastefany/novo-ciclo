@@ -1,14 +1,14 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyByZmAg5LeV06euziI6xksVym-HjiSSfWA",
-  authDomain: "novo-ciclo-be537.firebaseapp.com",
-  projectId: "novo-ciclo-be537",
-  storageBucket: "novo-ciclo-be537.firebasestorage.app",
-  messagingSenderId: "713869019399",
-  appId: "1:713869019399:web:7267be8b2bba12b0581da2"
+  apiKey: "AIzaSyDuvZUpNneZ3kAZr0nf_ntEltdy-s0RzSA",
+  authDomain: "novo-ciclo-103dc.firebaseapp.com",
+  projectId: "novo-ciclo-103dc",
+  storageBucket: "novo-ciclo-103dc.firebasestorage.app",
+  messagingSenderId: "1086539769581",
+  appId: "1:1086539769581:web:5df914b16d401147c30ee4"
 };
 
-export const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);

@@ -39,13 +39,11 @@ export default function Cadastro({navigation}){
     const dados = {
       username: username,
       cpf: cpf,
-      email: email,
-      senha: senha
     };
     
-    /*try{
+    try{
       if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== ''){
-        await cadastrarUsuarioRepository(dados);
+        await cadastrarUsuarioRepository(dados, email, senha);
         setMensagem('Cadastro realizado com sucesso!');
       }
       else{
@@ -54,7 +52,7 @@ export default function Cadastro({navigation}){
     }
     catch(err){
       setMensagem(`Ocorreu um erro: ${err}`);
-    }*/
+    }
   }
 
   return(

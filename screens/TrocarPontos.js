@@ -3,7 +3,6 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {cuponsAssai, cuponsCarrefour, cuponsKacula, cuponsPortoSeguro} from '../data/dadosCupons';
 import {useState, useEffect} from 'react';
 //import {UserContext} from '../ContextPerfil';
-import db from '../config/firebase'
 import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
 
 export default function TrocarPontos({route, navigation}) {

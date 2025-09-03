@@ -1,7 +1,6 @@
 import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
 import {useState, useEffect} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
-import db from '../config/firebase'
 import {getDocs, collection, query, where} from 'firebase/firestore';
 
 export default function Login({navigation}){

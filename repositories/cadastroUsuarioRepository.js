@@ -1,13 +1,10 @@
-import { setDoc, doc } from 'firebase/firestore';
-import { db } from '../config/firebase.js';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
-export const cadastrarUsuarioRepository = async (dados) => {
+export const cadastrarUsuario = async (dados, email, senha) => {
   try {
-    const credencial = await createUserWithEmailAndPassword(auth, dados.email, dados.senha);
+    const credencial = await createUserWithEmailAndPassword(auth, email, senha);
     return credencial.user.uid;
-  } 
-  catch(err) {
+  } catch (err) {
     return err.code;
   }
 };

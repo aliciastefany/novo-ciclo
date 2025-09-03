@@ -1,24 +1,12 @@
 import { SafeAreaView, Image, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text } from 'react-native';
-import { useEffect, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CardMaterial from '../components/CardMaterial';
 import { materiais } from '../data/dadosMateriais';
-import { db } from "../config/firebase";
-import { onSnapshot, doc } from "firebase/firestore";
 import Legenda from '../components/Legenda';
+import { getDados } from '../repositories/buscarDadosUsuario';
 
 export default function Home({navigation}){
-  const [pontos, setPontos] = useState(0); 
-  const [lixoKG, setLixoKG] = useState(0); 
-
-  useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
-      setPontos(doc.data().pontos);
-    });
-    return () => getPontos();
-  }, []);
-
-  setInterval(()=>console.log(pontos), 10000);
+  const dados = getDados('WvwjLK9WqoQOsld2nv8AvxIoen32');
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -61,7 +49,7 @@ export default function Home({navigation}){
               <Image source={require('../assets/circ_prog.png')} style={{width: 100, height: 100}} />
 
               <View style={estilos.texto_img}>
-                <Text style={{fontWeight: 500, fontSize: 15}}>{lixoKG} kg</Text>
+                <Text style={{fontWeight: 500, fontSize: 15}}>{dados.kg_reciclado} kg</Text>
               </View>
             </View>
 
@@ -84,10 +72,10 @@ export default function Home({navigation}){
               </View>
 
               <View style={{marginTop: 6}}>
-                <Text style={estilos.text_prog}>Você já reciclou {pontos} kg de lixo.</Text>
+                <Text style={estilos.text_prog}>Você já reciclou {dados.kg_reciclado} kg de lixo.</Text>
               </View>
             </View>
-
+                  
             <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
               <View style={estilos.card_pontos}>
                 <View style={estilos.tit_card}>
@@ -96,7 +84,7 @@ export default function Home({navigation}){
 
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Text style={{fontSize: 18, fontWeight: 700}}>{pontos}</Text>
+                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados.pontos}</Text>
                     <Text style={{fontWeight: 500}}>pontos</Text>
                   </View>
 

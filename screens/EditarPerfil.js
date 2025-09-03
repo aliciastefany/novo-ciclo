@@ -2,7 +2,6 @@ import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useEffect, useState} from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import db from '../config/firebase'
 import {doc, updateDoc, getDoc} from 'firebase/firestore';
 //import {UserContext} from '../ContextPerfil';
 

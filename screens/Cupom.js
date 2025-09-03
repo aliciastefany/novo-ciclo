@@ -1,7 +1,6 @@
 import {Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import CupomDoUsuario from '../components/CupomDoUsuario';
-import db from '../config/firebase'
 import {doc, getDoc} from 'firebase/firestore';
 import {useState, useEffect} from 'react';
 

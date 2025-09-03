@@ -3,7 +3,6 @@ import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {UserContext} from '../ContextPerfil';
 import {useState, useEffect, useContext} from 'react';
 import {conquistas} from '../data/dadosConquistas';
-import db from '../config/firebase'
 import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 //import { dadosCuponsResgatados } from '../data/dadosCuponsResgatados';
