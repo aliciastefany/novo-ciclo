@@ -1,24 +1,8 @@
 import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import db from '../config/firebase'
 import {getDocs, collection, query, where} from 'firebase/firestore';
-//import {UserContext} from '../ContextPerfil';
-
-/* if((username != '' && senha != '' && email != '') && (senha === dados.senha && username === dados.username && email === dados.email)){
-      navigation.navigate('Rotas');
-    } else{
-        Alert.alert(
-      'Não foi possível realizar o login!',
-      'Dados inválidos!',
-      [
-        {
-          text: 'Ok'
-        }
-      ]
-    );
-    }
-    }} */
 
 export default function Login({navigation}){
 

@@ -1,25 +1,22 @@
-import {SafeAreaView, Image, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text} from 'react-native';
-import {useEffect, useState} from 'react';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-//import {UserContext} from '../ContextPerfil';
+import { SafeAreaView, Image, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text } from 'react-native';
+import { useEffect, useState } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CardMaterial from '../components/CardMaterial';
-import {materiais} from '../data/dadosMateriais';
-import db from "../config/firebase";
-import {onSnapshot, doc} from "firebase/firestore";
+import { materiais } from '../data/dadosMateriais';
+import { db } from "../config/firebase";
+import { onSnapshot, doc } from "firebase/firestore";
 import Legenda from '../components/Legenda';
 
 export default function Home({navigation}){
-
-  //const {dados} = useContext(UserContext);
-
   const [pontos, setPontos] = useState(0); 
+  const [lixoKG, setLixoKG] = useState(0); 
 
   useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
+    const getPontos = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
       setPontos(doc.data().pontos);
     });
     return () => getPontos();
-  })
+  }, [])
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -62,7 +59,7 @@ export default function Home({navigation}){
               <Image source={require('../assets/circ_prog.png')} style={{width: 100, height: 100}} />
 
               <View style={estilos.texto_img}>
-                <Text style={{fontWeight: 500, fontSize: 15}}>27,50 kg</Text>
+                <Text style={{fontWeight: 500, fontSize: 15}}>{lixoKG} kg</Text>
               </View>
             </View>
 
@@ -85,7 +82,7 @@ export default function Home({navigation}){
               </View>
 
               <View style={{marginTop: 6}}>
-                <Text style={estilos.text_prog}>Você já reciclou 27,50 kg de lixo.</Text>
+                <Text style={estilos.text_prog}>Você já reciclou {pontos} kg de lixo.</Text>
               </View>
             </View>
 

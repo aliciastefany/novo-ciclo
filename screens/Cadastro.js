@@ -1,7 +1,7 @@
 import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
 import { useState, useEffect } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { cadastrarUsuarioRepository } from '../repositories/cadastroUsuarioRepository';
+import cadastrarUsuarioRepository from '../repositories/cadastroUsuarioRepository.js';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
@@ -43,7 +43,7 @@ export default function Cadastro({navigation}){
       senha: senha
     };
     
-    try{
+    /*try{
       if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== ''){
         await cadastrarUsuarioRepository(dados);
         setMensagem('Cadastro realizado com sucesso!');
@@ -54,7 +54,7 @@ export default function Cadastro({navigation}){
     }
     catch(err){
       setMensagem(`Ocorreu um erro: ${err}`);
-    }
+    }*/
   }
 
   return(

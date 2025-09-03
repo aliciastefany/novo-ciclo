@@ -1,7 +1,6 @@
 import { setDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase.js';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../config/auth.js';
 
 export const cadastrarUsuarioRepository = async (dados) => {
   try {
@@ -12,5 +11,3 @@ export const cadastrarUsuarioRepository = async (dados) => {
     return err.code;
   }
 };
-
-export default cadastrarUsuarioRepository;

@@ -16,7 +16,7 @@ export default function App() {
   return (
     <UserProvider>
       <NavigationContainer>
-          <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Inicial">
+          <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Rotas">
             <Stack.Screen name="Inicial" component={TelaInicial}/>
             <Stack.Screen name="Login" component={Login}/>
             <Stack.Screen name="Cadastro" component={Cadastro}/>
