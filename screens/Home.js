@@ -16,7 +16,9 @@ export default function Home({navigation}){
       setPontos(doc.data().pontos);
     });
     return () => getPontos();
-  }, [])
+  }, []);
+
+  setInterval(()=>console.log(pontos), 10000);
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
