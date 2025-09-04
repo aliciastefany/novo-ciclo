@@ -1,19 +1,18 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList} from 'react-native';
-import {mercados} from '../data/dadosMercados';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { mercados } from '../data/dadosMercados';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { onSnapshot, doc } from "firebase/firestore";
-//import {UserContext} from '../ContextPerfil';
+import { db } from '../config/firebase';
 
 export default function Pontos({navigation}) {
-
-  //const {dados} = useContext(UserContext);
-  
-  const [pontos, setPontos] = useState(0); 
+  const [pontos, setPontos] = useState(0);
+  const [lixo, setLixo] = useState(0); 
 
   useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
+    const getPontos = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
       setPontos(doc.data().pontos);
+      setLixo(doc.data().kg_reciclado);
     });
     console.log(pontos);
     return () => getPontos();
@@ -44,7 +43,7 @@ export default function Pontos({navigation}) {
           </View>
 
           <View style={estilos.card_lixo}>
-            <Text style={estilos.txt_lixo}>27,5 KG DE LIXO RECICLADOS</Text>
+            <Text style={estilos.txt_lixo}>{lixo} KG DE LIXO RECICLADOS</Text>
           </View>
         </View>
 

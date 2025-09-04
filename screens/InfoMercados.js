@@ -1,17 +1,30 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView} from 'react-native';
-import {UserContext} from '../ContextPerfil';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {mercados} from '../data/dadosMercados';
-import {useContext} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { mercados } from '../data/dadosMercados';
+import { db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
 
 export default function InfoMercados({ navigation }) {
+  const [dados, setDados] = useState('');
+
+  useEffect(() => {
+    try{
+      const getInfos = onSnapshot(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), (doc)=>{
+        setDados(doc.data());
+      });
+        
+      return ()=>getInfos();
+    }
+    catch(err){
+      console.error(err);
+    }
+  }, []);
 
   const link = () => {
-    const url = dados.site;
+    const url = dados.website;
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
-
-  const {dados} = useContext(UserContext);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'center' }}>
@@ -24,7 +37,7 @@ export default function InfoMercados({ navigation }) {
 
         <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
           <View style={estilos.titulo}>
-            <Text style={estilos.txt_tit}>{mercados[0].titulo}</Text>
+            <Text style={estilos.txt_tit}>{dados.nome}</Text>
           </View>
 
           <View style={estilos.area_img}>
@@ -45,20 +58,20 @@ export default function InfoMercados({ navigation }) {
             <View style={estilos.infos}>
               <View style={estilos.conts_infos}>
                 <Image source={require('../assets/endereco.png')} style={estilos.imgs} />
-                <Text style={estilos.texto_infos}>{dados.enderecoMercado}</Text>
+                <Text style={estilos.texto_infos}>{dados.endereco}</Text>
               </View>
 
               <View style={estilos.conts_infos}>
                 <Image source={require('../assets/link.png')} style={estilos.imgs} />
 
                 <TouchableOpacity style={estilos.btn_link} onPress={link}>
-                  <Text style={estilos.links}>{dados.site}</Text>
+                  <Text style={estilos.links}>{dados.website}</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={estilos.conts_infos}>
                 <Image source={require('../assets/telefone.png')} style={estilos.imgs} />
-                <Text style={estilos.texto_infos}>{dados.numeroMercado}</Text>
+                <Text style={estilos.texto_infos}>{dados.numero}</Text>
               </View>
             </View>
           </View>
@@ -66,7 +79,7 @@ export default function InfoMercados({ navigation }) {
           <View style={estilos.linha} />
 
           <View style={estilos.infos_mercado}>
-            <Text style={estilos.txt_infomerc}>{dados.descricaoMercado}</Text>
+            <Text style={estilos.txt_infomerc}>{dados.descricao}</Text>
             <View style={estilos.btn_cupons}>
               <TouchableOpacity style={estilos.btn} onPress={() => navigation.navigate('Cupons')}>
                 <Text style={estilos.txt_cps}>Cupons disponíveis no mercado</Text>

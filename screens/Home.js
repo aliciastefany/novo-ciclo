@@ -1,12 +1,61 @@
-import { SafeAreaView, Image, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CardMaterial from '../components/CardMaterial';
 import { materiais } from '../data/dadosMateriais';
 import Legenda from '../components/Legenda';
-import { getDados } from '../repositories/buscarDadosUsuario';
+import { PieChart } from 'react-native-chart-kit';
+import { useState, useEffect } from 'react';
+import { db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
 
 export default function Home({navigation}){
-  const dados = getDados('WvwjLK9WqoQOsld2nv8AvxIoen32');
+  const [dados, setDados] = useState(null);
+
+  useEffect(()=>{
+    const snap = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
+        setDados(doc.data());
+    }); 
+    
+    return ()=>snap();
+  }, []);
+
+  const grafico = [
+    {
+      name: 'Plástico',
+      population: dados ? dados.materiais_reciclados.plastico : 0,
+      color: materiais[0].corLegenda,
+    },
+    {
+      name: 'Papel',
+      population: dados ? dados.materiais_reciclados.papel : 0,
+      color: materiais[1].corLegenda,
+    },
+    {
+      name: 'Papelão',
+      population: dados ? dados.materiais_reciclados.papelao : 0,
+      color: materiais[2].corLegenda,
+    },
+    {
+      name: 'Metal',
+      population: dados ? dados.materiais_reciclados.metal : 0,
+      color: materiais[3].corLegenda,
+    },
+    {
+      name: 'Vidro',
+      population: dados ? dados.materiais_reciclados.vidro : 0,
+      color: materiais[4].corLegenda,
+    },
+    {
+      name: 'Madeira',
+      population: dados ? dados.materiais_reciclados.madeira : 0,
+      color: materiais[5].corLegenda,
+    },
+    {
+      name: 'Eletrônicos',
+      population: dados ? dados.materiais_reciclados.eletronico : 0,
+      color: materiais[6].corLegenda,
+    },
+  ]
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -46,10 +95,24 @@ export default function Home({navigation}){
         <View style={estilos.pontos}>
           <View style={{flex: 1}}>
             <View style={{alignItems: 'center'}}>
-              <Image source={require('../assets/circ_prog.png')} style={{width: 100, height: 100}} />
+              <PieChart 
+                data={grafico}
+                width={100}
+                height={100}
+                chartConfig={{
+                  color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                }}
+                accessor="population"
+                backgroundColor='transparent'
+                absolute={true}
+                hasLegend={false}
+                center={[25, 0]}
+              />
 
               <View style={estilos.texto_img}>
-                <Text style={{fontWeight: 500, fontSize: 15}}>{dados.kg_reciclado} kg</Text>
+                <View style={estilos.area_texto}>
+                  <Text style={{fontWeight: 500, fontSize: 15}}>{dados && dados.kg_reciclado} kg</Text>
+                </View>
               </View>
             </View>
 
@@ -57,10 +120,11 @@ export default function Home({navigation}){
               <FlatList
                 data={materiais}
                 keyExtractor={(item)=>item.id}
-                renderItem={({item})=>(
-                  <Legenda corLegenda={item.corLegenda} titulo={item.titulo} />
+                renderItem={({item, index})=>(
+                  <Legenda corLegenda={item.corLegenda} titulo={`${item.titulo} - ${grafico[index].population}kg`} />
                 )}
-                contentContainerStyle={{gap: 7}}
+                contentContainerStyle={{gap: 7, paddingRight: 30}}
+                showsVerticalScrollIndicator={false}
               />
             </View>
           </View>
@@ -72,7 +136,7 @@ export default function Home({navigation}){
               </View>
 
               <View style={{marginTop: 6}}>
-                <Text style={estilos.text_prog}>Você já reciclou {dados.kg_reciclado} kg de lixo.</Text>
+                <Text style={estilos.text_prog}>Você já reciclou {dados && dados.kg_reciclado} kg de lixo.</Text>
               </View>
             </View>
                   
@@ -84,7 +148,7 @@ export default function Home({navigation}){
 
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados.pontos}</Text>
+                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados && dados.pontos}</Text>
                     <Text style={{fontWeight: 500}}>pontos</Text>
                   </View>
 
@@ -240,6 +304,18 @@ const estilos = StyleSheet.create({
     width: '100%',
     height: 100,
     alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+  },
+
+  area_texto: {
+    fontWeight: 500, 
+    fontSize: 15, 
+    backgroundColor: 'white',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    borderRadius: 100,
     justifyContent: 'center'
   },
 

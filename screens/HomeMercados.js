@@ -1,10 +1,23 @@
-import {SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, View, Text, Platform, Alert} from 'react-native';
-import {useContext, useState} from 'react';
-import {UserContext} from '../ContextPerfil';
+import { SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, View, Text, Platform, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
+import { db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
 
 export default function HomeMercados({navigation}){
+  const [dados, setDados] = useState('');
 
-  const {dados, setDados} = useContext(UserContext);
+  useEffect(() => {
+    try{
+      const getInfos = onSnapshot(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), (doc)=>{
+        setDados(doc.data());
+      });
+        
+      return ()=>getInfos();
+    }
+    catch(err){
+      console.error(err);
+    }
+  }, []);
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -28,12 +41,12 @@ export default function HomeMercados({navigation}){
           <View style={estilos.lista}> 
             <ImageBackground source={require('../assets/kacula.jpg')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
               <View style={estilos.area_textos}>
-                <Text style={estilos.txt_tit2}>Kaçula Supermercados</Text>
-                <Text style={estilos.txt_desc}>Plásticos, metais, papelão e mais!</Text>
+                <Text style={estilos.txt_tit2}>{dados.nome}</Text>
+                <Text style={estilos.txt_desc}>{dados.descricao}</Text>
               </View>
 
               <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Editar Mercado')}>
+                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Editar Mercado', { dados })}>
                   <Text style={estilos.txt_btn}>Edite as informações!</Text>
                 </TouchableOpacity>
               </View>
@@ -58,22 +71,6 @@ export default function HomeMercados({navigation}){
                   { cancelable: true }
                 );
               }
-              setDados({
-                username: 'Pedro_Henrique',
-                  email: 'etectaboaosp@etec.sp.gov.br',
-                  cpf: '015.516.690-47',
-                  senha: 'etec2024',
-                  numero: '11 98457-2561',
-                  usernameMercado: 'Kaçula Supermercados',
-                  emailMercado: 'kaculasuper@gmail.com',
-                  cnpj: '54.839.485/0002-11',
-                  senhaMercado: 'kacula2024',
-                  numeroMercado: '(11) 4701-6181',
-                  descricaoMercado: 'O Kaçula Supermercado é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
-                  site: 'https://www.kacula.com.br/',
-                  enderecoMercado: 'Rua José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
-                  pontos: 275.5,
-              })
             }}>
               <Text style={{fontSize: 18, color: 'white', textAlign: 'center'}}>Sair</Text>
             </TouchableOpacity>
@@ -140,7 +137,7 @@ const estilos = StyleSheet.create({
     position: 'absolute',
     zIndex: 1,
     paddingHorizontal: 10,
-    gap: 2
+    gap: 2,
   },  
 
   btn:{
@@ -161,7 +158,9 @@ const estilos = StyleSheet.create({
   txt_desc:{
     fontSize: 15,
     color: 'white',
-    fontWeight: 400
+    fontWeight: 400,
+    overflow: 'hidden',
+    maxHeight: 55,
   },
 
   area_btnSair:{

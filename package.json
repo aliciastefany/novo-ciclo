@@ -23,6 +23,7 @@
     "expo-linear-gradient": "~14.1.5",
     "expo-status-bar": "~2.2.3",
     "firebase": "^11.9.1",
+    "nanoid": "^5.1.5",
     "react": "19.0.0",
     "react-native": "0.79.3",
     "react-native-chart-kit": "^6.12.0",

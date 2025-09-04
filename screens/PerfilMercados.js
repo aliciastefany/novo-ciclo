@@ -1,13 +1,31 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
-import {useContext} from 'react';
-import {mercados} from '../data/dadosMercados';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { mercados } from '../data/dadosMercados';
+import { useState, useEffect } from 'react';
+import { db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
 
 export default function PerfilMercados({navigation}) {
+  const [dados, setDados] = useState('');
 
-  const {dados} = useContext(UserContext);
-  
+  useEffect(() => {
+    try{
+      const getInfos = onSnapshot(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), (doc)=>{
+        setDados(doc.data());
+      });
+        
+      return ()=>getInfos();
+    }
+    catch(err){
+      console.error(err);
+    }
+  }, []);
+
+  const link = () => {
+    const url = dados.website;
+    Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
       <ScrollView style={{flex: 1}}>
@@ -17,37 +35,39 @@ export default function PerfilMercados({navigation}) {
           </View>
 
           <View style={estilos.area_perfil}>
-            <Image source={dados.imgMercado ? {uri: dados.imgMercado} : require('../assets/kacula_perfil.png')} style={estilos.perfil} />
+            <Image source={require('../assets/kacula_perfil.png')} style={estilos.perfil} />
           </View>
 
           <View style={estilos.descricao}>
             <View>
               <Text style={estilos.tit_desc}>Nome do mercado</Text>
-              <Text style={estilos.txt_desc}>{dados.usernameMercado}</Text>
+              <Text style={estilos.txt_desc}>{dados.nome}</Text>
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Email</Text>
-              <Text style={estilos.txt_desc}>{dados.emailMercado}</Text>
+              <Text style={estilos.txt_desc}>{dados.email}</Text>
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Número</Text>
-              <Text style={estilos.txt_desc}>{dados.numeroMercado}</Text>
+              <Text style={estilos.txt_desc}>{dados.numero}</Text>
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Endereço</Text>
-              <Text style={estilos.txt_desc}>{dados.enderecoMercado}</Text>
+              <Text style={estilos.txt_desc}>{dados.endereco}</Text>
             </View> 
             
             <View>
               <Text style={estilos.tit_desc}>WebSite</Text>
-              <Text style={[estilos.txt_desc, {textDecorationLine: 'underline'}]}>{dados.site}</Text>
+              <TouchableOpacity onPress={link}>
+                <Text style={[estilos.txt_desc, {textDecorationLine: 'underline'}]}>{dados.website}</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
-          <TouchableOpacity style={estilos.btn_editar} onPress={()=>navigation.navigate('Editar Mercado')}>
+          <TouchableOpacity style={estilos.btn_editar} onPress={()=>navigation.navigate('Editar Mercado', { dados })}>
             <MaterialCommunityIcons name='pencil' size={35} color='white' />
           </TouchableOpacity>
         </View>

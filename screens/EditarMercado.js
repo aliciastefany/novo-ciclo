@@ -1,33 +1,37 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, ScrollView} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {useContext, useState} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, ScrollView, Alert } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import {UserContext} from '../ContextPerfil';
+import { db } from '../config/firebase';
+import { updateDoc, doc } from 'firebase/firestore';
 
-export default function EditarMercado({navigation}) {
-
-  const {dados, setDados} = useContext(UserContext);
-  const [username, setUsername] = useState(dados.usernameMercado || '');
-  const [email, setEmail] = useState(dados.emailMercado || '');
-  const [numero, setNumero] = useState(dados.numeroMercado || '');
-  const [endereco, setEndereco] = useState(dados.enderecoMercado || '');
-  const [descricao, setDescricao] = useState(dados.descricaoMercado || '');
-  const [website, setWebsite] = useState(dados.site || '');
+export default function EditarMercado({navigation, route}) {
+  const {dados} = route.params;
+  const [username, setUsername] = useState(dados.nome || '');
+  const [email, setEmail] = useState(dados.email || '');
+  const [numero, setNumero] = useState(dados.numero || '');
+  const [endereco, setEndereco] = useState(dados.endereco || '');
+  const [descricao, setDescricao] = useState(dados.descricao || '');
+  const [website, setWebsite] = useState(dados.website || '');
   
-  const salvar = () => {
-    setDados({
-      ...dados,
-      usernameMercado: username,
-      emailMercado: email,
-      numeroMercado: numero,
-      enderecoMercado: endereco,
-      descricaoMercado: descricao,
-      imgMercado: image,
-      site: website,
-      pontos: 275.5,
-    });
-    navigation.navigate('Perfil');
-  };
+  const salvarInfo = async () => {
+    try{
+      await updateDoc(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), {
+        nome: username,
+        email: email,
+        numero: numero,
+        endereco: endereco,
+        descricao: descricao,
+        website: website,
+      });
+
+      Alert.alert('Dados atualizados!');
+      navigation.navigate('Perfil');
+    }
+    catch(err){
+      console.error(err);
+    }
+  }
 
   const [image, setImage] = useState(null);
 
@@ -63,37 +67,37 @@ export default function EditarMercado({navigation}) {
           <View style={estilos.descricao}>
             <View>
               <Text style={estilos.tit_desc}>Nome do mercado</Text>
-              <TextInput style={estilos.inputs} placeholder='Kaçula Supermercados' value={username} onChangeText={setUsername} />
+              <TextInput style={estilos.inputs} placeholder='Nome' value={username} onChangeText={(txt)=>setUsername(txt)} />
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Email</Text>
-              <TextInput style={estilos.inputs} placeholder='kacula@email.com' value={email} onChangeText={setEmail} />
+              <TextInput style={estilos.inputs} placeholder='Email' value={email} onChangeText={(txt)=>setEmail(txt)} />
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Número</Text>
-              <TextInput style={estilos.inputs} placeholder='+55 11 0000-0000' value={numero} onChangeText={setNumero} />
+              <TextInput style={estilos.inputs} placeholder='Número de telefone' value={numero} onChangeText={(txt)=>setNumero(txt)} />
 
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Endereço</Text>
-              <TextInput style={estilos.inputs} placeholder='R. Kaçula, 00 - Jardim Kaçula, São Paulo - SP, 00000-00' value={endereco} onChangeText={setEndereco} />
+              <TextInput style={estilos.inputs} placeholder='Endereço' value={endereco} onChangeText={(txt)=>setEndereco(txt)} />
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Website</Text>
-              <TextInput style={estilos.inputs} placeholder='https://www.kacula.com.br/' value={website} onChangeText={setWebsite} />
+              <TextInput style={estilos.inputs} placeholder='Website' value={website} onChangeText={(txt)=>setWebsite(txt)} />
             </View>
 
             <View>
               <Text style={estilos.tit_desc}>Descrição do mercado</Text>
-              <TextInput style={estilos.input_bio} placeholder='O Kaçula Supermercados é...' multiline={true} textAlignVertical="top" value={descricao} onChangeText={setDescricao} />
+              <TextInput style={estilos.input_bio} placeholder='Descrição do mercado' multiline={true} textAlignVertical="top" value={descricao} onChangeText={(txt)=>setDescricao(txt)} />
             </View>
           </View>
 
-          <TouchableOpacity style={estilos.btn_editar} onPress={salvar}>
+          <TouchableOpacity style={estilos.btn_editar} onPress={salvarInfo}>
             <MaterialCommunityIcons name='content-save' size={35} color='white' />
           </TouchableOpacity>
         </View>

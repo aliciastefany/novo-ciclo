@@ -1,29 +1,64 @@
-
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Modal, TextInput, TouchableWithoutFeedback} from 'react-native';
-import {mercados} from '../data/dadosMercados';
-import {cuponsKacula} from '../data/dadosCupons';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {useState} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Modal, TextInput } from 'react-native';
+import { mercados } from '../data/dadosMercados';
+import { MaterialCommunityIcons} from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import CupomDoMercado from '../components/CupomDoMercado';
+import { db } from '../config/firebase';
+import { doc, onSnapshot, setDoc, collection, deleteDoc, where, query } from 'firebase/firestore';
+import { nanoid } from 'nanoid/non-secure';
 
 export default function CuponsMercados({navigation}) {
-
-  const [cupons, setCupons] = useState(cuponsKacula);
+  const [cupons, setCupons] = useState([]);
   const [cardAdd, setCardAdd] = useState(false);
   const [preco, setPreco] = useState('');
   const [desc, setDesc] = useState('');
-  const [item, setItem] = useState('');
+  const [itens, setItens] = useState('');
   const [btnRmv, setBtnRmv] = useState(false);
 
-  const novoCupom = () => {
-     const novo = {
-      id: cupons.length + 1, 
-      precoTroca: preco, 
-      descPorc: desc + '% DE DESCONTO EM ' + item.toUpperCase(), 
-    };
-    setCupons(prev => [...prev, novo]);
-    setCardAdd(false);
+  const novoCupom = async () => {
+    const codigo = () => nanoid(10);
+
+    try{
+      await setDoc(doc(db, 'cupons', codigo()), {
+        precoTroca: preco, 
+        descPorc: desc + '% DE DESCONTO EM ' + itens.toUpperCase(),
+        empresa: doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN')
+      });
+      
+      setCardAdd(false);
+    }
+    catch(err){
+      console.error(err);
+    }
   }
+
+  const deletarCupom = async (id) => {
+    try{
+      await deleteDoc(doc(db, 'cupons', id));
+    }
+    catch(err){
+      console.error(err);
+    }
+  }
+
+  useEffect(()=>{
+    try{
+      const coll = collection(db, 'cupons');
+      const q = query(coll, where('empresa', '==', doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN')));
+      const snap = onSnapshot(q, (documentos)=>{
+        const listaCupons = documentos.docs.map((doc)=>({
+          id: doc.id, 
+          precoTroca: doc.data().precoTroca, 
+          descPorc: doc.data().descPorc,
+        }));
+        setCupons(listaCupons);
+      });
+      return ()=>snap();
+    }
+    catch(err){
+      console.error(err);
+    }
+  },[cupons]);
 
   const porcentagem = (atual) => {
     if(atual > 100){
@@ -32,13 +67,6 @@ export default function CuponsMercados({navigation}) {
       setDesc(atual);
     }
   }
-
-  const remover = (id) => {
-    setCupons(prev => prev.filter(atual => atual.id != id));
-  }
-  //atual: indice do array percorrido no momento - {}
-  //filter: cria um novo array com a condição
-  //prev: estado anterior
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -72,17 +100,17 @@ export default function CuponsMercados({navigation}) {
             <View style={estilos.area_add}>
               <View style={{gap: 5, alignItems: 'center'}}>
                 <Text style={{fontSize: 15}}>Preço de troca do cupom (pontos):</Text>
-                <TextInput placeholder='000' style={estilos.input} keyboardType='numeric' maxLength={3} onChangeText={setPreco} />
+                <TextInput placeholder='000' style={estilos.input} keyboardType='numeric' maxLength={3} onChangeText={(txt)=>setPreco(txt)} />
               </View>
 
               <View style={{gap: 5, alignItems: 'center'}}>
                 <Text style={{fontSize: 15}}>Desconto do cupom (%):</Text>
-                <TextInput placeholder='000' style={estilos.input} keyboardType='numeric' maxLength={3} onChangeText={porcentagem} />
+                <TextInput placeholder='000' style={estilos.input} keyboardType='numeric' maxLength={3} onChangeText={(txt)=>porcentagem(txt)} />
               </View>
 
               <View style={{gap: 5, alignItems: 'center'}}>
                 <Text style={{fontSize: 15}}>Item em promoção:</Text>
-                <TextInput placeholder='Frios, carnes...' style={estilos.input} maxLength={30} onChangeText={setItem} />
+                <TextInput placeholder='Frios, carnes...' style={estilos.input} maxLength={30} onChangeText={(txt)=>setItens(txt)} />
               </View>
             </View>
 
@@ -102,10 +130,10 @@ export default function CuponsMercados({navigation}) {
               style={estilos.flatlist}
               data={cupons}
               renderItem={({item})=>(
-                <CupomDoMercado setBtnRmv={setBtnRmv} btnRmv={btnRmv} onPress={remover(item.id)}/>
+                <CupomDoMercado setBtnRmv={setBtnRmv} item={item} btnRmv={btnRmv} onPress={()=>deletarCupom(item.id)}/>
               )}
-              keyExtractor={item => item.id}
-              contentContainerStyle={{gap: 20}}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{gap: 20, alignItems: 'center'}}
             />
           </View>
         </View>
@@ -212,6 +240,5 @@ const estilos = StyleSheet.create({
   flatlist:{
     marginVertical: 10, 
     width: '100%', 
-    alignItems: 'center'
   },
 });

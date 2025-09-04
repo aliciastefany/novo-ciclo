@@ -1,43 +1,28 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
-import {useState, useEffect, useContext} from 'react';
-import {conquistas} from '../data/dadosConquistas';
-import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect } from 'react';
+import { conquistas } from '../data/dadosConquistas';
+import { doc, onSnapshot } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 //import { dadosCuponsResgatados } from '../data/dadosCuponsResgatados';
+import { db } from '../config/firebase';
 
 export default function Perfil({navigation}) {
-
-  const {dados} = useContext(UserContext);
-
-  const [infoUsuario, setInfoUsuario] = useState({});
+  const [infoUsuario, setInfoUsuario] = useState('');
   const [cuponsUsuario, setCuponsUsuario] = useState([]);
 
   useEffect(() => {
-    const getInfoUsuarios = async () => {
-      const getInfoUsuario = await getDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'))
-      setInfoUsuario(getInfoUsuario.data());
+    try{
+      const getInfoUsuario = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+        setInfoUsuario(doc.data());
+      });
+        
+      return ()=>getInfoUsuario();
     }
-    getInfoUsuarios();
-  }, [])
-
-  useEffect(() => {
-    const getCupons = async () => {
-      const getCuponsUsuario = await getDocs(collection(db, 'cupons'));
-      const cupons = [];
-      getCuponsUsuario.forEach((doc) => {
-        cupons.push({
-          id: doc.id,
-          precoTroca: doc.data().precoTroca,
-          nomeMercado: doc.data().nomeMercado
-        });
-      })
-      setCuponsUsuario(cupons);
+    catch(err){
+      console.error(err);
     }
-    getCupons();
-  }, [])
-
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -47,7 +32,7 @@ export default function Perfil({navigation}) {
         </TouchableOpacity>
       </View>
         
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1, width: '100%'}} showsVerticalScrollIndicator={false}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
           <View style={estilos.img_fundo}>
             <Image source={require('../assets/fundo_perfil.jpg')} style={estilos.img} />
@@ -55,7 +40,7 @@ export default function Perfil({navigation}) {
 
           
         <View style={estilos.area_perfil}>
-          <Image source={dados.img ? {uri: dados.img} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
+          <Image source={require('../assets/perfil_perfil.png')} style={estilos.perfil} />
         </View>
 
           <View style={estilos.descricao}>
@@ -75,9 +60,7 @@ export default function Perfil({navigation}) {
             </View>
           </View>
 
-          <TouchableOpacity style={estilos.btn_editar} onPress={() => navigation.navigate('Editar Perfil', {
-            infoUsuario
-          })}>
+          <TouchableOpacity style={estilos.btn_editar} onPress={() => navigation.navigate('Editar Perfil', { infoUsuario })}>
             <MaterialCommunityIcons name='pencil' size={35} color='white' />
           </TouchableOpacity>
 
@@ -89,7 +72,7 @@ export default function Perfil({navigation}) {
             <View style={{alignItems: 'center', width: '100%'}}>
               <FlatList 
                 style={{width: '100%', marginVertical: 10}}
-                contentContainerStyle={{gap: 20}}
+                contentContainerStyle={{gap: 20, alignItems: 'center'}}
                 data={conquistas}
                 keyExtractor={item => item.id}
                 renderItem={({item}) => (

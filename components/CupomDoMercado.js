@@ -1,6 +1,7 @@
-import {View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
+import { MaterialCommunityIcons} from '@expo/vector-icons';
 
-export default function CupomDoMercado({ setBtnRmv, btnRmv, onPress }){
+export default function CupomDoMercado({ setBtnRmv, btnRmv, onPress, item }){
     return (
         <TouchableWithoutFeedback onPress={()=>{setBtnRmv(!btnRmv)}}>
             <View style={estilos.card_cupom}>
@@ -9,11 +10,11 @@ export default function CupomDoMercado({ setBtnRmv, btnRmv, onPress }){
                     <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
 
                     <View style={estilos.cobrir}>
-                    <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
+                      <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
                     </View>
                 </View>
 
-                <TouchableOpacity style={btnRmv ? estilos.btn_rmv : {display: 'none'}} onPress={() => {onPress}}>
+                <TouchableOpacity style={btnRmv ? estilos.btn_rmv : {display: 'none'}} onPress={onPress}>
                     <MaterialCommunityIcons name='delete' color='white' size={30} />
                 </TouchableOpacity>
             </View>

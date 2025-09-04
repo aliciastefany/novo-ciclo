@@ -11,7 +11,7 @@ export const getDados = (id) =>{
         }); 
         
         return ()=>snap();
-    }, [id]);
+    }, []);
     
     return dados;
 } 
