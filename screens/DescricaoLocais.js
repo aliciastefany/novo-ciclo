@@ -36,11 +36,11 @@ export default function DescricaoLocais({route, navigation}) {
 
         <View style={estilos.area_infos}>
           <View style={estilos.cont_avaliacao}>
-            <MaterialCommunityIcons name={mercados.e1} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e2} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e3} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e4} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e5} size={45} color='#31420a' />
+            <MaterialCommunityIcons name='star' size={45} color='#31420a' />
+            <MaterialCommunityIcons name='star' size={45} color='#31420a' />
+            <MaterialCommunityIcons name='star' size={45} color='#31420a' />
+            <MaterialCommunityIcons name='star' size={45} color='#31420a' />
+            <MaterialCommunityIcons name='star-outline' size={45} color='#31420a' />
           </View>
 
           <View style={estilos.infos}>
@@ -67,11 +67,16 @@ export default function DescricaoLocais({route, navigation}) {
         <View style={estilos.linha} />
 
         <View style={estilos.infos_mercado}>
-          <Text style={estilos.txt_infomerc}>{mercados.data().descricao}</Text>
-
-          <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Pontos', {mercados: mercados})}>
-            <Text style={estilos.txt_btn}>Veja os cupons disponiveis</Text>
-          </TouchableOpacity>
+          <View style={{flex: 1}}>
+            <Text style={estilos.txt_infomerc}>{mercados.data().descricao}</Text>
+          </View>
+          
+          <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+            <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: mercados.id })}>
+              <Text style={estilos.txt_btn}>Veja os cupons disponiveis</Text>
+            </TouchableOpacity>
+          </View>
+          
         </View>
       </View>
     </SafeAreaView>
@@ -181,12 +186,13 @@ const estilos = StyleSheet.create({
   
   infos_mercado:{
     width: '100%',
-    gap: 10,
+    gap: 20,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 30,
+    paddingVertical: 15,
     flex: 1,
-    marginTop: 1
+    marginTop: 1,
   },
 
   btn_cupons:{
@@ -201,7 +207,7 @@ const estilos = StyleSheet.create({
 
   txt_infomerc:{
     textAlign: 'justify',
-    fontSize: 15
+    fontSize: 15,
   },
 
   txt_btn:{

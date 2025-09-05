@@ -3,16 +3,15 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import {mercados} from '../data/dadosMercados.js';
 
 export default function Locais({navigation}) {
-  const [mercadoss, setMercadoss] = useState('');
+  const [mercados, setMercados] = useState('');
 
   useEffect(() => {
     const getDados = async () => {
       try{
         const getInfos = await getDocs(collection(db, 'mercados'));
-        setMercadoss(getInfos.docs);
+        setMercados(getInfos.docs);
       }
       catch(err){
         console.error(err);
@@ -20,11 +19,6 @@ export default function Locais({navigation}) {
     }
     getDados();
   }, []);
-
-  const link = () => {
-    const url = dados.website;
-    Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
-  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -52,10 +46,10 @@ export default function Locais({navigation}) {
             showsVerticalScrollIndicator={false}
             renderItem={({item})=>(
               <View style={estilos.lista}> 
-                <ImageBackground source={require('../assets/kacula.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
+                <ImageBackground source={require('../assets/kacula.jpg')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                   <View style={estilos.area_textos}>
-                    <Text style={estilos.txt_tit}>{item.titulo}</Text>
-                    <Text style={estilos.txt_desc}>{item.endereco}</Text>
+                    <Text style={estilos.txt_tit}>{item.data().nome}</Text>
+                    <Text style={estilos.txt_desc}>{item.data().descricao}</Text>
                   </View>
 
                   <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>

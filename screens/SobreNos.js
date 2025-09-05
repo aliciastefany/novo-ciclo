@@ -1,6 +1,6 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, FlatList} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {membros} from '../data/dadosMembros';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, FlatList } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { membros } from '../data/dadosMembros';
 import MembroEquipe from '../components/MembroEquipe';
 
 export default function SobreNos({navigation}) {

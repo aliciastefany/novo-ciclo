@@ -2,27 +2,88 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { conquistas } from '../data/dadosConquistas';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
-//import { dadosCuponsResgatados } from '../data/dadosCuponsResgatados';
 import { db } from '../config/firebase';
 
 export default function Perfil({navigation}) {
   const [infoUsuario, setInfoUsuario] = useState('');
+  const [refsCupons, setRefsCupons] = useState([]);
   const [cuponsUsuario, setCuponsUsuario] = useState([]);
 
   useEffect(() => {
-    try{
-      const getInfoUsuario = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+    const getInfoUsuario = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+      try{
         setInfoUsuario(doc.data());
-      });
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
         
-      return ()=>getInfoUsuario();
-    }
-    catch(err){
-      console.error(err);
-    }
+    return ()=>getInfoUsuario();
   }, []);
+
+  useEffect(() => {
+    const getResgatados = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+      try{
+        const lista = doc.data().cuponsResgatados.map((item)=>(
+          item.id
+        ))
+        setRefsCupons(lista)
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
+        
+    return ()=>getResgatados();
+  }, []);
+
+  useEffect(() => {
+    const cupons = () => {
+      try{
+        refsCupons.map((item)=>{
+          const get = async () => {
+            const ok = await getDoc(doc(db, 'cupons', item));
+            const infos = {
+              id: ok.id,
+              precoTroca: ok.data().precoTroca,
+              mercado: ok.data().mercado,
+              descPorc: ok.data().descPorc,
+            }
+            setCuponsUsuario(infos)
+          }
+          get();
+        })
+      }
+      catch(err){
+        console.error(err);
+      }
+    } 
+    cupons();
+  }, [refsCupons]);
+
+  {/*useEffect(() => {
+    const cupons = refsCupons.map((item)=>
+      onSnapshot(item, (doc)=>{
+        try{
+          const dados = {
+            id: doc.id,
+            precoTroca: doc.data().precoTroca,
+            mercado: doc.data().mercado,
+            descPorc: doc.data().descPorc,
+          }
+          setCuponsUsuario(dados);
+        }
+        catch(err){
+          console.error(err);
+        }
+      })
+    );
+      
+    return () => cupons.forEach(item => item());
+  }, [refsCupons]);*/}
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -37,7 +98,6 @@ export default function Perfil({navigation}) {
           <View style={estilos.img_fundo}>
             <Image source={require('../assets/fundo_perfil.jpg')} style={estilos.img} />
         </View>
-
           
         <View style={estilos.area_perfil}>
           <Image source={require('../assets/perfil_perfil.png')} style={estilos.perfil} />
@@ -75,6 +135,7 @@ export default function Perfil({navigation}) {
                 contentContainerStyle={{gap: 20, alignItems: 'center'}}
                 data={conquistas}
                 keyExtractor={item => item.id}
+                scrollEnabled={false}
                 renderItem={({item}) => (
                   <View style={estilos.cont_cqst}>
                     <Image source={item.imagem} style={estilos.img_conqs} />
@@ -105,13 +166,12 @@ export default function Perfil({navigation}) {
               style={{width: '100%', marginVertical: 10}}
               contentContainerStyle={{gap: 20, alignItems: 'center'}}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => navigation.navigate('Cupom', {
-                  idCupom: item.id 
-                })}>
+                <TouchableOpacity onPress={() => navigation.navigate('Cupom', { idCupom: item.id })}>
                   <CupomDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
                 </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id}
+              scrollEnabled={false}
             />
           </View>
         </View> 
