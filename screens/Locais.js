@@ -1,8 +1,30 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ImageBackground, Image, FlatList} from 'react-native';
-import {mercados} from '../data/dadosMercados';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ImageBackground, Image, FlatList } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect } from 'react';
+import { getDocs, collection } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import {mercados} from '../data/dadosMercados.js';
 
 export default function Locais({navigation}) {
+  const [mercadoss, setMercadoss] = useState('');
+
+  useEffect(() => {
+    const getDados = async () => {
+      try{
+        const getInfos = await getDocs(collection(db, 'mercados'));
+        setMercadoss(getInfos.docs);
+      }
+      catch(err){
+        console.error(err);
+      } 
+    }
+    getDados();
+  }, []);
+
+  const link = () => {
+    const url = dados.website;
+    Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -27,16 +49,17 @@ export default function Locais({navigation}) {
           <FlatList 
             style={estilos.flatlist}
             data={mercados}
+            showsVerticalScrollIndicator={false}
             renderItem={({item})=>(
               <View style={estilos.lista}> 
-                <ImageBackground source={item.imagem} style={{height: '100%', width: '100%', justifyContent: 'center',}}>
+                <ImageBackground source={require('../assets/kacula.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                   <View style={estilos.area_textos}>
                     <Text style={estilos.txt_tit}>{item.titulo}</Text>
-                    <Text style={estilos.txt_desc}>{item.descricao}</Text>
+                    <Text style={estilos.txt_desc}>{item.endereco}</Text>
                   </View>
 
                   <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', {mercados: item})}>
+                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', { mercados: item })}>
                       <Text style={estilos.txt_btn}>Conheça já!</Text>
                     </TouchableOpacity>
                   </View>

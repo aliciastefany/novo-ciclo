@@ -1,13 +1,11 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image} from 'react-native';
-
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function DescricaoLocais({route, navigation}) {
-
-  const {mercados} = route.params;
+  const { mercados } = route.params;
 
   const link = () => {
-    const url = mercados.link; 
+    const url = mercados.data().website; 
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
 
@@ -27,12 +25,12 @@ export default function DescricaoLocais({route, navigation}) {
 
       <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
         <View style={estilos.titulo}>
-          <Text style={estilos.txt_tit}>{mercados.titulo}</Text>
+          <Text style={estilos.txt_tit}>{mercados.data().nome}</Text>
         </View>
 
         <View style={estilos.area_img}>
           <View style={estilos.cont_img}>
-            <Image source={mercados.logo} style={estilos.img} />
+            <Image source={require('../assets/logo_kacula.png')} style={estilos.img} />
           </View>
         </View>
 
@@ -48,20 +46,20 @@ export default function DescricaoLocais({route, navigation}) {
           <View style={estilos.infos}>
             <View style={estilos.conts_infos}>
               <Image source={require('../assets/endereco.png')} style={estilos.imgs} />
-              <Text style={estilos.texto_infos}>{mercados.endereco}</Text>
+              <Text style={estilos.texto_infos}>{mercados.data().endereco}</Text>
             </View>
 
             <View style={estilos.conts_infos}>
               <Image source={require('../assets/link.png')} style={estilos.imgs} />
 
               <TouchableOpacity style={estilos.btn_link} onPress={link}>
-                <Text style={estilos.links}>{mercados.link}</Text>
+                <Text style={estilos.links}>{mercados.data().website}</Text>
               </TouchableOpacity>
             </View>
 
             <View style={estilos.conts_infos}>
               <Image source={require('../assets/telefone.png')} style={estilos.imgs} />
-              <Text style={estilos.texto_infos}>{mercados.telefone}</Text>
+              <Text style={estilos.texto_infos}>{mercados.data().numero}</Text>
             </View>
           </View>
         </View>
@@ -69,7 +67,7 @@ export default function DescricaoLocais({route, navigation}) {
         <View style={estilos.linha} />
 
         <View style={estilos.infos_mercado}>
-          <Text style={estilos.txt_infomerc}>{mercados.texto_desc}</Text>
+          <Text style={estilos.txt_infomerc}>{mercados.data().descricao}</Text>
 
           <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Pontos', {mercados: mercados})}>
             <Text style={estilos.txt_btn}>Veja os cupons disponiveis</Text>

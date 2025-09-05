@@ -1,42 +1,93 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Alert} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {cuponsAssai, cuponsCarrefour, cuponsKacula, cuponsPortoSeguro} from '../data/dadosCupons';
-import {useState, useEffect} from 'react';
-//import {UserContext} from '../ContextPerfil';
-import {doc, updateDoc, onSnapshot} from 'firebase/firestore';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Alert } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect } from 'react';
+import { doc, updateDoc, onSnapshot, collection, query, where, arrayUnion, Timestamp } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 export default function TrocarPontos({route, navigation}) {
-
-  const {mercadosAnt} = route.params;
-  //const {dados, setDados} = useContext(UserContext);
-
+  const { mercado } = route.params;
   const [pontos, setPontos] = useState(0); 
+  const [cupons, setCupons] = useState([]);
+  const [disponiveis, setDisponiveis] = useState([]);
+  const [resgatados, setResgatados] = useState([]);
 
-  useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
-      setPontos(doc.data().pontos);
-      console.log(pontos);
+  useEffect(()=>{
+    const q = query(collection(db, 'cupons'), where('mercado', '==', doc(db, 'mercados', mercado)));
+    const snap = onSnapshot(q, (documentos)=>{
+      try{
+        const lista = documentos.docs.map((doc)=>({
+          id: doc.id,
+          descPorc: doc.data().descPorc,
+          precoTroca: doc.data().precoTroca,
+        }));
+        setDisponiveis(lista);
+      }
+      catch(err){
+        console.error(err);
+      }
     });
-    return () => getPontos();
-  })
 
+    const snap2 = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+      try{
+        const lista = doc.data().cuponsResgatados.map((item)=>(
+          item.id
+        ));
+        setResgatados(lista);
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
 
-  const exibirCupons = (idMercado) => {
-    switch (idMercado) {
-      case 'Kaçula Supermercados': return cuponsKacula;
-      case 'Carrefour Hipermercado': return cuponsCarrefour;
-      case 'Supermercado Porto Seguro': return cuponsPortoSeguro;
-      case 'Assaí Atacadista': return cuponsAssai;
-      default: return [];
+    return ()=>{snap(); snap2();};
+  }, [mercado]);
+
+  useEffect(()=>{
+    const remove = () => {
+      const novo = disponiveis.filter(item => !resgatados.includes(item.id));
+      setCupons(novo);
     }
-  };
+    remove();
+  }, [resgatados, disponiveis]);
 
-  const cupons = exibirCupons(mercadosAnt.titulo);
+  useEffect(()=>{
+    const snap = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+      try{
+        setPontos(doc.data().pontos);
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
 
-  const alterarPontos = async (novoValor) => {
-    await updateDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), {
-      pontos: novoValor
-    })
+    return ()=>snap();
+  }, [pontos]);
+
+  const resgatarCupom = async (cupom) => {
+    if (pontos < cupom.precoTroca) {
+      Alert.alert('Não foi possível resgatar cupom!', 'Você não tem pontos suficientes para resgatar esse cupom!');
+    } else {
+        const pontosAtualizados = pontos - cupom.precoTroca;
+        const data = new Date();
+        const marca = Timestamp.fromDate(data);
+      
+        try{
+          await updateDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), {
+            pontos: pontosAtualizados,
+            cuponsResgatados: arrayUnion({
+              cupom: doc(db, 'cupons', cupom.id),
+              marca: marca,
+              id: cupom.id
+            })
+          });
+          
+          setPontos(pontosAtualizados); 
+          Alert.alert('Cupom resgatado!', 'Parabéns! Você resgatou esse cupom.');
+        }
+        catch(err){ 
+          console.error(err);
+        }
+      }
   }
 
   return (
@@ -67,42 +118,37 @@ export default function TrocarPontos({route, navigation}) {
 
           <View style={estilos.area_img}>
             <View style={estilos.cont_img}>
-              <Image source={mercadosAnt.logo} style={estilos.img_logo} />
+              <Image source={require('../assets/logo_kacula.png')} style={estilos.img_logo} />
             </View>
           </View>
 
           <View style={estilos.cont_lista}>
-            <FlatList
-              style={estilos.flatlist}
-              data={cupons}
-              renderItem={({item})=>(
-                <View style={estilos.card_cupom}>
-                  <View style={{alignItems: 'center', marginTop: -20}}>
-                    <Text style={estilos.txt_troca}>Preço de troca: {item.precoTroca} pontos</Text>
-                    <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
+            {
+              cupons.length > 0 ?
+                <FlatList
+                  style={estilos.flatlist}
+                  data={cupons}
+                  renderItem={({item})=>(
+                    <View style={estilos.card_cupom}>
+                      <View style={{alignItems: 'center', marginTop: -20}}>
+                        <Text style={estilos.txt_troca}>Preço de troca: {item.precoTroca} pontos</Text>
+                        <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
 
-                    <View style={estilos.cobrir}>
-                      <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
+                        <View style={estilos.cobrir}>
+                          <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
+                        </View>
+                      </View>
+
+                      <TouchableOpacity style={estilos.btn_troca} onPress={()=>resgatarCupom(item)}>
+                        <Text style={estilos.txt_troca2}>Trocar e Resgatar!</Text>
+                      </TouchableOpacity>
                     </View>
-                  </View>
-
-                  <TouchableOpacity style={estilos.btn_troca} onPress={() => {
-                    if (pontos < item.precoTroca) {
-                      Alert.alert('Não foi possível resgatar cupom!', 'Você não tem pontos suficientes para resgatar esse cupom!');
-                    } else {
-                      const pontosAtualizados = pontos - item.precoTroca;
-                      setPontos(pontosAtualizados); 
-                      alterarPontos(pontosAtualizados);
-                      Alert.alert('Cupom resgatado!', 'Parabéns! Você resgatou esse cupom.');
-                    }
-                  }}>
-                    <Text style={estilos.txt_troca2}>Trocar e Resgatar!</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-              keyExtractor={item => item.id}
-              contentContainerStyle={{gap: 20, alignItems: 'center'}}
-            />
+                  )}
+                  keyExtractor={item => item.id}
+                  contentContainerStyle={{gap: 20, alignItems: 'center'}}
+                /> :
+                <Text style={{fontWeight: 500, fontSize: 16,}}>Nenhum cupom disponível!</Text>
+            }
           </View>
         </View>
 

@@ -1,22 +1,45 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList } from 'react-native';
-import { mercados } from '../data/dadosMercados';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
-import { onSnapshot, doc } from "firebase/firestore";
+import { onSnapshot, doc, collection } from "firebase/firestore";
 import { db } from '../config/firebase';
 
 export default function Pontos({navigation}) {
   const [pontos, setPontos] = useState(0);
   const [lixo, setLixo] = useState(0); 
+  const [mercados, setMercados] = useState([]);
 
   useEffect(() => {
     const getPontos = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
-      setPontos(doc.data().pontos);
-      setLixo(doc.data().kg_reciclado);
+      try{
+        setPontos(doc.data().pontos);
+        setLixo(doc.data().kg_reciclado);
+      }
+      catch(err){
+        console.error(err);
+      }
     });
-    console.log(pontos);
+
     return () => getPontos();
-  })
+  }, []);
+
+  useEffect(()=>{
+    const mercados = onSnapshot(collection(db, 'mercados'), (documentos)=>{
+      try{
+        const lista = documentos.docs.map((doc)=>({
+          id: doc.id,
+          img: require('../assets/logo_kacula.png'),
+        }));
+
+        setMercados(lista);
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
+
+    return ()=>mercados();
+  },[]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -58,10 +81,9 @@ export default function Pontos({navigation}) {
             <FlatList
               style={{marginVertical: 10}}
               data={mercados}
-              //{item} = desestruturar
               renderItem={({item})=>(
-                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Trocar Pontos', {mercadosAnt: item})}>
-                  <Image style={estilos.imgs} source={item.logo} />
+                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: item.id })}>
+                  <Image style={estilos.imgs} source={item.img} />
                 </TouchableOpacity>
               )}
               keyExtractor={item => item.id}
