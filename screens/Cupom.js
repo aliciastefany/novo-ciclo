@@ -5,18 +5,8 @@ import {doc, getDoc} from 'firebase/firestore';
 import {useState, useEffect} from 'react';
 
 export default function Cupom({route, navigation}){
-    
-    const {idCupom} = route.params;
-    
-    const [cupom, setCupom] = useState({})
-
-    useEffect(() => {
-      const getCupom = async () => {
-          const getCupomUsuario = await getDoc(doc(db, 'cupons', idCupom));
-          setCupom(getCupomUsuario.data());
-      }
-      getCupom();
-    }, [idCupom])
+    const { infosCupom } = route.params;
+    const cupom = infosCupom;
 
     return(
       <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center', gap: 10}}>
@@ -25,11 +15,11 @@ export default function Cupom({route, navigation}){
             <MaterialCommunityIcons name='keyboard-backspace' size={40} color='black' />
           </TouchableOpacity>
           <View style={{marginTop: 12}}>
-            <Text style={estilos.txt_tit}>PONTOS E CUPONS</Text>
+            <Text style={estilos.txt_tit}>QR CODE DO CUPOM</Text>
           </View>
         </View>
         <View style={{flex: 1, width: '100%', alignItems: 'center', gap: 30}}>
-          <CupomDoUsuario precoTroca={cupom.precoTroca} nomeMercado={cupom.nomeMercado}/>
+          <CupomDoUsuario precoTroca={cupom.precoTroca} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
           <Image source={require('../assets/qrcode_pg.png')} style={estilos.imgQrCode} />
         </View>
       </SafeAreaView>
@@ -52,4 +42,21 @@ const estilos = StyleSheet.create({
     width: '95%',
     textAlign: 'right'
   },
+  cobrir:{
+    position: 'absolute',
+    backgroundColor: '#A9C26F',
+    height: 52,
+    width: 120,
+    top: 70,
+    left: 89,
+    alignContent: 'center',
+    paddingLeft: 10,
+    justifyContent: 'center'
+  },
+  txt_cobrir:{
+    textAlign: 'center',
+    fontSize: 13,
+    color: 'white',
+    fontWeight: 700
+  }
 })

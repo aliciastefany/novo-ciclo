@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { conquistas } from '../data/dadosConquistas';
@@ -30,29 +30,34 @@ export default function Perfil({navigation}) {
         const lista = doc.data().cuponsResgatados.map((item)=>(
           item.id
         ))
-        setRefsCupons(lista)
+        setRefsCupons(lista);
       }
       catch(err){
         console.error(err);
       }
     });
-        
+    setInterval(()=>console.log(cuponsUsuario), 40000);
     return ()=>getResgatados();
   }, []);
 
   useEffect(() => {
     const cupons = () => {
       try{
+        let array = [];
         refsCupons.map((item)=>{
           const get = async () => {
-            const ok = await getDoc(doc(db, 'cupons', item));
+            const cupom = await getDoc(doc(db, 'cupons', item));
+            const mercado = await getDoc(cupom.data().mercado);
+            const nome = mercado.data().nome;
+
             const infos = {
-              id: ok.id,
-              precoTroca: ok.data().precoTroca,
-              mercado: ok.data().mercado,
-              descPorc: ok.data().descPorc,
+              id: cupom.id,
+              precoTroca: cupom.data().precoTroca,
+              mercado: nome,
+              descPorc: cupom.data().descPorc,
             }
-            setCuponsUsuario(infos)
+            array.push(infos);
+            setCuponsUsuario(array);
           }
           get();
         })
@@ -63,27 +68,6 @@ export default function Perfil({navigation}) {
     } 
     cupons();
   }, [refsCupons]);
-
-  {/*useEffect(() => {
-    const cupons = refsCupons.map((item)=>
-      onSnapshot(item, (doc)=>{
-        try{
-          const dados = {
-            id: doc.id,
-            precoTroca: doc.data().precoTroca,
-            mercado: doc.data().mercado,
-            descPorc: doc.data().descPorc,
-          }
-          setCuponsUsuario(dados);
-        }
-        catch(err){
-          console.error(err);
-        }
-      })
-    );
-      
-    return () => cupons.forEach(item => item());
-  }, [refsCupons]);*/}
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -166,9 +150,11 @@ export default function Perfil({navigation}) {
               style={{width: '100%', marginVertical: 10}}
               contentContainerStyle={{gap: 20, alignItems: 'center'}}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => navigation.navigate('Cupom', { idCupom: item.id })}>
-                  <CupomDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
-                </TouchableOpacity>
+                <TouchableWithoutFeedback onPress={() => navigation.navigate('Cupom', { infosCupom: item })}>
+                  <View>
+                    <CupomDoUsuario precoTroca={item.precoTroca} descPorc={item.descPorc} nomeMercado={item.mercado}/>
+                  </View>
+                </TouchableWithoutFeedback>
               )}
               keyExtractor={(item) => item.id}
               scrollEnabled={false}
