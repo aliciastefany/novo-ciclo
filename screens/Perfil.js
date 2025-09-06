@@ -5,6 +5,7 @@ import { conquistas } from '../data/dadosConquistas';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 import { db } from '../config/firebase';
+import QRCode from 'react-native-qrcode-svg';
 
 export default function Perfil({navigation}) {
   const [infoUsuario, setInfoUsuario] = useState('');
@@ -46,18 +47,23 @@ export default function Perfil({navigation}) {
         let array = [];
         refsCupons.map((item)=>{
           const get = async () => {
-            const cupom = await getDoc(doc(db, 'cupons', item));
-            const mercado = await getDoc(cupom.data().mercado);
-            const nome = mercado.data().nome;
+            try{
+              const cupom = await getDoc(doc(db, 'cupons', item));
+              const mercado = await getDoc(cupom.data().mercado);
+              const nome = mercado.data().nome;
 
-            const infos = {
-              id: cupom.id,
-              precoTroca: cupom.data().precoTroca,
-              mercado: nome,
-              descPorc: cupom.data().descPorc,
+              const infos = {
+                id: cupom.id,
+                precoTroca: cupom.data().precoTroca,
+                mercado: nome,
+                descPorc: cupom.data().descPorc,
+              }
+              array.push(infos);
+              setCuponsUsuario(array);
             }
-            array.push(infos);
-            setCuponsUsuario(array);
+            catch(err){
+              console.error(err);
+            }
           }
           get();
         })
@@ -68,6 +74,8 @@ export default function Perfil({navigation}) {
     } 
     cupons();
   }, [refsCupons]);
+
+  const json = JSON.stringify({idCliente: 'WvwjLK9WqoQOsld2nv8AvxIoen32'});
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -130,15 +138,17 @@ export default function Perfil({navigation}) {
             </View>
           </View> 
         </View>
+
         <View estilos={estilos.qrCode}>
           <View style={{marginLeft: 25}}>
             <Text style={estilos.txt_cqst}>Seu QR Code</Text>
           </View>
 
           <View style={{width: '100%', alignItems: 'center', marginTop: 15}}>
-            <Image source={require('../assets/qrcode_pg.png')} style={estilos.imgQrCode} />
+            <QRCode value={json} size={200} />
           </View>
         </View>
+
         <View style={estilos.cupons}>
           <View style={{marginLeft: 25}}>
             <Text style={estilos.txt_cqst}>Seus cupons resgatados</Text>

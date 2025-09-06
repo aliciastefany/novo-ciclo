@@ -12,7 +12,7 @@ import Editar from '../screens/EditarMercado';
 
 export default function Rotas2() {
   return (
-    <Tab.Navigator initialRouteName='Home' screenOptions={()=>({
+    <Tab.Navigator initialRouteName='Qr Code' screenOptions={()=>({
       tabBarLabelStyle: {
         color: 'black',
         fontWeight: 500,

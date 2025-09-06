@@ -1,12 +1,17 @@
-import {Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { Image, StyleSheet, Text, View, SafeAreaView, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CupomDoUsuario from '../components/CupomDoUsuario';
-import {doc, getDoc} from 'firebase/firestore';
-import {useState, useEffect} from 'react';
+import QRCode from 'react-native-qrcode-svg';
 
 export default function Cupom({route, navigation}){
     const { infosCupom } = route.params;
     const cupom = infosCupom;
+
+    const valueQr = {
+      "idCupom": cupom.id,
+    }
+
+    const json = JSON.stringify(valueQr);
 
     return(
       <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center', gap: 10}}>
@@ -20,7 +25,7 @@ export default function Cupom({route, navigation}){
         </View>
         <View style={{flex: 1, width: '100%', alignItems: 'center', gap: 30}}>
           <CupomDoUsuario precoTroca={cupom.precoTroca} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
-          <Image source={require('../assets/qrcode_pg.png')} style={estilos.imgQrCode} />
+          <QRCode value={json} size={250} />
         </View>
       </SafeAreaView>
     )
