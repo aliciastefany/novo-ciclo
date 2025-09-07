@@ -21,7 +21,8 @@ export default function CuponsMercados({navigation}) {
     try{
       await setDoc(doc(db, 'cupons', codigo()), {
         precoTroca: preco, 
-        descPorc: desc + '% DE DESCONTO EM ' + itens.toUpperCase(),
+        descPorc: desc,
+        itens: itens.toUpperCase(),
         empresa: doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN')
       });
       
@@ -50,6 +51,7 @@ export default function CuponsMercados({navigation}) {
           id: doc.id, 
           precoTroca: doc.data().precoTroca, 
           descPorc: doc.data().descPorc,
+          itens: doc.data().itens
         }));
         setCupons(listaCupons);
       });

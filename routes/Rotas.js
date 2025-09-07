@@ -67,9 +67,6 @@ const Tab = createBottomTabNavigator();
 
 
 function Lateral1() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -111,9 +108,6 @@ function Lateral1() {
 }
 
 function Lateral2() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -155,9 +149,6 @@ function Lateral2() {
 }
 
 function Lateral3() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -199,9 +190,6 @@ function Lateral3() {
 }
 
 function Lateral4() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -243,9 +231,6 @@ function Lateral4() {
 }
 
 function Lateral5() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -288,7 +273,7 @@ function Lateral5() {
 
 export default function Rotas() {
   return (
-    <Tab.Navigator initialRouteName='Home' screenOptions={() => ({
+    <Tab.Navigator initialRouteName='Locais' screenOptions={() => ({
       tabBarLabelStyle: {
         color: 'black',
         fontWeight: 500,

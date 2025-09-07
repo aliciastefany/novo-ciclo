@@ -36,11 +36,13 @@ export default function DescricaoLocais({route, navigation}) {
 
         <View style={estilos.area_infos}>
           <View style={estilos.cont_avaliacao}>
+            
+
+            {/* <MaterialCommunityIcons name='star' size={45} color='#31420a' />
             <MaterialCommunityIcons name='star' size={45} color='#31420a' />
             <MaterialCommunityIcons name='star' size={45} color='#31420a' />
             <MaterialCommunityIcons name='star' size={45} color='#31420a' />
-            <MaterialCommunityIcons name='star' size={45} color='#31420a' />
-            <MaterialCommunityIcons name='star-outline' size={45} color='#31420a' />
+            <MaterialCommunityIcons name='star-outline' size={45} color='#31420a' /> */}
           </View>
 
           <View style={estilos.infos}>
@@ -140,7 +142,7 @@ const estilos = StyleSheet.create({
   },
 
   cont_avaliacao:{
-    flexDirection: 'row',
+    width: 'auto',
   },
 
   infos:{

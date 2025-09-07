@@ -57,6 +57,7 @@ export default function Perfil({navigation}) {
                 precoTroca: cupom.data().precoTroca,
                 mercado: nome,
                 descPorc: cupom.data().descPorc,
+                itens: cupom.data().itens,
               }
               array.push(infos);
               setCuponsUsuario(array);
@@ -162,7 +163,7 @@ export default function Perfil({navigation}) {
               renderItem={({item}) => (
                 <TouchableWithoutFeedback onPress={() => navigation.navigate('Cupom', { infosCupom: item })}>
                   <View>
-                    <CupomDoUsuario precoTroca={item.precoTroca} descPorc={item.descPorc} nomeMercado={item.mercado}/>
+                    <CupomDoUsuario precoTroca={item.precoTroca} itens={item.itens} descPorc={item.descPorc} nomeMercado={item.mercado}/>
                   </View>
                 </TouchableWithoutFeedback>
               )}

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-export default function CupomDoUsuario({ precoTroca, nomeMercado, descPorc }) {
+export default function CupomDoUsuario({ precoTroca, nomeMercado, descPorc, itens }) {
   return (
     <View style={estilos.card_cupom}>
       <View style={{ alignItems: 'center', marginTop: -20 }}>
@@ -8,7 +8,7 @@ export default function CupomDoUsuario({ precoTroca, nomeMercado, descPorc }) {
         <Image source={require('../assets/img_cupom.png')} style={estilos.img} />
 
         <View style={estilos.cobrir}>
-          <Text style={estilos.txt_cobrir}>{descPorc}</Text>
+          <Text style={estilos.txt_cobrir}>{descPorc}% DE DESCONTO EM {itens}</Text>
         </View>
       </View>
 

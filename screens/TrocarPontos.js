@@ -19,8 +19,10 @@ export default function TrocarPontos({route, navigation}) {
           id: doc.id,
           descPorc: doc.data().descPorc,
           precoTroca: doc.data().precoTroca,
+          itens: doc.data().itens,
         }));
         setDisponiveis(lista);
+        console.log(disponiveis)
       }
       catch(err){
         console.error(err);
@@ -135,7 +137,7 @@ export default function TrocarPontos({route, navigation}) {
                         <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
 
                         <View style={estilos.cobrir}>
-                          <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
+                          <Text style={estilos.txt_cobrir}>{item.descPorc} DE DESCONTO EM {item.itens}</Text>
                         </View>
                       </View>
 

@@ -52,7 +52,7 @@ export default function Home({navigation}){
     },
     {
       name: 'Eletrônicos',
-      population: dados ? dados.materiais_reciclados.eletronico : 0,
+      population: dados ? dados.materiais_reciclados.eletronicos : 0,
       color: materiais[6].corLegenda,
     },
   ]

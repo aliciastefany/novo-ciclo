@@ -6,7 +6,7 @@ import { db } from '../config/firebase';
 import { getDoc, doc } from 'firebase/firestore';
 
 export default function QrCode({navigation}) {
-  const [username, setUsername] = useState('asas');
+  const [username, setUsername] = useState('');
 
   useEffect(()=>{
     const getUser = async () => {

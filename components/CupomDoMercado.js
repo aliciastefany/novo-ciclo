@@ -10,7 +10,7 @@ export default function CupomDoMercado({ setBtnRmv, btnRmv, onPress, item }){
                     <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
 
                     <View style={estilos.cobrir}>
-                      <Text style={estilos.txt_cobrir}>{item.descPorc}</Text>
+                      <Text style={estilos.txt_cobrir}>{item.descPorc}% DE DESCONTO EM {item.itens}</Text>
                     </View>
                 </View>
 

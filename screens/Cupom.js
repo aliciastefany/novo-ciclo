@@ -24,7 +24,7 @@ export default function Cupom({route, navigation}){
           </View>
         </View>
         <View style={{flex: 1, width: '100%', alignItems: 'center', gap: 30}}>
-          <CupomDoUsuario precoTroca={cupom.precoTroca} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
+          <CupomDoUsuario precoTroca={cupom.precoTroca} itens={cupom.itens} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
           <QRCode value={json} size={250} />
         </View>
       </SafeAreaView>
