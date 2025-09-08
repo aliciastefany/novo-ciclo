@@ -22,7 +22,6 @@ export default function TrocarPontos({route, navigation}) {
           itens: doc.data().itens,
         }));
         setDisponiveis(lista);
-        console.log(disponiveis)
       }
       catch(err){
         console.error(err);

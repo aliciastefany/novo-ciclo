@@ -53,7 +53,7 @@ export default function Locais({navigation}) {
                   </View>
 
                   <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', { mercados: item })}>
+                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', { mercado: item })}>
                       <Text style={estilos.txt_btn}>Conheça já!</Text>
                     </TouchableOpacity>
                   </View>

@@ -2,7 +2,7 @@ import { StyleSheet, SafeAreaView, TouchableOpacity, Text, View, FlatList, TextI
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
 import { db } from '../config/firebase';
-import { doc, increment, updateDoc, getDoc } from 'firebase/firestore';
+import { doc, increment, updateDoc } from 'firebase/firestore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function QrCodeMercados(){
