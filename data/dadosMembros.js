@@ -7,24 +7,12 @@ export const membros = [
 
     {
         id: 2,
-        nome: 'Matheus Zelante Cavalcante',
-        imagem: require('../assets/matheusZ.jpg'),
-    },
-
-    {
-        id: 3,
-        nome: 'Nicolas Pimentel de Sousa',
-        imagem: require('../assets/nicolas.jpg'),
-    },
-
-    {
-        id: 4,
         nome: 'Pedro Henrique Tabile Piovezani',
         imagem: require('../assets/pedro.jpg'),
     },
 
     {
-        id: 5,
+        id: 3,
         nome: 'Sabrina Oliveira Nunes',
         imagem: require('../assets/sabrina.jpg'),
     },

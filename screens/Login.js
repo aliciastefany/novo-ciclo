@@ -2,6 +2,7 @@ import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput
 import {useState, useEffect} from 'react';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {getDocs, collection, query, where} from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 export default function Login({navigation}){
 
@@ -28,7 +29,7 @@ export default function Login({navigation}){
   }, []);
 
   const realizarLogin = async () => {
-    const docRef = collection(db, 'usuarios');
+    const docRef = collection(db, 'usuario');
     const queryLogin = query(docRef, where('username', '==', username), where('email', '==', email), where('senha', '==', senha));
     const resultado = await getDocs(queryLogin);
 

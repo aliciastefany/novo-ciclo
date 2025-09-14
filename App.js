@@ -1,5 +1,5 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import Rotas from './routes/Rotas';
 import RotasMercados from './routes/RotasMercados';
@@ -16,7 +16,7 @@ export default function App() {
   return (
     <UserProvider>
       <NavigationContainer>
-          <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Rotas">
+          <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Rotas Mercados">
             <Stack.Screen name="Inicial" component={TelaInicial}/>
             <Stack.Screen name="Login" component={Login}/>
             <Stack.Screen name="Cadastro" component={Cadastro}/>

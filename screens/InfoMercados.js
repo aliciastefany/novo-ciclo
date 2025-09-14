@@ -1,12 +1,14 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView, Alert } from 'react-native';
 import { mercados } from '../data/dadosMercados';
 import { db } from '../config/firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
+import StarRatingDisplay from 'react-native-star-rating-widget';
+import { getAvaliacao } from '../data/avaliacaoMercado';
 
 export default function InfoMercados({ navigation }) {
   const [dados, setDados] = useState('');
+  const [avaliacao, setAvaliacao] = useState(0);
 
   useEffect(() => {
     try{
@@ -25,6 +27,15 @@ export default function InfoMercados({ navigation }) {
     const url = dados.website;
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
+
+  const notas = getAvaliacao('up9NTSgAfwP4pKVa8qMN');
+  useEffect(()=>{
+    setAvaliacao(notas);
+  }, [notas]);
+
+  const notaAvaliada = () => {
+    Alert.alert('Avaliação', `Sua avaliação é ${avaliacao}`);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'center' }}>
@@ -48,11 +59,13 @@ export default function InfoMercados({ navigation }) {
 
           <View style={estilos.area_infos}>
             <View style={estilos.cont_avaliacao}>
-              <MaterialCommunityIcons name={mercados[0].e1} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e2} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e3} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e4} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e5} size={45} color='#31420a' />
+              <StarRatingDisplay 
+                rating={avaliacao}
+                starSize={45}
+                color='#31420a'
+                emptyColor='#31420a'
+                onChange={notaAvaliada}
+              />
             </View>
 
             <View style={estilos.infos}>

@@ -148,7 +148,7 @@ export default function Home({navigation}){
 
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados && dados.pontos}</Text>
+                    <Text style={{fontSize: 18, fontWeight: 700}} onPress={()=>navigation.navigate('Login')}>{dados && dados.pontos}</Text>
                     <Text style={{fontWeight: 500}}>pontos</Text>
                   </View>
 
