@@ -1,7 +1,8 @@
 import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
 import { useState, useEffect } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import cadastrarUsuarioRepository from '../repositories/cadastroUsuarioRepository.js';
+import { auth } from '../config/firebase.js';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
@@ -35,7 +36,7 @@ export default function Cadastro({navigation}){
   const [confsenha, setConfsenha] = useState('');
   const [mensagem, setMensagem] = useState('');
 
-  const realizarCadastro = async () => {
+  {/*const realizarCadastro = async () => {
     const dados = {
       username: username,
       cpf: cpf,
@@ -43,8 +44,9 @@ export default function Cadastro({navigation}){
     
     try{
       if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== ''){
-        await cadastrarUsuarioRepository(dados, email, senha);
+        const ok = await cadastrarUsuarioRepository(dados, email, senha);
         setMensagem('Cadastro realizado com sucesso!');
+        console.log(ok);
       }
       else{
         setMensagem('Preencha todos os campos corretamente!');
@@ -52,7 +54,13 @@ export default function Cadastro({navigation}){
     }
     catch(err){
       setMensagem(`Ocorreu um erro: ${err}`);
+      console.error(`Ocorreu um erro: ${err}`);
     }
+  }*/}
+
+  async function handleCreateUser() {
+    const ok = await createUserWithEmailAndPassword(auth, 'teste@teste.com', '1234567');
+    console.log(ok);
   }
 
   return(
@@ -102,7 +110,7 @@ export default function Cadastro({navigation}){
                   <Text style={tecladoVisivel ? estilos.txt2Peq : estilos.txt2}>Já tem uma conta? Faça seu </Text>
 
                   <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                    <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
+                    <TouchableOpacity onPress={handleCreateUser}>
                       <Text style={tecladoVisivel ? estilos.txt_cadastroPeq : estilos.txt_cadastro}>login</Text>
                     </TouchableOpacity> 
                     <Text style={tecladoVisivel ? estilos.txt2Peq : estilos.txt2}>!</Text>

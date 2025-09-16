@@ -1,5 +1,5 @@
-import { setDoc, doc } from 'firebase/firestore';
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../config/firebase.js';
 
 export const login = async (dados) => {
   try {
