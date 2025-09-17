@@ -35,7 +35,9 @@ export default function Cadastro({navigation}){
   const [confsenha, setConfsenha] = useState('');
   const [mensagem, setMensagem] = useState('');
 
-  const realizarCadastro = async () => {
+  const realizarCadastro = async (event) => {
+    event.preventDefault();
+
     const dados = {
       username: username,
       cpf: cpf,
@@ -47,6 +49,7 @@ export default function Cadastro({navigation}){
         const response = await cadastrarUsuarioRepository(dados, senha);
         setMensagem('Cadastro realizado com sucesso!');
         console.log(response);
+        navigation.navigate('Login');
       }
       else{
         setMensagem('Preencha todos os campos corretamente!');
@@ -74,21 +77,21 @@ export default function Cadastro({navigation}){
             <ImageBackground source={require('../assets/fundo-login.jpg')} style={estilos.img_textura} imageStyle={{borderRadius: 20}}>
               <View style={estilos.campos_card}>
                 <View style={tecladoVisivel ? estilos.area_inputsPeq : estilos.area_inputs}>
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Usuário' onChangeText={setUsername} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={username} placeholder='Usuário' onChangeText={(txt)=>setUsername(txt)} />
 
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='CPF' onChangeText={setCpf} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={cpf} placeholder='CPF' onChangeText={(txt)=>setCpf(txt)} />
     
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' onChangeText={setEmail} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={email} placeholder='Email' onChangeText={(txt)=>setEmail(txt)} />
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Senha' onChangeText={setSenha} secureTextEntry={senhaOculta}/>
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={senha} placeholder='Senha' onChangeText={(txt)=>setSenha(txt)} secureTextEntry={senhaOculta}/>
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta(!senhaOculta))}>
                       <MaterialCommunityIcons name={senhaOculta ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>
                   </View>
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Confirmar Senha' secureTextEntry={senhaOculta2} onChangeText={setConfsenha} />
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={confsenha} placeholder='Confirmar Senha' secureTextEntry={senhaOculta2} onChangeText={(txt)=>setConfsenha(txt)} />
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta2(!senhaOculta2))}>
                       <MaterialCommunityIcons name={senhaOculta2 ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>
