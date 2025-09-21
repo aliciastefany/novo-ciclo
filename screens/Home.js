@@ -4,18 +4,32 @@ import CardMaterial from '../components/CardMaterial';
 import { materiais } from '../data/dadosMateriais';
 import Legenda from '../components/Legenda';
 import { PieChart } from 'react-native-chart-kit';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { db } from '../config/firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function Home({navigation}){
   const [dados, setDados] = useState(null);
+  const { idUser } = useContext(UserContext);
+  const [materiaisZero, setMateriaisZero] = useState(false);
 
   useEffect(()=>{
-    const snap = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
+    const snap = onSnapshot(doc(db, 'usuario', idUser), (doc) => {
+      try{
         setDados(doc.data());
+        
+        const m = doc.data().materiais_reciclados;
+        if(m.eletronicos + m.madeira + m.metal + m.papel + m.papelao + m.plastico + m.vidro === 0){
+          setMateriaisZero(true);
+        } else{
+          setMateriaisZero(false);
+        }
+      } catch(erro){
+        console.error(erro);
+      }
     }); 
-    
+
     return ()=>snap();
   }, []);
 
@@ -95,19 +109,36 @@ export default function Home({navigation}){
         <View style={estilos.pontos}>
           <View style={{flex: 1}}>
             <View style={{alignItems: 'center'}}>
-              <PieChart 
-                data={grafico}
-                width={100}
-                height={100}
-                chartConfig={{
-                  color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
-                }}
-                accessor="population"
-                backgroundColor='transparent'
-                absolute={true}
-                hasLegend={false}
-                center={[25, 0]}
-              />
+              {
+                materiaisZero ? 
+                  <PieChart 
+                    data={[{name: 'Inicial', population: 1, color: 'black'}]}
+                    width={100}
+                    height={100}
+                    chartConfig={{
+                      color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                    }}
+                    accessor="population"
+                    backgroundColor='transparent'
+                    absolute={true}
+                    hasLegend={false}
+                    center={[25, 0]}
+                  /> :
+
+                  <PieChart 
+                    data={grafico}
+                    width={100}
+                    height={100}
+                    chartConfig={{
+                      color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                    }}
+                    accessor="population"
+                    backgroundColor='transparent'
+                    absolute={true}
+                    hasLegend={false}
+                    center={[25, 0]}
+                  />
+              }
 
               <View style={estilos.texto_img}>
                 <View style={estilos.area_texto}>
@@ -148,7 +179,7 @@ export default function Home({navigation}){
 
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Text style={{fontSize: 18, fontWeight: 700}} onPress={()=>navigation.navigate('Login')}>{dados && dados.pontos}</Text>
+                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados && dados.pontos}</Text>
                     <Text style={{fontWeight: 500}}>pontos</Text>
                   </View>
 

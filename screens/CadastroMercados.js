@@ -1,10 +1,10 @@
-import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
-import {useState, useEffect, useContext} from 'react';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
+import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
+import { useState, useEffect, useContext } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { UserContext } from '../ContextPerfil.js';
+import { cadastrarMercadoRepository } from '../repositories/cadastroMercadoRepository.js';
 
 export default function CadastroMercados({navigation}){
-
   const [senhaOculta, setSenhaOculta] = useState(true);
   const [senhaOculta2, setSenhaOculta2] = useState(true);
   const [tecladoVisivel, setTecladoVisivel] = useState(false);  
@@ -23,21 +23,73 @@ export default function CadastroMercados({navigation}){
     };
   }, []);
 
-  const {dados, setDados} = useContext(UserContext);
-  const [username, setUsername] = useState(dados.usernameMercado || '');
-  const [email, setEmail] = useState(dados.emailMercado || '');
-  const [cnpj, setCnpj] = useState(dados.cnpj || '');
-  const [senha, setSenha] = useState(dados.senhaMercado || '');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [cnpj, setCnpj] = useState('');
+  const [senha, setSenha] = useState('');
   const [confsenha, setConfsenha] = useState('');
 
-  const salvar = () => {
-    setDados({
-      usernameMercado: username,
-      emailMercado: email,
-      cnpj: cnpj,
-      senhaMercado: senha,
-    });
-    navigation.navigate('Login Mercados');
+  const { setIdUser } = useContext(UserContext);
+
+  const cadastrar = async () => {
+    const buscarCnpj = async () => {
+      const url = `https://brasilapi.com.br/api/cnpj/v1/${cnpj}`;
+
+      try{
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+        if(dados.type === 'bad_request'){
+          Alert.alert(dados.message);
+          return false;
+        } else{
+          setUsername(dados.nome_fantasia);
+          return true;
+        }
+        
+      } catch(err){
+        Alert.alert('Erro ao buscar CNPJ', err);
+        console.error(err);
+      }
+    }
+
+    if(username !== '' && email !== '' && cnpj !== '' && senha !== '' && senha === confsenha){
+      const dados = {
+        nome: username,
+        email: email.replace(/\s/g, ''),
+        cnpj: cnpj,
+      };
+
+      const valido = await buscarCnpj();
+      if(valido){
+        const resposta = await cadastrarMercadoRepository(dados, senha);
+        console.log(resposta)
+        if(resposta.sucess){
+          Alert.alert('Cadastro realizado com sucesso!');
+          setIdUser(resposta.id);
+
+          navigation.reset({
+            index: 0,
+            routes: [
+              {name: 'Rotas Mercados'}
+            ]
+          });
+        } else{
+          if(resposta.erro === 'auth/weak-password'){
+            Alert.alert('A senha deve ter pelo menos 6 caracteres!');
+          }
+
+          if(resposta.erro === 'auth/email-already-in-use'){
+            Alert.alert('Este email já está em uso!');
+          }
+
+          if(resposta.erro === 'auth/invalid-email' || resposta.erro === 'auth/missing-email'){
+            Alert.alert('Email inválido!');
+          }
+        }
+      }
+    } else{
+      Alert.alert('Preencha todos os campos corretamente!');
+    }
   };
 
   return(
@@ -56,21 +108,21 @@ export default function CadastroMercados({navigation}){
             <ImageBackground source={require('../assets/fundo-login.jpg')} style={estilos.img_textura} imageStyle={{borderRadius: 20}}>
               <View style={estilos.campos_card}>
                 <View style={tecladoVisivel ? estilos.area_inputsPeq : estilos.area_inputs}>
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Mercado' onChangeText={setUsername} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Nome do mercado' value={username} onChangeText={(txt)=>setUsername(txt)} />
 
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='CNPJ'  onChangeText={setCnpj} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='CNPJ' value={cnpj} onChangeText={(txt)=>setCnpj(txt)} />
     
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' onChangeText={setEmail} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' value={email} onChangeText={(txt)=>setEmail(txt)} />
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Senha' onChangeText={setSenha} secureTextEntry={senhaOculta}/>
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Senha' value={senha} onChangeText={(txt)=>setSenha(txt)} secureTextEntry={senhaOculta}/>
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta(!senhaOculta))}>
                       <MaterialCommunityIcons name={senhaOculta ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>
                   </View>
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Confirmar Senha' secureTextEntry={senhaOculta2} onChangeText={setConfsenha} />
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Confirmar Senha' value={confsenha} secureTextEntry={senhaOculta2} onChangeText={(txt)=>setConfsenha(txt)} />
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta2(!senhaOculta2))}>
                       <MaterialCommunityIcons name={senhaOculta2 ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>
@@ -78,22 +130,7 @@ export default function CadastroMercados({navigation}){
                 </View>
 
                 <View style={tecladoVisivel ? {marginTop: 10, width: '100%'} : {marginTop: 23, width: '100%'}} >
-                  <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={()=>{
-                    if (!email || !cnpj || !username || !confsenha || senha === "" || confsenha != senha){
-                      Alert.alert(
-                        'Não foi possível realizar o cadastro!',
-                        'Preencha todos os campos corretamente!',
-                        [
-                          {
-                            text: 'Ok'
-                          }
-                        ]
-                      );
-                    } else { 
-                        salvar();
-                      }
-                    }
-                  }>
+                  <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={cadastrar}>
                     <Text style={tecladoVisivel ? estilos.txtPeq : estilos.txt}>Cadastrar</Text>
                   </TouchableOpacity>
                 </View>

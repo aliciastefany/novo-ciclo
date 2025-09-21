@@ -1,5 +1,5 @@
-import {SafeAreaView, ImageBackground, StyleSheet, TouchableOpacity, Text, Image, View} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
+import { SafeAreaView, ImageBackground, StyleSheet, TouchableOpacity, Text, Image, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Inicial({navigation}){
   return(

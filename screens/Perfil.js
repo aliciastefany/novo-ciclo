@@ -1,19 +1,22 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView, TouchableWithoutFeedback, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { conquistas } from '../data/dadosConquistas';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
-import { db } from '../config/firebase';
+import { UserContext } from '../ContextPerfil.js';
+import { auth, db } from '../config/firebase';
 import QRCode from 'react-native-qrcode-svg';
+import { signOut } from 'firebase/auth';
 
 export default function Perfil({navigation}) {
   const [infoUsuario, setInfoUsuario] = useState('');
   const [refsCupons, setRefsCupons] = useState([]);
   const [cuponsUsuario, setCuponsUsuario] = useState([]);
+  const { idUser, setIdUser } = useContext(UserContext);
 
   useEffect(() => {
-    const getInfoUsuario = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+    const getInfoUsuario = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
       try{
         setInfoUsuario(doc.data());
       }
@@ -26,18 +29,21 @@ export default function Perfil({navigation}) {
   }, []);
 
   useEffect(() => {
-    const getResgatados = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+    const getResgatados = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
       try{
-        const lista = doc.data().cuponsResgatados.map((item)=>(
-          item.id
-        ))
-        setRefsCupons(lista);
+        if(doc.data().cuponsResgatados){
+          const lista = doc.data().cuponsResgatados.map((item, index)=>({
+            id: item.id,
+            index: index,
+            data_resgate: item.data_resgate,
+          }))
+          setRefsCupons(lista);
+        }
       }
       catch(err){
         console.error(err);
       }
     });
-    setInterval(()=>console.log(cuponsUsuario), 40000);
     return ()=>getResgatados();
   }, []);
 
@@ -45,29 +51,33 @@ export default function Perfil({navigation}) {
     const cupons = () => {
       try{
         let array = [];
-        refsCupons.map((item)=>{
-          const get = async () => {
-            try{
-              const cupom = await getDoc(doc(db, 'cupons', item));
-              const mercado = await getDoc(cupom.data().mercado);
-              const nome = mercado.data().nome;
+        if(refsCupons !== undefined){
+          refsCupons.map((item)=>{
+            const get = async () => {
+              try{
+                const cupom = await getDoc(doc(db, 'cupons', item.id));
+                const mercado = await getDoc(cupom.data().mercado);
+                const nome = mercado.data().nome;
 
-              const infos = {
-                id: cupom.id,
-                precoTroca: cupom.data().precoTroca,
-                mercado: nome,
-                descPorc: cupom.data().descPorc,
-                itens: cupom.data().itens,
+                const infos = {
+                  id: cupom.id,
+                  precoTroca: cupom.data().precoTroca,
+                  mercado: nome,
+                  descPorc: cupom.data().descPorc,
+                  itens: cupom.data().itens,
+                  data_resgate: item.data_resgate,
+                  index: item.index,
+                }
+                array.push(infos);
+                setCuponsUsuario(array);
               }
-              array.push(infos);
-              setCuponsUsuario(array);
+              catch(err){
+                console.error(err);
+              }
             }
-            catch(err){
-              console.error(err);
-            }
-          }
-          get();
-        })
+            get();
+          })
+        }
       }
       catch(err){
         console.error(err);
@@ -76,7 +86,22 @@ export default function Perfil({navigation}) {
     cupons();
   }, [refsCupons]);
 
-  const json = JSON.stringify({idCliente: 'WvwjLK9WqoQOsld2nv8AvxIoen32'});
+  const sair = async () => {
+    try{
+      await signOut(auth);
+      Alert.alert('Você saiu da sua conta!');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Inicial'}]
+      });
+      setIdUser(null);
+    } catch(err){
+      Alert.alert(`Ocorreu um erro: ${err}`);
+      console.error(err);
+    }
+  }
+
+  const json = JSON.stringify({idCliente: idUser});
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -115,6 +140,10 @@ export default function Perfil({navigation}) {
 
           <TouchableOpacity style={estilos.btn_editar} onPress={() => navigation.navigate('Editar Perfil', { infoUsuario })}>
             <MaterialCommunityIcons name='pencil' size={35} color='white' />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={estilos.btn_sair} onPress={sair}>
+            <MaterialCommunityIcons name='logout' size={23} color='white' />
           </TouchableOpacity>
 
           <View style={estilos.conquistas}>
@@ -242,6 +271,18 @@ const estilos = StyleSheet.create({
     height: 60,
     right: 27,
     top: '33%',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  btn_sair:{
+    backgroundColor: '#31420a',
+    position: 'absolute',
+    width: 45,
+    height: 45,
+    right: 34,
+    top: '43%',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center'

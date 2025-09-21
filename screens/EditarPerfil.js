@@ -1,12 +1,14 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function EditarPerfil({route, navigation}) {
-  const {infoUsuario} = route.params;
+  const { infoUsuario } = route.params;
+  const { idUser } = useContext(UserContext);
   
   const [username, setUsername] = useState(infoUsuario.username);
   const [email, setEmail] = useState(infoUsuario.email);
@@ -15,7 +17,7 @@ export default function EditarPerfil({route, navigation}) {
 
   const salvarInfo = async () => {
     try{
-      await updateDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), {
+      await updateDoc(doc(db, 'usuario', idUser), {
         username: username,
         email: email,
         cpf: cpf

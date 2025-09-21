@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Modal, TextInput } from 'react-native';
 import { mercados } from '../data/dadosMercados';
 import { MaterialCommunityIcons} from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import CupomDoMercado from '../components/CupomDoMercado';
 import { db } from '../config/firebase';
-import { doc, onSnapshot, setDoc, collection, deleteDoc, where, query } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, collection, deleteDoc, where, query, serverTimestamp } from 'firebase/firestore';
 import { nanoid } from 'nanoid/non-secure';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function CuponsMercados({navigation}) {
   const [cupons, setCupons] = useState([]);
@@ -15,15 +16,22 @@ export default function CuponsMercados({navigation}) {
   const [itens, setItens] = useState('');
   const [btnRmv, setBtnRmv] = useState(false);
 
+  const { idUser } = useContext(UserContext);
+
   const novoCupom = async () => {
     const codigo = () => nanoid(10);
+
+    if (!idUser) {
+      return;
+    }
 
     try{
       await setDoc(doc(db, 'cupons', codigo()), {
         precoTroca: preco, 
         descPorc: desc,
         itens: itens.toUpperCase(),
-        empresa: doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN')
+        empresa: doc(db, 'mercados', idUser),
+        data_criacao: serverTimestamp(),
       });
       
       setCardAdd(false);
@@ -43,9 +51,13 @@ export default function CuponsMercados({navigation}) {
   }
 
   useEffect(()=>{
+    if (!idUser) {
+      return;
+    }
+
     try{
       const coll = collection(db, 'cupons');
-      const q = query(coll, where('empresa', '==', doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN')));
+      const q = query(coll, where('empresa', '==', doc(db, 'mercados', idUser)));
       const snap = onSnapshot(q, (documentos)=>{
         const listaCupons = documentos.docs.map((doc)=>({
           id: doc.id, 
@@ -60,7 +72,7 @@ export default function CuponsMercados({navigation}) {
     catch(err){
       console.error(err);
     }
-  },[cupons]);
+  }, [cupons]);
 
   const porcentagem = (atual) => {
     if(atual > 100){

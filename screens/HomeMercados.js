@@ -1,14 +1,21 @@
-import { SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, View, Text, Platform, Alert } from 'react-native';
-import { useEffect, useState } from 'react';
-import { db } from '../config/firebase';
+import { SafeAreaView, StyleSheet, TouchableOpacity, ImageBackground, View, Text, Alert } from 'react-native';
+import { useEffect, useState, useContext } from 'react';
+import { db, auth } from '../config/firebase.js';
 import { onSnapshot, doc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function HomeMercados({navigation}){
-  const [dados, setDados] = useState('');
+  const [dados, setDados] = useState({});
+  const { setIdUser, idUser } = useContext(UserContext);
 
   useEffect(() => {
+    if (!idUser) {
+      return;
+    }
+
     try{
-      const getInfos = onSnapshot(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), (doc)=>{
+      const getInfos = onSnapshot(doc(db, 'mercados', idUser), (doc)=>{
         setDados(doc.data());
       });
         
@@ -18,6 +25,21 @@ export default function HomeMercados({navigation}){
       console.error(err);
     }
   }, []);
+
+  const sair = async () => {
+    try{
+      await signOut(auth);
+      Alert.alert('Você saiu da sua conta!');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Inicial'}]
+      });
+      setIdUser(null);
+    } catch(err){
+      Alert.alert(`Ocorreu um erro: ${err}`);
+      console.error(err);
+    }
+  }
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -42,11 +64,11 @@ export default function HomeMercados({navigation}){
             <ImageBackground source={require('../assets/kacula.jpg')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
               <View style={estilos.area_textos}>
                 <Text style={estilos.txt_tit2}>{dados.nome}</Text>
-                <Text style={estilos.txt_desc}>{dados.descricao}</Text>
+                <Text style={estilos.txt_desc}>{dados?.descricao || 'Descreva a missão do seu mercado!'}</Text>
               </View>
 
               <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Editar Mercado', { dados })}>
+                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Editar Mercado', { dados: dados })}>
                   <Text style={estilos.txt_btn}>Edite as informações!</Text>
                 </TouchableOpacity>
               </View>
@@ -56,22 +78,7 @@ export default function HomeMercados({navigation}){
           </View> 
           
           <View style={estilos.area_btnSair}>
-            <TouchableOpacity style={estilos.btn_sair} onPress={() => {
-              if (Platform.OS === 'android') {
-                Alert.alert(
-                  'Sair da conta',
-                  'Você quer sair da sua conta?',
-                  [
-                    { text: 'Não', style: 'cancel' },
-                    { text: 'Sim', onPress: () => {
-                        navigation.navigate('Inicial')
-                      }
-                    },
-                  ],
-                  { cancelable: true }
-                );
-              }
-            }}>
+            <TouchableOpacity style={estilos.btn_sair} onPress={sair}>
               <Text style={{fontSize: 18, color: 'white', textAlign: 'center'}}>Sair</Text>
             </TouchableOpacity>
           </View>

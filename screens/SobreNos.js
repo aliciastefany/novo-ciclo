@@ -41,15 +41,14 @@ export default function SobreNos({navigation}) {
               <Text style={estilos.tit_obj1}>Equipe</Text>
             </View>
             <View style={estilos.area_imgs}>
-              <FlatList
-                data={membros}
-                numColumns={2}
-                renderItem={({item})=>(
-                  <MembroEquipe nome={item.nome} imagem={item.imagem}/>
-                )}
-                keyExtractor={item => item.id}
-                contentContainerStyle={{gap: 20, alignItems: 'center'}}
-              />
+              <View style={estilos.membrosDupla}>
+                <MembroEquipe nome={membros[0].nome} imagem={membros[0].imagem}/>
+                <MembroEquipe nome={membros[1].nome} imagem={membros[1].imagem}/>
+              </View>
+              
+              <View>
+                <MembroEquipe nome={membros[2].nome} imagem={membros[2].imagem}/>
+              </View>
             </View>
           </View>
         </View>
@@ -113,6 +112,12 @@ const estilos = StyleSheet.create({
     width: '100%',
     marginTop: 10,
     marginBottom: 30,
+    gap: 20,
+  },
+
+  membrosDupla: {
+    width: '100%',
+    flexDirection: 'row',
   },
 
   campo_imgs:{

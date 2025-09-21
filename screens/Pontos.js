@@ -1,16 +1,18 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { onSnapshot, doc, collection } from "firebase/firestore";
 import { db } from '../config/firebase';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function Pontos({navigation}) {
   const [pontos, setPontos] = useState(0);
   const [lixo, setLixo] = useState(0); 
   const [mercados, setMercados] = useState([]);
+  const { idUser } = useContext(UserContext);
 
   useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc) => {
+    const getPontos = onSnapshot(doc(db, 'usuario', idUser), (doc) => {
       try{
         setPontos(doc.data().pontos);
         setLixo(doc.data().kg_reciclado);

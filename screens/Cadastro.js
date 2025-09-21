@@ -1,7 +1,8 @@
 import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { cadastrarUsuarioRepository } from '../repositories/cadastroUsuarioRepository.js';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
@@ -22,42 +23,62 @@ export default function Cadastro({navigation}){
     };
   }, []);
 
-  useEffect(()=>{
-    if(mensagem !== ''){
-      Alert.alert(mensagem);
-    }
-  }, [mensagem]);
-
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [confsenha, setConfsenha] = useState('');
-  const [mensagem, setMensagem] = useState('');
 
-  const realizarCadastro = async (event) => {
-    event.preventDefault();
+  const { setIdUser } = useContext(UserContext);
 
+  const realizarCadastro = async () => {
+    const materiais = {
+      eletronicos: 0,
+      madeira: 0,
+      metal: 0,
+      papel: 0,
+      papelao: 0,
+      plastico: 0,
+      vidro: 0,
+    };
+    
     const dados = {
       username: username,
       cpf: cpf,
-      email: email,
+      email: email.replace(/\s/g, ''),
+      materiais_reciclados: materiais,
+      kg_reciclado: 0,
+      pontos: 0,
     };
-    
-    try{
-      if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== '' && confsenha === senha){
-        const response = await cadastrarUsuarioRepository(dados, senha);
-        setMensagem('Cadastro realizado com sucesso!');
-        console.log(response);
-        navigation.navigate('Login');
+
+    if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== '' && confsenha === senha){
+      const resposta = await cadastrarUsuarioRepository(dados, senha);
+
+      if(resposta.sucess){
+        Alert.alert('Cadastro realizado com sucesso!');
+        setIdUser(resposta.id);
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {name: 'Rotas'}
+          ]
+        });
+      } else{
+        if(resposta.erro === 'auth/weak-password'){
+          Alert.alert('A senha deve ter pelo menos 6 caracteres!');
+        }
+
+        if(resposta.erro === 'auth/email-already-in-use'){
+          Alert.alert('Este email já está em uso!');
+        }
+
+        if(resposta.erro === 'auth/invalid-email' || resposta.erro === 'auth/missing-email'){
+          Alert.alert('Email inválido!');
+        }
       }
-      else{
-        setMensagem('Preencha todos os campos corretamente!');
-      }
-    }
-    catch(err){
-      setMensagem(`Ocorreu um erro: ${err}`);
-      console.error(`Ocorreu um erro: ${err}`);
+    } else{
+      Alert.alert('Preencha todos os campos corretamente!');
     }
   }
 

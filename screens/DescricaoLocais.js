@@ -1,15 +1,17 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import StarRating from 'react-native-star-rating-widget';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { db } from '../config/firebase';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { getAvaliacao } from '../data/avaliacaoMercado'; 
+import { UserContext } from '../ContextPerfil.js';
 
 export default function DescricaoLocais({route, navigation}) {
   const { mercado } = route.params;
   const [rating, setRating] = useState(0);
   const [avaliacaoMedia, setAvaliacaoMedia] = useState('');
+  const { idUser } = useContext(UserContext);
 
   const link = () => {
     const url = mercado.data().website; 
@@ -24,7 +26,7 @@ export default function DescricaoLocais({route, navigation}) {
   const addAvaliacao = () => {
     const avaliacaoUsuario = async () => {
       try{
-        const docUsuario = await getDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'));
+        const docUsuario = await getDoc(doc(db, 'usuario', idUser));
         const avaliacoes = docUsuario.data().avaliacoes_feitas || [];
         const mercadoAvaliado = avaliacoes.findIndex(item => item.mercado_avaliado.id === mercado.id);
 
@@ -35,7 +37,7 @@ export default function DescricaoLocais({route, navigation}) {
               nota: rating
             });
 
-            await updateDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), {
+            await updateDoc(doc(db, 'usuario', idUser), {
               avaliacoes_feitas: avaliacoes
             });
           }
@@ -48,7 +50,7 @@ export default function DescricaoLocais({route, navigation}) {
             nota: rating
           }
 
-          await updateDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), {
+          await updateDoc(doc(db, 'usuario', idUser), {
             avaliacoes_feitas: avaliacoes
           });
         }
@@ -63,12 +65,12 @@ export default function DescricaoLocais({route, navigation}) {
       try{
         const docMercado = await getDoc(doc(db, 'mercados', mercado.id));
         const avaliacoesRecebidas = docMercado.data().avaliacoes_recebidas || [];
-        const avaliador = avaliacoesRecebidas.findIndex(item => item.avaliador.id === 'WvwjLK9WqoQOsld2nv8AvxIoen32');
+        const avaliador = avaliacoesRecebidas.findIndex(item => item.avaliador.id === idUser);
 
         if(avaliador === -1){
           try{
             avaliacoesRecebidas.push({
-              avaliador: doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'),
+              avaliador: doc(db, 'usuario', idUser),
               nota: rating
             });
 
@@ -81,7 +83,7 @@ export default function DescricaoLocais({route, navigation}) {
           }
         } else{
           avaliacoesRecebidas[avaliador] = {
-            avaliador: doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'),
+            avaliador: doc(db, 'usuario', idUser),
             nota: rating
           }
 

@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, ScrollView, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { db } from '../config/firebase';
 import { updateDoc, doc } from 'firebase/firestore';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function EditarMercado({navigation, route}) {
   const {dados} = route.params;
@@ -14,9 +15,15 @@ export default function EditarMercado({navigation, route}) {
   const [descricao, setDescricao] = useState(dados.descricao || '');
   const [website, setWebsite] = useState(dados.website || '');
   
+  const { idUser } = useContext(UserContext);
+
   const salvarInfo = async () => {
+    if(!idUser){
+      return;
+    }
+    
     try{
-      await updateDoc(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), {
+      await updateDoc(doc(db, 'mercados', idUser), {
         nome: username,
         email: email,
         numero: numero,

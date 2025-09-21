@@ -2,17 +2,24 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image,
 import { mercados } from '../data/dadosMercados';
 import { db } from '../config/firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useContext } from 'react';
 import StarRatingDisplay from 'react-native-star-rating-widget';
 import { getAvaliacao } from '../data/avaliacaoMercado';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function InfoMercados({ navigation }) {
   const [dados, setDados] = useState('');
-  const [avaliacao, setAvaliacao] = useState(0);
+  const [avaliacao, setAvaliacao] = useState(null);
+
+  const { idUser } = useContext(UserContext);
 
   useEffect(() => {
+    if(!idUser){
+      return;
+    }
+    
     try{
-      const getInfos = onSnapshot(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), (doc)=>{
+      const getInfos = onSnapshot(doc(db, 'mercados', idUser), (doc)=>{
         setDados(doc.data());
       });
         
@@ -28,13 +35,19 @@ export default function InfoMercados({ navigation }) {
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
 
-  const notas = getAvaliacao('up9NTSgAfwP4pKVa8qMN');
+  const notas = getAvaliacao(idUser);
   useEffect(()=>{
-    setAvaliacao(notas);
+    if(notas !== null){
+      setAvaliacao(notas);
+    }
   }, [notas]);
 
   const notaAvaliada = () => {
-    Alert.alert('Avaliação', `Sua avaliação é ${avaliacao}`);
+    if(avaliacao === null){
+      Alert.alert('Nenhuma avaliação recebida ainda!');
+    } else{
+      Alert.alert('Avaliação', `Sua avaliação é ${avaliacao}`);
+    }
   }
 
   return (
@@ -60,7 +73,7 @@ export default function InfoMercados({ navigation }) {
           <View style={estilos.area_infos}>
             <View style={estilos.cont_avaliacao}>
               <StarRatingDisplay 
-                rating={avaliacao}
+                rating={avaliacao || 0}
                 starSize={45}
                 color='#31420a'
                 emptyColor='#31420a'

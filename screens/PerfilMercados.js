@@ -1,16 +1,23 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { mercados } from '../data/dadosMercados';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { db } from '../config/firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function PerfilMercados({navigation}) {
   const [dados, setDados] = useState('');
 
+  const { idUser } = useContext(UserContext);
+
   useEffect(() => {
+    if(!idUser){
+      return;
+    }
+    
     try{
-      const getInfos = onSnapshot(doc(db, 'mercados', 'up9NTSgAfwP4pKVa8qMN'), (doc)=>{
+      const getInfos = onSnapshot(doc(db, 'mercados', idUser), (doc)=>{
         setDados(doc.data());
       });
         
@@ -28,7 +35,7 @@ export default function PerfilMercados({navigation}) {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1, width: '100%'}}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
           <View style={estilos.img_fundo}>
             <Image source={mercados[0].logo} style={estilos.img} />
@@ -130,7 +137,7 @@ const estilos = StyleSheet.create({
     width: 60,
     height: 60,
     right: 27,
-    top: '33%',
+    top: '40%',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center'

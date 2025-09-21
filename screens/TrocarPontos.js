@@ -1,8 +1,9 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
-import { doc, updateDoc, onSnapshot, collection, query, where, arrayUnion, Timestamp } from 'firebase/firestore';
+import { useState, useEffect, useContext } from 'react';
+import { doc, updateDoc, onSnapshot, collection, query, where, arrayUnion, Timestamp, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function TrocarPontos({route, navigation}) {
   const { mercado } = route.params;
@@ -10,6 +11,7 @@ export default function TrocarPontos({route, navigation}) {
   const [cupons, setCupons] = useState([]);
   const [disponiveis, setDisponiveis] = useState([]);
   const [resgatados, setResgatados] = useState([]);
+  const { idUser } = useContext(UserContext);
 
   useEffect(()=>{
     const q = query(collection(db, 'cupons'), where('mercado', '==', doc(db, 'mercados', mercado)));
@@ -28,12 +30,15 @@ export default function TrocarPontos({route, navigation}) {
       }
     });
 
-    const snap2 = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+    const snap2 = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
       try{
-        const lista = doc.data().cuponsResgatados.map((item)=>(
+        const lista = doc.data().cuponsResgatados?.map((item)=>(
           item.id
         ));
-        setResgatados(lista);
+
+        if(lista !== undefined){
+          setResgatados(lista);
+        }
       }
       catch(err){
         console.error(err);
@@ -52,7 +57,7 @@ export default function TrocarPontos({route, navigation}) {
   }, [resgatados, disponiveis]);
 
   useEffect(()=>{
-    const snap = onSnapshot(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), (doc)=>{
+    const snap = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
       try{
         setPontos(doc.data().pontos);
       }
@@ -69,16 +74,14 @@ export default function TrocarPontos({route, navigation}) {
       Alert.alert('Não foi possível resgatar cupom!', 'Você não tem pontos suficientes para resgatar esse cupom!');
     } else {
         const pontosAtualizados = pontos - cupom.precoTroca;
-        const data = new Date();
-        const marca = Timestamp.fromDate(data);
       
         try{
-          await updateDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'), {
+          await updateDoc(doc(db, 'usuario', idUser), {
             pontos: pontosAtualizados,
             cuponsResgatados: arrayUnion({
               cupom: doc(db, 'cupons', cupom.id),
-              marca: marca,
-              id: cupom.id
+              id: cupom.id,
+              data_resgate: serverTimestamp(),
             })
           });
           
