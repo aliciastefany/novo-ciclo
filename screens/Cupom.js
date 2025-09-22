@@ -12,7 +12,7 @@ export default function Cupom({route, navigation}){
     const cupom = infosCupom;
     const [qrcode, setQrcode] = useState(cupom.troca);
     const data = cupom.data_resgate.toDate();
-    const troca = cupom.data_troca?.toDate();
+    const troca = cupom.data_troca ? cupom.data_troca.toDate() : null;
 
     const valueQr = {
       "idCupom": cupom.id,
@@ -33,12 +33,16 @@ export default function Cupom({route, navigation}){
           troca: true,
           data_troca: marca,
         }
+
+        const cuponsResgatadosId = busca.data().cuponsResgatadosId;
+        const novoArray = cuponsResgatadosId.filter(item => item !== cupom.id);
         
         await updateDoc(doc(db, 'usuario', idUser), {
           cuponsResgatados: arrayCupons,
+          cuponsResgatadosId: novoArray,
         });
 
-        setQrcode(false);
+        setQrcode(true);
       } catch(err){
         console.error(err);
         Alert.alert('Ocorreu um erro', err);
@@ -79,7 +83,8 @@ export default function Cupom({route, navigation}){
 
             {
               qrcode ? 
-                <Text style={{fontSize: 19, fontWeight: 'bold', marginTop: 15}}>Data de uso: {troca.toLocaleDateString('pt-BR')} - {troca.toLocaleTimeString('pt-BR')}</Text> :
+                troca &&
+                  <Text style={{fontSize: 19, fontWeight: 'bold', marginTop: 15}}>Data de uso: {troca.toLocaleDateString('pt-BR')} - {troca.toLocaleTimeString('pt-BR')}</Text> :
                 <TouchableOpacity style={estilos.btnResgatado} onPress={validado}>
                   <MaterialCommunityIcons name='check' color='white' size={35} />
                 </TouchableOpacity>

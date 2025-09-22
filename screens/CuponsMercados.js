@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Modal, TextInput, Alert } from 'react-native';
 import { mercados } from '../data/dadosMercados';
 import { MaterialCommunityIcons} from '@expo/vector-icons';
 import { useEffect, useState, useContext } from 'react';
 import CupomDoMercado from '../components/CupomDoMercado';
 import { db } from '../config/firebase';
-import { doc, onSnapshot, setDoc, collection, deleteDoc, where, query, serverTimestamp } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, collection, deleteDoc, where, query, serverTimestamp, getDocs, getDoc, updateDoc } from 'firebase/firestore';
 import { nanoid } from 'nanoid/non-secure';
 import { UserContext } from '../ContextPerfil.js';
 
@@ -25,24 +25,77 @@ export default function CuponsMercados({navigation}) {
       return;
     }
 
-    try{
-      await setDoc(doc(db, 'cupons', codigo()), {
-        precoTroca: Number(preco), 
-        descPorc: Number(desc),
-        itens: itens.toUpperCase(),
-        mercado: doc(db, 'mercados', idUser),
-        data_criacao: serverTimestamp(),
-      });
-      
-      setCardAdd(false);
-    }
-    catch(err){
-      console.error(err);
+    if(preco !== 0 && desc !== 0 && itens !== ''){
+      try{
+        await setDoc(doc(db, 'cupons', codigo()), {
+          precoTroca: Number(preco), 
+          descPorc: Number(desc),
+          itens: itens.toUpperCase(),
+          mercado: doc(db, 'mercados', idUser),
+          data_criacao: serverTimestamp(),
+        });
+        
+        setCardAdd(false);
+        setPreco(0);
+        setDesc(0);
+        setItens('');
+      }
+      catch(err){
+        console.error(err);
+      }
+    } else{
+      Alert.alert('Preencha todos os campos corretamente!');
     }
   }
 
   const deletarCupom = async (id) => {
+    const buscarResgateUsuarios = async () => {
+      try{
+        const q = query(collection(db, 'usuario'), where('cuponsResgatadosId', 'array-contains', id));
+        const docsSnap = await getDocs(q);
+        const lista = docsSnap.docs.map((item)=>({
+          idUsuario: item.id,
+        }));
+        return lista;
+      } catch(err){
+        console.error(err);
+        return [];
+      }
+    }
+
+    const getReembolso = async () => {
+      const lista = await buscarResgateUsuarios();
+      if (lista.length === 0){
+        return;
+      };
+
+      const cupom = await getDoc(doc(db, 'cupons', id));
+      const valorReembolso = cupom.data().precoTroca;
+
+      lista.map((item)=>{
+        const get = async () => {
+          const docUser = await getDoc(doc(db, 'usuario', item.idUsuario));
+          const pontos = docUser.data().pontos;
+          const pontosAtualizacao = pontos + valorReembolso;
+          
+          const cuponsResgatados = docUser.data().cuponsResgatados;
+          const novoArray1 = cuponsResgatados.filter(item => item.id !== id);
+
+          const cuponsResgatadosId = docUser.data().cuponsResgatadosId;
+          const novoArray2 = cuponsResgatadosId.filter(item => item !== id);
+
+          await updateDoc(doc(db, 'usuario', item.idUsuario), {
+            pontos: pontosAtualizacao,
+            cuponsResgatados: novoArray1,
+            cuponsResgatadosId: novoArray2,
+          });
+        }
+        get();
+      });
+    };
+
     try{
+      await getReembolso();
       await deleteDoc(doc(db, 'cupons', id));
     }
     catch(err){

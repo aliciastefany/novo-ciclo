@@ -37,7 +37,7 @@ export default function Perfil({navigation}) {
             index: index,
             data_resgate: item.data_resgate,
             troca: item.troca ? true : false,
-            data_troca: item.data_troca,
+            data_troca: item.data_troca ? item.data_troca : null,
           }))
           setRefsCupons(lista);
         }

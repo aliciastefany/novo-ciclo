@@ -83,7 +83,8 @@ export default function TrocarPontos({route, navigation}) {
               id: cupom.id,
               data_resgate: marca,
               cupom: doc(db, 'cupons', cupom.id),
-            })
+            }),
+            cuponsResgatadosId: arrayUnion(cupom.id),
           });
           
           setPontos(pontosAtualizados); 
@@ -140,7 +141,7 @@ export default function TrocarPontos({route, navigation}) {
                         <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
 
                         <View style={estilos.cobrir}>
-                          <Text style={estilos.txt_cobrir}>{item.descPorc} DE DESCONTO EM {item.itens}</Text>
+                          <Text style={estilos.txt_cobrir}>{item.descPorc}% DE DESCONTO EM {item.itens}</Text>
                         </View>
                       </View>
 
