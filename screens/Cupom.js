@@ -3,18 +3,20 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 import QRCode from 'react-native-qrcode-svg';
 import { db } from '../config/firebase.js';
-import { doc, updateDoc } from 'firebase/firestore';
+import { Timestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { UserContext } from '../ContextPerfil.js';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 export default function Cupom({route, navigation}){
     const { infosCupom } = route.params;
     const cupom = infosCupom;
-
+    const [qrcode, setQrcode] = useState(cupom.troca);
     const data = cupom.data_resgate.toDate();
+    const troca = cupom.data_troca?.toDate();
 
     const valueQr = {
       "idCupom": cupom.id,
+      "idMercado": cupom.id_mercado
     }
 
     const json = JSON.stringify(valueQr);
@@ -23,17 +25,20 @@ export default function Cupom({route, navigation}){
 
     const atualizarCupom = async () => {
       try{
-        const 
-      } catch(err){
-        console.error(err);
-        Alert.alert('Ocorreu um erro', err);
-      }
-
-      try{
-        const atualizacao = await updateDoc(doc(db, 'usuario', idUser), {
-          [`cuponsResgatados.${cupom.index}.troca`]: true,
+        const busca = await getDoc(doc(db, 'usuario', idUser));
+        const arrayCupons = busca.data().cuponsResgatados;
+        const marca = Timestamp.fromDate(new Date());
+        arrayCupons[cupom.index] = {
+          ...arrayCupons[cupom.index],
+          troca: true,
+          data_troca: marca,
+        }
+        
+        await updateDoc(doc(db, 'usuario', idUser), {
+          cuponsResgatados: arrayCupons,
         });
-        console.log(atualizacao);
+
+        setQrcode(false);
       } catch(err){
         console.error(err);
         Alert.alert('Ocorreu um erro', err);
@@ -65,15 +70,20 @@ export default function Cupom({route, navigation}){
         <View style={{flex: 1, width: '100%', alignItems: 'center', gap: 25}}>
           <CupomDoUsuario precoTroca={cupom.precoTroca} itens={cupom.itens} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
 
-          <QRCode value={json} size={250} />
-
+          {
+            !qrcode && <QRCode value={json} size={250} />
+          }
 
           <View style={estilos.areaResgate}>
-            <Text>Data de troca: {data.toLocaleDateString('pt-BR')} - {data.toLocaleTimeString('pt-BR')}</Text>
+            <Text>Data de resgate: {data.toLocaleDateString('pt-BR')} - {data.toLocaleTimeString('pt-BR')}</Text>
 
-            <TouchableOpacity style={estilos.btnResgatado} onPress={validado}>
-              <MaterialCommunityIcons name='check' color='white' size={35} />
-            </TouchableOpacity>
+            {
+              qrcode ? 
+                <Text style={{fontSize: 19, fontWeight: 'bold', marginTop: 15}}>Data de uso: {troca.toLocaleDateString('pt-BR')} - {troca.toLocaleTimeString('pt-BR')}</Text> :
+                <TouchableOpacity style={estilos.btnResgatado} onPress={validado}>
+                  <MaterialCommunityIcons name='check' color='white' size={35} />
+                </TouchableOpacity>
+            }
           </View>
         </View>
       </SafeAreaView>

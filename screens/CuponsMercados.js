@@ -11,8 +11,8 @@ import { UserContext } from '../ContextPerfil.js';
 export default function CuponsMercados({navigation}) {
   const [cupons, setCupons] = useState([]);
   const [cardAdd, setCardAdd] = useState(false);
-  const [preco, setPreco] = useState('');
-  const [desc, setDesc] = useState('');
+  const [preco, setPreco] = useState(0);
+  const [desc, setDesc] = useState(0);
   const [itens, setItens] = useState('');
   const [btnRmv, setBtnRmv] = useState(false);
 
@@ -27,10 +27,10 @@ export default function CuponsMercados({navigation}) {
 
     try{
       await setDoc(doc(db, 'cupons', codigo()), {
-        precoTroca: preco, 
-        descPorc: desc,
+        precoTroca: Number(preco), 
+        descPorc: Number(desc),
         itens: itens.toUpperCase(),
-        empresa: doc(db, 'mercados', idUser),
+        mercado: doc(db, 'mercados', idUser),
         data_criacao: serverTimestamp(),
       });
       
@@ -57,7 +57,7 @@ export default function CuponsMercados({navigation}) {
 
     try{
       const coll = collection(db, 'cupons');
-      const q = query(coll, where('empresa', '==', doc(db, 'mercados', idUser)));
+      const q = query(coll, where('mercado', '==', doc(db, 'mercados', idUser)));
       const snap = onSnapshot(q, (documentos)=>{
         const listaCupons = documentos.docs.map((doc)=>({
           id: doc.id, 
@@ -72,7 +72,7 @@ export default function CuponsMercados({navigation}) {
     catch(err){
       console.error(err);
     }
-  }, [cupons]);
+  }, [idUser]);
 
   const porcentagem = (atual) => {
     if(atual > 100){

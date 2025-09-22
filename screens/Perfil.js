@@ -36,6 +36,8 @@ export default function Perfil({navigation}) {
             id: item.id,
             index: index,
             data_resgate: item.data_resgate,
+            troca: item.troca ? true : false,
+            data_troca: item.data_troca,
           }))
           setRefsCupons(lista);
         }
@@ -56,20 +58,27 @@ export default function Perfil({navigation}) {
             const get = async () => {
               try{
                 const cupom = await getDoc(doc(db, 'cupons', item.id));
-                const mercado = await getDoc(cupom.data().mercado);
-                const nome = mercado.data().nome;
-
-                const infos = {
-                  id: cupom.id,
-                  precoTroca: cupom.data().precoTroca,
-                  mercado: nome,
-                  descPorc: cupom.data().descPorc,
-                  itens: cupom.data().itens,
-                  data_resgate: item.data_resgate,
-                  index: item.index,
+                if(cupom.exists()){
+                  const mercado = await getDoc(cupom.data().mercado);
+                  const nome = mercado.data().nome;
+                  console.log(item.data_troca);
+                  const infos = {
+                    id: cupom.id,
+                    precoTroca: cupom.data().precoTroca,
+                    mercado: nome,
+                    descPorc: cupom.data().descPorc,
+                    itens: cupom.data().itens,
+                    data_resgate: item.data_resgate,
+                    index: item.index,
+                    troca: item.troca,
+                    data_troca: item.data_troca,
+                    id_mercado: mercado.id,
+                  }
+                  array.push(infos);
+                  setCuponsUsuario(array);
+                } else{
+                  Alert.alert('Reembolso', 'Alguns cupons foram excluídos pela empresa. Você terá seus pontos de volta.');
                 }
-                array.push(infos);
-                setCuponsUsuario(array);
               }
               catch(err){
                 console.error(err);
@@ -192,7 +201,7 @@ export default function Perfil({navigation}) {
               renderItem={({item}) => (
                 <TouchableWithoutFeedback onPress={() => navigation.navigate('Cupom', { infosCupom: item })}>
                   <View>
-                    <CupomDoUsuario precoTroca={item.precoTroca} itens={item.itens} descPorc={item.descPorc} nomeMercado={item.mercado}/>
+                    <CupomDoUsuario precoTroca={item.precoTroca} troca={item.troca} itens={item.itens} descPorc={item.descPorc} nomeMercado={item.mercado}/>
                   </View>
                 </TouchableWithoutFeedback>
               )}

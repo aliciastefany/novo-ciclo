@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect, useContext } from 'react';
-import { doc, updateDoc, onSnapshot, collection, query, where, arrayUnion, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, collection, query, where, arrayUnion, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { UserContext } from '../ContextPerfil.js';
 
@@ -74,14 +74,15 @@ export default function TrocarPontos({route, navigation}) {
       Alert.alert('Não foi possível resgatar cupom!', 'Você não tem pontos suficientes para resgatar esse cupom!');
     } else {
         const pontosAtualizados = pontos - cupom.precoTroca;
-      
+        const marca = Timestamp.fromDate(new Date());
+
         try{
           await updateDoc(doc(db, 'usuario', idUser), {
             pontos: pontosAtualizados,
             cuponsResgatados: arrayUnion({
-              cupom: doc(db, 'cupons', cupom.id),
               id: cupom.id,
-              data_resgate: serverTimestamp(),
+              data_resgate: marca,
+              cupom: doc(db, 'cupons', cupom.id),
             })
           });
           
