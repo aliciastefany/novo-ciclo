@@ -1,17 +1,19 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { db } from '../config/firebase';
 import { getDoc, doc } from 'firebase/firestore';
+import { UserContext } from '../ContextPerfil';
 
 export default function QrCode({navigation}) {
   const [username, setUsername] = useState('');
+  const { idUser } = useContext(UserContext);
 
   useEffect(()=>{
     const getUser = async () => {
       try{
-        const usuario = await getDoc(doc(db, 'usuario', 'WvwjLK9WqoQOsld2nv8AvxIoen32'));
+        const usuario = await getDoc(doc(db, 'usuario', idUser));
         setUsername(usuario.data().username);
       }
       catch(err){
@@ -22,7 +24,7 @@ export default function QrCode({navigation}) {
   }, [])
 
   const json = JSON.stringify({
-    idCliente: 'WvwjLK9WqoQOsld2nv8AvxIoen32',
+    idCliente: idUser,
     username: username
   });
 

@@ -88,6 +88,7 @@ export default function CuponsMercados({navigation}) {
             pontos: pontosAtualizacao,
             cuponsResgatados: novoArray1,
             cuponsResgatadosId: novoArray2,
+            mensagemAlteracao: true,
           });
         }
         get();

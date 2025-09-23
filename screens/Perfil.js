@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect, useContext } from 'react';
 import { conquistas } from '../data/dadosConquistas';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 import { UserContext } from '../ContextPerfil.js';
 import { auth, db } from '../config/firebase';
@@ -36,8 +36,8 @@ export default function Perfil({navigation}) {
             id: item.id,
             index: index,
             data_resgate: item.data_resgate,
-            troca: item.troca ? true : false,
-            data_troca: item.data_troca ? item.data_troca : null,
+            troca: item.troca,
+            data_troca: item.data_troca ? item.data_troca : false,
           }))
           setRefsCupons(lista);
         }
@@ -50,12 +50,13 @@ export default function Perfil({navigation}) {
   }, []);
 
   useEffect(() => {
-    const cupons = () => {
+    const cupons = async () => {
       try{
         let array = [];
+        let excluido = false;
+
         if(refsCupons !== undefined){
-          refsCupons.map((item)=>{
-            const get = async () => {
+          for(const item of refsCupons){
               try{
                 const cupom = await getDoc(doc(db, 'cupons', item.id));
                 if(cupom.exists()){
@@ -75,17 +76,37 @@ export default function Perfil({navigation}) {
                     id_mercado: mercado.id,
                   }
                   array.push(infos);
-                  setCuponsUsuario(array);
                 } else{
-                  Alert.alert('Reembolso', 'Alguns cupons foram excluídos pela empresa. Você terá seus pontos de volta.');
+                  excluido = true;
                 }
               }
               catch(err){
                 console.error(err);
               }
+          };
+
+          setCuponsUsuario(array);
+
+          if(excluido){
+            try{
+              const atualizar = async () => {
+                await updateDoc(doc(db, 'usuario', idUser), {
+                  mensagemAlteracao: false,
+                })
+              };
+
+              const docUser = await getDoc(doc(db, 'usuario', idUser));
+              if(docUser.data().mensagemAlteracao){
+                Alert.alert(
+                  'Reembolso', 
+                  'Alguns cupons foram excluídos pela empresa. Você teve (ou terá) seus pontos de volta.',
+                  [{text: 'Ok', onPress: () => atualizar()}]
+                );
+              }
+            } catch(err){
+              console.error(err);
             }
-            get();
-          })
+          }
         }
       }
       catch(err){

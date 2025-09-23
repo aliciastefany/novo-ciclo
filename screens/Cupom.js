@@ -5,7 +5,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { db } from '../config/firebase.js';
 import { Timestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { UserContext } from '../ContextPerfil.js';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 export default function Cupom({route, navigation}){
     const { infosCupom } = route.params;
@@ -13,7 +13,11 @@ export default function Cupom({route, navigation}){
     const [qrcode, setQrcode] = useState(cupom.troca);
     const data = cupom.data_resgate.toDate();
     const troca = cupom.data_troca ? cupom.data_troca.toDate() : null;
-
+    console.log(cupom.troca, qrcode);
+    useEffect(() => {
+      setQrcode(cupom.troca);
+    }, [cupom]);
+  
     const valueQr = {
       "idCupom": cupom.id,
       "idMercado": cupom.id_mercado
@@ -82,9 +86,10 @@ export default function Cupom({route, navigation}){
             <Text>Data de resgate: {data.toLocaleDateString('pt-BR')} - {data.toLocaleTimeString('pt-BR')}</Text>
 
             {
-              qrcode ? 
-                troca &&
-                  <Text style={{fontSize: 19, fontWeight: 'bold', marginTop: 15}}>Data de uso: {troca.toLocaleDateString('pt-BR')} - {troca.toLocaleTimeString('pt-BR')}</Text> :
+              qrcode ? troca !== null ?
+                  <Text style={{fontSize: 19, fontWeight: 'bold', marginTop: 15}}>Data de uso: {troca.toLocaleDateString('pt-BR')} - {troca.toLocaleTimeString('pt-BR')}</Text> 
+                  : <Text style={{fontSize: 19, fontWeight: 'bold', marginTop: 15}}>Cupom resgatado!</Text> 
+                : 
                 <TouchableOpacity style={estilos.btnResgatado} onPress={validado}>
                   <MaterialCommunityIcons name='check' color='white' size={35} />
                 </TouchableOpacity>
