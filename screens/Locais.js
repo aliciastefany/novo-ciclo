@@ -65,6 +65,12 @@ export default function Locais({navigation}) {
             keyExtractor={item => item.id}
             contentContainerStyle={{gap: 30}}
           />
+
+          <View style={estilos.areaBotao}>
+            <TouchableOpacity style={estilos.btnLocais} onPress={()=>navigation.navigate('LocaisProximos')}>
+              <Text style={estilos.txtLocais}>Locais Próximos</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -149,4 +155,24 @@ const estilos = StyleSheet.create({
     color: 'white',
     fontWeight: 400
   },
+
+  areaBotao: {
+    width: '100%',
+    alignItems: 'center',
+  },
+
+  btnLocais: {
+    width: '50%',
+    height: 39,
+    backgroundColor: '#31420a',
+    borderRadius: 15, 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  txtLocais: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18
+  }
 });

@@ -16,6 +16,7 @@ import Dados2 from '../screens/Dados2';
 import Dados3 from '../screens/Dados3';
 import Editar from '../screens/EditarPerfil';
 import Cupom from '../screens/Cupom';
+import LocaisProximos from '../screens/LocaisProximos';
 
 const Drawer = createDrawerNavigator();
 
@@ -57,6 +58,8 @@ function Lateral1() {
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
+      
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
@@ -98,6 +101,7 @@ function Lateral2() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
@@ -139,6 +143,7 @@ function Lateral3() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
@@ -180,6 +185,7 @@ function Lateral4() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
@@ -221,13 +227,14 @@ function Lateral5() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
 
 export default function Rotas() {
   return (
-    <Tab.Navigator initialRouteName='Home' screenOptions={() => ({
+    <Tab.Navigator initialRouteName='Qr Code' screenOptions={() => ({
       tabBarLabelStyle: {
         color: 'black',
         fontWeight: 500,
