@@ -3,8 +3,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { db } from '../config/firebase';
-import { updateDoc, doc } from 'firebase/firestore';
+import { updateDoc, doc, GeoPoint } from 'firebase/firestore';
 import { UserContext } from '../ContextPerfil.js';
+import Geocoder from 'react-native-geocoding';
 
 export default function EditarMercado({navigation, route}) {
   const {dados} = route.params;
@@ -23,6 +24,13 @@ export default function EditarMercado({navigation, route}) {
     }
     
     try{
+      Geocoder.init('AIzaSyCd65Fjy3fMfsNls74nh98LEf4vtWvFu8M');
+
+      const geocodificacao = await Geocoder.from(endereco);
+      const coordenadas = geocodificacao.results[0].geometry.location;
+      const lat = coordenadas.lat;
+      const lng = coordenadas.lng;
+
       await updateDoc(doc(db, 'mercados', idUser), {
         nome: username,
         email: email,
@@ -30,6 +38,7 @@ export default function EditarMercado({navigation, route}) {
         endereco: endereco,
         descricao: descricao,
         website: website,
+        coordenadas: new GeoPoint(lat, lng),
       });
 
       Alert.alert('Dados atualizados!');
@@ -100,7 +109,7 @@ export default function EditarMercado({navigation, route}) {
 
             <View>
               <Text style={estilos.tit_desc}>Descrição do mercado</Text>
-              <TextInput style={estilos.input_bio} placeholder='Descrição do mercado' multiline={true} textAlignVertical="top" value={descricao} onChangeText={(txt)=>setDescricao(txt)} />
+              <TextInput style={estilos.input_bio} placeholder='Descrição do mercado' multiline={true} maxLength={300} textAlignVertical="top" value={descricao} onChangeText={(txt)=>setDescricao(txt)} />
             </View>
           </View>
 
