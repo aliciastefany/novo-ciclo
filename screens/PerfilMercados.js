@@ -38,11 +38,11 @@ export default function PerfilMercados({navigation}) {
       <ScrollView style={{flex: 1, width: '100%'}}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
           <View style={estilos.img_fundo}>
-            <Image source={mercados[0].logo} style={estilos.img} />
+            <Image source={dados.fundoPerfil ? {uri: dados.fundoPerfil} : require('../assets/kacula_perfil.png')} style={estilos.img} />
           </View>
 
           <View style={estilos.area_perfil}>
-            <Image source={require('../assets/kacula_perfil.png')} style={estilos.perfil} />
+            <Image source={dados.fotoPerfil ? {uri: dados.fotoPerfil} : require('../assets/kacula_perfil.png')} style={estilos.perfil} />
           </View>
 
           <View style={estilos.descricao}>

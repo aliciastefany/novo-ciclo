@@ -61,7 +61,7 @@ export default function HomeMercados({navigation}){
           </View>
 
           <View style={estilos.lista}> 
-            <ImageBackground source={require('../assets/kacula.jpg')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
+            <ImageBackground source={dados.fundoPerfil ? {uri: dados.fundoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
               <View style={estilos.area_textos}>
                 <Text style={estilos.txt_tit2}>{dados.nome}</Text>
                 <Text style={estilos.txt_desc}>{dados?.descricao || 'Descreva a missão do seu mercado!'}</Text>

@@ -120,7 +120,7 @@ export default function DescricaoLocais({route, navigation}) {
 
         <View style={estilos.area_img}>
           <View style={estilos.cont_img}>
-            <Image source={require('../assets/logo_kacula.png')} style={estilos.img} />
+            <Image source={mercado.data().fotoPerfil ? {uri: mercado.data().fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.img} resizeMode={!mercado.data().fotoPerfil && 'contain'} />
           </View>
         </View>
 

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ImageBackground, Image, FlatList } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export default function Locais({navigation}) {
@@ -46,7 +46,7 @@ export default function Locais({navigation}) {
             showsVerticalScrollIndicator={false}
             renderItem={({item})=>(
               <View style={estilos.lista}> 
-                <ImageBackground source={require('../assets/kacula.jpg')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
+                <ImageBackground source={item.data().fundoPerfil ? {uri: item.data().fundoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                   <View style={estilos.area_textos}>
                     <Text style={estilos.txt_tit}>{item.data().nome}</Text>
                     <Text style={estilos.txt_desc}>{item.data().descricao}</Text>

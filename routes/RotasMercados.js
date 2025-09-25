@@ -13,18 +13,9 @@ import Editar from '../screens/EditarMercado';
 export default function Rotas2() {
   return (
     <Tab.Navigator initialRouteName='Home' screenOptions={()=>({
-      tabBarLabelStyle: {
-        color: 'black',
-        fontWeight: 500,
-        fontSize: 14,
-        position: 'relative',
-        marginBottom: 4,
-        marginTop: 0,
-      },
-
       tabBarStyle: {
         backgroundColor: '#eaeaea',
-        height: 55
+        height: 87,
       }
     })}>
 

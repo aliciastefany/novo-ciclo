@@ -6,7 +6,7 @@ import { db } from '../config/firebase';
 import { UserContext } from '../ContextPerfil.js';
 
 export default function TrocarPontos({route, navigation}) {
-  const { mercado } = route.params;
+  const { mercado, fotoPerfil } = route.params;
   const [pontos, setPontos] = useState(0); 
   const [cupons, setCupons] = useState([]);
   const [disponiveis, setDisponiveis] = useState([]);
@@ -124,7 +124,7 @@ export default function TrocarPontos({route, navigation}) {
 
           <View style={estilos.area_img}>
             <View style={estilos.cont_img}>
-              <Image source={require('../assets/logo_kacula.png')} style={estilos.img_logo} />
+              <Image source={fotoPerfil ? {uri: fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.img_logo} resizeMode={!fotoPerfil && 'contain'} />
             </View>
           </View>
 

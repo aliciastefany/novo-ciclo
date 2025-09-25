@@ -2,10 +2,11 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Imag
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import { db } from '../config/firebase';
+import { db, storage } from '../config/firebase';
 import { updateDoc, doc, GeoPoint } from 'firebase/firestore';
 import { UserContext } from '../ContextPerfil.js';
 import Geocoder from 'react-native-geocoding';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function EditarMercado({navigation, route}) {
   const {dados} = route.params;
@@ -49,34 +50,86 @@ export default function EditarMercado({navigation, route}) {
     }
   }
 
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(dados.fotoPerfil || null);
+  const [imageFundo, setImageFundo] = useState(dados.fundoPerfil || null);
 
-  const pickImage = async () => {
+  const pickImagePerfil = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      try{
+        const imagem = result.assets[0].uri;
+      
+        const fetchImg = await fetch(imagem);
+        const blob = await fetchImg.blob();
+
+        const referencia = ref(storage, `/perfil-mercados/${idUser}.jpg`);
+
+        await uploadBytes(referencia, blob);
+
+        const urlFoto = await getDownloadURL(referencia);
+
+        await updateDoc(doc(db, 'mercados', idUser), {
+          fotoPerfil: urlFoto,
+        });
+
+        setImage(urlFoto);
+      } catch(err){
+        console.error(err);
+      }
+    }
+  };
+
+  const pickImageFundo = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      setImage(result.assets[0].uri)
+      try{
+        const imagem = result.assets[0].uri;
+      
+        const fetchImg = await fetch(imagem);
+        const blob = await fetchImg.blob();
+
+        const referencia = ref(storage, `/fundo-mercados/${idUser}.jpg`);
+
+        await uploadBytes(referencia, blob);
+
+        const urlFoto = await getDownloadURL(referencia);
+
+        await updateDoc(doc(db, 'mercados', idUser), {
+          fundoPerfil: urlFoto,
+        });
+
+        setImageFundo(urlFoto);
+      } catch(err){
+        console.error(err);
+      }
     }
   };
-  
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
       <ScrollView style={{flex: 1, width: '100%'}}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
-          <View style={estilos.img_fundo}>
-            <Image source={require('../assets/logo_kacula.png')} style={estilos.img} />
+          <View style={estilos.img_fundo}> 
+            <TouchableOpacity onPress={pickImageFundo}>
+              <Image source={imageFundo ? {uri: imageFundo} : require('../assets/kacula_perfil.png')} style={estilos.img} />
+            </TouchableOpacity>
           </View>
 
           <View style={estilos.area_perfil}>
-            <TouchableOpacity onPress={pickImage}>
-              <Image source={image ? {uri:image} : require('../assets/kacula_perfil.png')} style={estilos.perfil} />
+            <TouchableOpacity onPress={pickImagePerfil}>
+              <Image source={image ? {uri: image} : require('../assets/kacula_perfil.png')} style={estilos.perfil} />
             </TouchableOpacity>
           </View>
 

@@ -66,7 +66,7 @@ export default function InfoMercados({ navigation }) {
 
           <View style={estilos.area_img}>
             <View style={estilos.cont_img}>
-              <Image source={mercados[0].logo} style={estilos.img} />
+              <Image source={dados.fotoPerfil ? {uri: dados.fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.img} resizeMode={!dados.fotoPerfil && 'contain'} />
             </View>
           </View>
 
@@ -143,7 +143,7 @@ const estilos = StyleSheet.create({
 
   area_img: {
     width: '100%',
-    height: '25%',
+    height: '30%',
     alignItems: 'center',
   },
 
@@ -155,7 +155,8 @@ const estilos = StyleSheet.create({
     borderBottomWidth: 2,
     backgroundColor: '#f8f8f8',
     marginTop: 5,
-    borderColor: 'gray'
+    borderColor: 'gray',
+    padding: 5,
   },
 
   img: {

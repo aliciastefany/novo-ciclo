@@ -234,21 +234,16 @@ function Lateral5() {
 
 export default function Rotas() {
   return (
-    <Tab.Navigator initialRouteName='Qr Code' screenOptions={() => ({
-      tabBarLabelStyle: {
-        color: 'black',
-        fontWeight: 500,
-        fontSize: 14,
-        position: 'relative',
-        marginBottom: 4,
-        marginTop: 0,
-      },
-
+    <Tab.Navigator initialRouteName='Home' screenOptions={{
       tabBarStyle: {
         backgroundColor: '#eaeaea',
-        height: 55
-      }
-    })}>
+        height: 87,
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+      },
+    }}>
 
       <Tab.Screen name="Home" component={Lateral1} options={{ headerShown: false, tabBarIcon: ({ focused }) => <View style={focused && estilos.click}><Image source={require('../assets/home.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false }} />
 

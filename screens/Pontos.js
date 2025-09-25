@@ -30,7 +30,7 @@ export default function Pontos({navigation}) {
       try{
         const lista = documentos.docs.map((doc)=>({
           id: doc.id,
-          img: require('../assets/logo_kacula.png'),
+          fotoPerfil: doc.data().fotoPerfil,
         }));
 
         setMercados(lista);
@@ -84,8 +84,8 @@ export default function Pontos({navigation}) {
               style={{marginVertical: 10}}
               data={mercados}
               renderItem={({item})=>(
-                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: item.id })}>
-                  <Image style={estilos.imgs} source={item.img} />
+                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: item.id, fotoPerfil: item.fotoPerfil })}>
+                  <Image style={estilos.imgs} source={item.fotoPerfil ? {uri: item.fotoPerfil} : require('../assets/perfil_perfil.png')} resizeMode={!item.fotoPerfil && 'contain'} />
                 </TouchableOpacity>
               )}
               keyExtractor={item => item.id}

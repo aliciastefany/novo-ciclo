@@ -45,13 +45,14 @@ export default function LocaisProximos({navigation}) {
             * sin(dLon / 2) * sin(dLon / 2);
     const c = 2 * atan2(sqrt(a), sqrt(1 - a)); 
     const d = R * c;
-    console.log('distancia', d);
     return d; // distance in km
   }
 
   const [cep, setCep] = useState('');
 
   const getMercados = async () => {
+    setMercProx(null);
+
     if(cep && mercados){
       try{
         Geocoder.init('AIzaSyCd65Fjy3fMfsNls74nh98LEf4vtWvFu8M');
@@ -62,7 +63,6 @@ export default function LocaisProximos({navigation}) {
 
         const geocodificacao = await Geocoder.from(endereco);
         const coordenadas = geocodificacao.results[0].geometry.location;
-        console.log('coord', coordenadas)
 
         const listaMercados = [];
         const docsMercados = await getDocs(collection(db, 'mercados'));
@@ -73,6 +73,7 @@ export default function LocaisProximos({navigation}) {
             id: doc.id,
             descricao: doc.data().descricao,
             nome: doc.data().nome,
+            fotoPerfil: doc.data().fotoPerfil,
             doc: doc,
           }
           listaMercados.push(dados);
@@ -81,13 +82,41 @@ export default function LocaisProximos({navigation}) {
         const listaFormatada = listaMercados.filter((item) => haversineDistanciaKM(coordenadas.lat, coordenadas.lng, item.latitude, item.longitude) <= 50);
         setMercProx(listaFormatada);
       } catch(err){
-        console.error(err);
         Alert.alert('Erro ao buscar', 'Verifique se o CEP informado é válido ou tente novamente!');
       }
     } else{
       Alert.alert('Informe um CEP válido!');
     }
   }
+
+  const coresAleatorias = () => {
+    const red = Math.round(Math.random(1) * 256);
+    const green = Math.round(Math.random(1) * 256);
+    const blue = Math.round(Math.random(1) * 256);
+
+    return `rgb(${red}, ${green}, ${blue})`;
+  }
+
+  const [region, setRegion] = useState({latitude: -15.7801, longitude: -47.9292, latitudeDelta: 1, longitudeDelta: 1,});
+
+  useEffect(()=>{
+    if(mercProx && mercProx.length > 0){
+      const mark1 = mercProx[0];
+      setRegion({
+        latitude: mark1.latitude,
+        longitude: mark1.longitude,
+        latitudeDelta: 1, 
+        longitudeDelta: 1,
+      });
+    } else{
+      setRegion({
+        latitude: -15.7801, 
+        longitude: -47.9292, 
+        latitudeDelta: 1, 
+        longitudeDelta: 1,
+      });
+    }
+  }, [mercProx]);
 
   return(
     <SafeAreaView style={{flex: 1}}>
@@ -109,10 +138,11 @@ export default function LocaisProximos({navigation}) {
         <View style={estilos.fundoMapa}>
           <MapView 
             style={{flex: 1, width: '100%', height: '100%'}}
+            region={region}
             initialRegion={{
               latitude: -15.7801,
               longitude: -47.9292,
-              latitudeDelta:1,
+              latitudeDelta: 1,
               longitudeDelta: 1,
             }}
             mapType="standard"
@@ -126,7 +156,7 @@ export default function LocaisProximos({navigation}) {
                     coordinate={{latitude: item.latitude, longitude: item.longitude}}
                     title={item.nome}
                     description={item.descricao}
-                    pinColor={'#31420a'}
+                    pinColor={coresAleatorias()}
                   />
                 ))
               }
@@ -153,7 +183,7 @@ export default function LocaisProximos({navigation}) {
                             showsVerticalScrollIndicator={false}
                             renderItem={({item, index})=>(
                               <View style={estilos.lista}> 
-                                <ImageBackground source={require('../assets/kacula.jpg')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
+                                <ImageBackground source={item.fotoPerfil ? {uri: item.fotoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                                   <View style={estilos.area_textos}>
                                     <Text style={estilos.txt_tit}>{item.nome}</Text>
                                     <Text style={estilos.txt_desc}>{item.descricao}</Text>

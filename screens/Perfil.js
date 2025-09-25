@@ -5,9 +5,10 @@ import { conquistas } from '../data/dadosConquistas';
 import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 import { UserContext } from '../ContextPerfil.js';
-import { auth, db } from '../config/firebase';
+import { auth, db, storage } from '../config/firebase';
 import QRCode from 'react-native-qrcode-svg';
 import { signOut } from 'firebase/auth';
+import { ref } from 'firebase/storage';
 
 export default function Perfil({navigation}) {
   const [infoUsuario, setInfoUsuario] = useState('');
@@ -27,6 +28,7 @@ export default function Perfil({navigation}) {
         
     return ()=>getInfoUsuario();
   }, []);
+
 
   useEffect(() => {
     const getResgatados = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
@@ -133,6 +135,8 @@ export default function Perfil({navigation}) {
 
   const json = JSON.stringify({idCliente: idUser});
 
+
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
       <View style={estilos.cabecalho}>
@@ -148,7 +152,7 @@ export default function Perfil({navigation}) {
         </View>
           
         <View style={estilos.area_perfil}>
-          <Image source={require('../assets/perfil_perfil.png')} style={estilos.perfil} />
+          <Image source={infoUsuario.fotoPerfil ? {uri: infoUsuario.fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
         </View>
 
           <View style={estilos.descricao}>

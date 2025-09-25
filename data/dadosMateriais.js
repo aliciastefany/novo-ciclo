@@ -80,7 +80,7 @@ export const materiais = [
     texto3: 'Evitar o desmatamento e minimizar os danos causados à natureza: a extração e o descarte indevido da madeira geram impactos negativos no meio ambiente.',
     kg: 17,
     cor: '#31420a',
-    corLegenda: '#189e2e'
+    corLegenda: '#649e2e'
   },
 
   {
