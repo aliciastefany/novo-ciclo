@@ -182,7 +182,7 @@ export default function LocaisProximos({navigation}) {
                             data={mercProx}
                             showsVerticalScrollIndicator={false}
                             renderItem={({item, index})=>(
-                              <View style={estilos.lista}> 
+                              <TouchableOpacity style={estilos.lista} onPress={()=>navigation.navigate('Descricao Locais', { mercado: mercDadosPag[index].doc })}> 
                                 <ImageBackground source={item.fotoPerfil ? {uri: item.fotoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                                   <View style={estilos.area_textos}>
                                     <Text style={estilos.txt_tit}>{item.nome}</Text>
@@ -190,14 +190,14 @@ export default function LocaisProximos({navigation}) {
                                   </View>
 
                                   <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', { mercado: mercDadosPag[index].doc })}>
-                                      <Text style={estilos.txt_btn}>Conheça já!</Text>
-                                    </TouchableOpacity>
+                                    <View style={estilos.btn_conhecer}>
+                                      <Text style={estilos.txt_conhecer}>Conheça já!</Text>
+                                    </View>
                                   </View>
 
                                   <View style={estilos.opacidade} />
                                 </ImageBackground>
-                              </View> 
+                              </TouchableOpacity> 
                             )}
                             keyExtractor={item => item.id}
                             contentContainerStyle={{gap: 20}}       
@@ -310,7 +310,7 @@ const estilos = StyleSheet.create({
     gap: 2
   },  
 
-  btn:{
+  btn_conhecer:{
     width: '100%',
     height: '20%',
     backgroundColor: '#253304',
@@ -319,7 +319,7 @@ const estilos = StyleSheet.create({
     zIndex: 1
   },
 
-  txt_btn:{
+  txt_conhecer:{
     fontSize: 18,
     color: 'white',
     fontWeight: 600

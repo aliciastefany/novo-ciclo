@@ -135,7 +135,7 @@ export default function TrocarPontos({route, navigation}) {
                   style={estilos.flatlist}
                   data={cupons}
                   renderItem={({item})=>(
-                    <View style={estilos.card_cupom}>
+                    <TouchableOpacity style={estilos.card_cupom} onPress={()=>resgatarCupom(item)}>
                       <View style={{alignItems: 'center', marginTop: -20}}>
                         <Text style={estilos.txt_troca}>Preço de troca: {item.precoTroca} pontos</Text>
                         <Image source={require('../assets/img_cupom.png')} style={estilos.img}/>  
@@ -145,10 +145,10 @@ export default function TrocarPontos({route, navigation}) {
                         </View>
                       </View>
 
-                      <TouchableOpacity style={estilos.btn_troca} onPress={()=>resgatarCupom(item)}>
+                      <View style={estilos.area_troca}>
                         <Text style={estilos.txt_troca2}>Trocar e Resgatar!</Text>
-                      </TouchableOpacity>
-                    </View>
+                      </View>
+                    </TouchableOpacity>
                   )}
                   keyExtractor={item => item.id}
                   contentContainerStyle={{gap: 20, alignItems: 'center'}}
@@ -260,7 +260,7 @@ const estilos = StyleSheet.create({
     fontWeight: 800
   },
 
-  btn_troca:{
+  area_troca:{
     backgroundColor: '#31420a',
     width: '100%',
     position: 'absolute',

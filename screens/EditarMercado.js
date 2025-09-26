@@ -121,6 +121,10 @@ export default function EditarMercado({navigation, route}) {
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
       <ScrollView style={{flex: 1, width: '100%'}}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+          <TouchableOpacity style={estilos.btn_voltar} onPress={()=>navigation.navigate('Perfil')}>
+            <MaterialCommunityIcons name='keyboard-backspace' size={40} color='black' />
+          </TouchableOpacity>
+
           <View style={estilos.img_fundo}> 
             <TouchableOpacity onPress={pickImageFundo}>
               <Image source={imageFundo ? {uri: imageFundo} : require('../assets/kacula_perfil.png')} style={estilos.img} />
@@ -178,6 +182,17 @@ export default function EditarMercado({navigation, route}) {
 }
 
 const estilos = StyleSheet.create({
+  btn_voltar: {
+    position: 'absolute',
+    marginTop: 35,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'space-between',
+    paddingHorizontal: 25,
+    zIndex: 1
+  },
+
   img_fundo:{
     width: '100%',
     height: 220,

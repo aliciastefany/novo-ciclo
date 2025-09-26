@@ -45,7 +45,7 @@ export default function Locais({navigation}) {
             data={mercados}
             showsVerticalScrollIndicator={false}
             renderItem={({item})=>(
-              <View style={estilos.lista}> 
+              <TouchableOpacity style={estilos.lista} onPress={()=>navigation.navigate('Descricao Locais', { mercado: item })}> 
                 <ImageBackground source={item.data().fundoPerfil ? {uri: item.data().fundoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                   <View style={estilos.area_textos}>
                     <Text style={estilos.txt_tit}>{item.data().nome}</Text>
@@ -53,14 +53,14 @@ export default function Locais({navigation}) {
                   </View>
 
                   <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', { mercado: item })}>
-                      <Text style={estilos.txt_btn}>Conheça já!</Text>
-                    </TouchableOpacity>
+                    <View style={estilos.area_conhecer}>
+                      <Text style={estilos.txt_conhecer}>Conheça já!</Text>
+                    </View>
                   </View>
 
                   <View style={estilos.opacidade} />
                 </ImageBackground>
-              </View>
+              </TouchableOpacity>
             )}
             keyExtractor={item => item.id}
             contentContainerStyle={{gap: 30}}
@@ -129,7 +129,7 @@ const estilos = StyleSheet.create({
     gap: 2
   },  
 
-  btn:{
+  area_conhecer:{
     width: '100%',
     height: '20%',
     backgroundColor: '#253304',
@@ -138,7 +138,7 @@ const estilos = StyleSheet.create({
     zIndex: 1
   },
 
-  txt_btn:{
+  txt_conhecer:{
     fontSize: 18,
     color: 'white',
     fontWeight: 600

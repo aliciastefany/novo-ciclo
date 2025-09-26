@@ -61,20 +61,20 @@ export default function HomeMercados({navigation}){
           </View>
 
           <View style={estilos.lista}> 
-            <ImageBackground source={dados.fundoPerfil ? {uri: dados.fundoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
-              <View style={estilos.area_textos}>
-                <Text style={estilos.txt_tit2}>{dados.nome}</Text>
-                <Text style={estilos.txt_desc}>{dados?.descricao || 'Descreva a missão do seu mercado!'}</Text>
-              </View>
+            <TouchableOpacity style={{width: '100%'}} onPress={()=>navigation.navigate('Editar Mercado', { dados: dados })}>
+              <ImageBackground source={dados.fundoPerfil ? {uri: dados.fundoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
+                <View style={estilos.area_textos}>
+                  <Text style={estilos.txt_tit2}>{dados.nome}</Text>
+                  <Text style={estilos.txt_desc}>{dados?.descricao || 'Descreva a missão do seu mercado!'}</Text>
+                </View>
 
-              <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Editar Mercado', { dados: dados })}>
-                  <Text style={estilos.txt_btn}>Edite as informações!</Text>
-                </TouchableOpacity>
-              </View>
+                <View style={estilos.opacidade} />
 
-              <View style={estilos.opacidade} />
-            </ImageBackground>
+                <View style={estilos.area_editar}>
+                  <Text style={estilos.txt_editar}>Edite as informações!</Text>
+                </View>
+              </ImageBackground> 
+            </TouchableOpacity>
           </View> 
           
           <View style={estilos.area_btnSair}>
@@ -147,16 +147,18 @@ const estilos = StyleSheet.create({
     gap: 2,
   },  
 
-  btn:{
+  area_editar:{
     width: '100%',
-    height: '20%',
     backgroundColor: '#253304',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1
+    zIndex: 1,
+    position: 'absolute',
+    bottom: 0,
+    height: '20%',
   },
 
-  txt_btn:{
+  txt_editar:{
     fontSize: 18,
     color: 'white',
     fontWeight: 600

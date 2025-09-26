@@ -67,6 +67,10 @@ export default function EditarPerfil({route, navigation}) {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
         <View style={estilos.cabecalho}>
+          <TouchableOpacity onPress={()=>navigation.goBack()}>
+            <MaterialCommunityIcons name='keyboard-backspace' size={40} color='black' />
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <MaterialCommunityIcons name='menu' size={40} color='black' />
           </TouchableOpacity>
@@ -118,7 +122,7 @@ const estilos = StyleSheet.create({
     flex: 0.1,
     flexDirection: 'row',
     alignItems: 'center', 
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     paddingHorizontal: 25,
     position: 'absolute',
     zIndex: 1
