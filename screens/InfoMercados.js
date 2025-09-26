@@ -1,17 +1,54 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView} from 'react-native';
-import {UserContext} from '../ContextPerfil';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {mercados} from '../data/dadosMercados';
-import {useContext} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView, Alert } from 'react-native';
+import { mercados } from '../data/dadosMercados';
+import { db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { useState, useEffect,useContext } from 'react';
+import StarRatingDisplay from 'react-native-star-rating-widget';
+import { getAvaliacao } from '../data/avaliacaoMercado';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function InfoMercados({ navigation }) {
+  const [dados, setDados] = useState('');
+  const [avaliacao, setAvaliacao] = useState(null);
+
+  const { idUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if(!idUser){
+      return;
+    }
+    
+    try{
+      const getInfos = onSnapshot(doc(db, 'mercados', idUser), (doc)=>{
+        setDados(doc.data());
+      });
+        
+      return ()=>getInfos();
+    }
+    catch(err){
+      console.error(err);
+    }
+  }, []);
 
   const link = () => {
-    const url = dados.site;
+    const url = dados.website;
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
 
-  const {dados} = useContext(UserContext);
+  const notas = getAvaliacao(idUser);
+  useEffect(()=>{
+    if(notas !== null){
+      setAvaliacao(notas);
+    }
+  }, [notas]);
+
+  const notaAvaliada = () => {
+    if(avaliacao === null){
+      Alert.alert('Nenhuma avaliação recebida ainda!');
+    } else{
+      Alert.alert('Avaliação', `Sua avaliação é ${avaliacao}`);
+    }
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'center' }}>
@@ -24,41 +61,43 @@ export default function InfoMercados({ navigation }) {
 
         <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
           <View style={estilos.titulo}>
-            <Text style={estilos.txt_tit}>{mercados[0].titulo}</Text>
+            <Text style={estilos.txt_tit}>{dados.nome}</Text>
           </View>
 
           <View style={estilos.area_img}>
             <View style={estilos.cont_img}>
-              <Image source={mercados[0].logo} style={estilos.img} />
+              <Image source={dados.fotoPerfil ? {uri: dados.fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.img} resizeMode={!dados.fotoPerfil && 'contain'} />
             </View>
           </View>
 
           <View style={estilos.area_infos}>
             <View style={estilos.cont_avaliacao}>
-              <MaterialCommunityIcons name={mercados[0].e1} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e2} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e3} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e4} size={45} color='#31420a' />
-              <MaterialCommunityIcons name={mercados[0].e5} size={45} color='#31420a' />
+              <StarRatingDisplay 
+                rating={avaliacao || 0}
+                starSize={45}
+                color='#31420a'
+                emptyColor='#31420a'
+                onChange={notaAvaliada}
+              />
             </View>
 
             <View style={estilos.infos}>
               <View style={estilos.conts_infos}>
                 <Image source={require('../assets/endereco.png')} style={estilos.imgs} />
-                <Text style={estilos.texto_infos}>{dados.enderecoMercado}</Text>
+                <Text style={estilos.texto_infos}>{dados.endereco}</Text>
               </View>
 
               <View style={estilos.conts_infos}>
                 <Image source={require('../assets/link.png')} style={estilos.imgs} />
 
                 <TouchableOpacity style={estilos.btn_link} onPress={link}>
-                  <Text style={estilos.links}>{dados.site}</Text>
+                  <Text style={estilos.links}>{dados.website}</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={estilos.conts_infos}>
                 <Image source={require('../assets/telefone.png')} style={estilos.imgs} />
-                <Text style={estilos.texto_infos}>{dados.numeroMercado}</Text>
+                <Text style={estilos.texto_infos}>{dados.numero}</Text>
               </View>
             </View>
           </View>
@@ -66,7 +105,7 @@ export default function InfoMercados({ navigation }) {
           <View style={estilos.linha} />
 
           <View style={estilos.infos_mercado}>
-            <Text style={estilos.txt_infomerc}>{dados.descricaoMercado}</Text>
+            <Text style={estilos.txt_infomerc}>{dados.descricao}</Text>
             <View style={estilos.btn_cupons}>
               <TouchableOpacity style={estilos.btn} onPress={() => navigation.navigate('Cupons')}>
                 <Text style={estilos.txt_cps}>Cupons disponíveis no mercado</Text>
@@ -104,7 +143,7 @@ const estilos = StyleSheet.create({
 
   area_img: {
     width: '100%',
-    height: '25%',
+    height: '30%',
     alignItems: 'center',
   },
 
@@ -116,7 +155,8 @@ const estilos = StyleSheet.create({
     borderBottomWidth: 2,
     backgroundColor: '#f8f8f8',
     marginTop: 5,
-    borderColor: 'gray'
+    borderColor: 'gray',
+    padding: 5,
   },
 
   img: {

@@ -1,8 +1,24 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ImageBackground, Image, FlatList} from 'react-native';
-import {mercados} from '../data/dadosMercados';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ImageBackground, Image, FlatList } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect } from 'react';
+import { getDocs, collection, doc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 export default function Locais({navigation}) {
+  const [mercados, setMercados] = useState('');
+
+  useEffect(() => {
+    const getDados = async () => {
+      try{
+        const getInfos = await getDocs(collection(db, 'mercados'));
+        setMercados(getInfos.docs);
+      }
+      catch(err){
+        console.error(err);
+      } 
+    }
+    getDados();
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -27,27 +43,34 @@ export default function Locais({navigation}) {
           <FlatList 
             style={estilos.flatlist}
             data={mercados}
+            showsVerticalScrollIndicator={false}
             renderItem={({item})=>(
-              <View style={estilos.lista}> 
-                <ImageBackground source={item.imagem} style={{height: '100%', width: '100%', justifyContent: 'center',}}>
+              <TouchableOpacity style={estilos.lista} onPress={()=>navigation.navigate('Descricao Locais', { mercado: item })}> 
+                <ImageBackground source={item.data().fundoPerfil ? {uri: item.data().fundoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                   <View style={estilos.area_textos}>
-                    <Text style={estilos.txt_tit}>{item.titulo}</Text>
-                    <Text style={estilos.txt_desc}>{item.descricao}</Text>
+                    <Text style={estilos.txt_tit}>{item.data().nome}</Text>
+                    <Text style={estilos.txt_desc}>{item.data().descricao}</Text>
                   </View>
 
                   <View style={{width: '100%', height: '100%', justifyContent: 'flex-end'}}>
-                    <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Descricao Locais', {mercados: item})}>
-                      <Text style={estilos.txt_btn}>Conheça já!</Text>
-                    </TouchableOpacity>
+                    <View style={estilos.area_conhecer}>
+                      <Text style={estilos.txt_conhecer}>Conheça já!</Text>
+                    </View>
                   </View>
 
                   <View style={estilos.opacidade} />
                 </ImageBackground>
-              </View>
+              </TouchableOpacity>
             )}
             keyExtractor={item => item.id}
             contentContainerStyle={{gap: 30}}
           />
+
+          <View style={estilos.areaBotao}>
+            <TouchableOpacity style={estilos.btnLocais} onPress={()=>navigation.navigate('LocaisProximos')}>
+              <Text style={estilos.txtLocais}>Locais Próximos</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -106,7 +129,7 @@ const estilos = StyleSheet.create({
     gap: 2
   },  
 
-  btn:{
+  area_conhecer:{
     width: '100%',
     height: '20%',
     backgroundColor: '#253304',
@@ -115,7 +138,7 @@ const estilos = StyleSheet.create({
     zIndex: 1
   },
 
-  txt_btn:{
+  txt_conhecer:{
     fontSize: 18,
     color: 'white',
     fontWeight: 600
@@ -132,4 +155,24 @@ const estilos = StyleSheet.create({
     color: 'white',
     fontWeight: 400
   },
+
+  areaBotao: {
+    width: '100%',
+    alignItems: 'center',
+  },
+
+  btnLocais: {
+    width: '50%',
+    height: 39,
+    backgroundColor: '#31420a',
+    borderRadius: 15, 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  txtLocais: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18
+  }
 });

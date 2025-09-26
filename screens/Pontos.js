@@ -1,24 +1,47 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList} from 'react-native';
-import {mercados} from '../data/dadosMercados';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
-import db from "../config/firebase";
-import { onSnapshot, doc } from "firebase/firestore";
-//import {UserContext} from '../ContextPerfil';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect, useContext } from 'react';
+import { onSnapshot, doc, collection } from "firebase/firestore";
+import { db } from '../config/firebase';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function Pontos({navigation}) {
-
-  //const {dados} = useContext(UserContext);
-  
-  const [pontos, setPontos] = useState(0); 
+  const [pontos, setPontos] = useState(0);
+  const [lixo, setLixo] = useState(0); 
+  const [mercados, setMercados] = useState([]);
+  const { idUser } = useContext(UserContext);
 
   useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
-      setPontos(doc.data().pontos);
+    const getPontos = onSnapshot(doc(db, 'usuario', idUser), (doc) => {
+      try{
+        setPontos(doc.data().pontos);
+        setLixo(doc.data().kg_reciclado);
+      }
+      catch(err){
+        console.error(err);
+      }
     });
-    console.log(pontos);
+
     return () => getPontos();
-  })
+  }, []);
+
+  useEffect(()=>{
+    const mercados = onSnapshot(collection(db, 'mercados'), (documentos)=>{
+      try{
+        const lista = documentos.docs.map((doc)=>({
+          id: doc.id,
+          fotoPerfil: doc.data().fotoPerfil,
+        }));
+
+        setMercados(lista);
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
+
+    return ()=>mercados();
+  },[]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -45,7 +68,7 @@ export default function Pontos({navigation}) {
           </View>
 
           <View style={estilos.card_lixo}>
-            <Text style={estilos.txt_lixo}>27,5 KG DE LIXO RECICLADOS</Text>
+            <Text style={estilos.txt_lixo}>{lixo} KG DE LIXO RECICLADOS</Text>
           </View>
         </View>
 
@@ -60,10 +83,9 @@ export default function Pontos({navigation}) {
             <FlatList
               style={{marginVertical: 10}}
               data={mercados}
-              //{item} = desestruturar
               renderItem={({item})=>(
-                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Trocar Pontos', {mercadosAnt: item})}>
-                  <Image style={estilos.imgs} source={item.logo} />
+                <TouchableOpacity style={estilos.btn} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: item.id, fotoPerfil: item.fotoPerfil })}>
+                  <Image style={estilos.imgs} source={item.fotoPerfil ? {uri: item.fotoPerfil} : require('../assets/perfil_perfil.png')} resizeMode={!item.fotoPerfil && 'contain'} />
                 </TouchableOpacity>
               )}
               keyExtractor={item => item.id}

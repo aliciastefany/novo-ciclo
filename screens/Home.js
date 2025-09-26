@@ -1,25 +1,75 @@
-import {SafeAreaView, Image, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text} from 'react-native';
-import {useEffect, useState} from 'react';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-//import {UserContext} from '../ContextPerfil';
+import { SafeAreaView, StyleSheet, FlatList, TouchableOpacity, ImageBackground, View, Text } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CardMaterial from '../components/CardMaterial';
-import {materiais} from '../data/dadosMateriais';
-import db from "../config/firebase";
-import {onSnapshot, doc} from "firebase/firestore";
+import { materiais } from '../data/dadosMateriais';
 import Legenda from '../components/Legenda';
+import { PieChart } from 'react-native-chart-kit';
+import { useState, useEffect, useContext } from 'react';
+import { db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function Home({navigation}){
+  const [dados, setDados] = useState(null);
+  const { idUser } = useContext(UserContext);
+  const [materiaisZero, setMateriaisZero] = useState(false);
 
-  //const {dados} = useContext(UserContext);
+  useEffect(()=>{
+    const snap = onSnapshot(doc(db, 'usuario', idUser), (doc) => {
+      try{
+        setDados(doc.data());
+        
+        const m = doc.data().materiais_reciclados;
+        if(m.eletronicos + m.madeira + m.metal + m.papel + m.papelao + m.plastico + m.vidro === 0){
+          setMateriaisZero(true);
+        } else{
+          setMateriaisZero(false);
+        }
+      } catch(erro){
+        console.error(erro);
+      }
+    }); 
 
-  const [pontos, setPontos] = useState(0); 
+    return ()=>snap();
+  }, []);
 
-  useEffect(() => {
-    const getPontos = onSnapshot(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), (doc) => {
-      setPontos(doc.data().pontos);
-    });
-    return () => getPontos();
-  })
+  const grafico = [
+    {
+      name: 'Plástico',
+      population: dados ? dados.materiais_reciclados.plastico : 0,
+      color: materiais[0].corLegenda,
+    },
+    {
+      name: 'Papel',
+      population: dados ? dados.materiais_reciclados.papel : 0,
+      color: materiais[1].corLegenda,
+    },
+    {
+      name: 'Papelão',
+      population: dados ? dados.materiais_reciclados.papelao : 0,
+      color: materiais[2].corLegenda,
+    },
+    {
+      name: 'Metal',
+      population: dados ? dados.materiais_reciclados.metal : 0,
+      color: materiais[3].corLegenda,
+    },
+    {
+      name: 'Vidro',
+      population: dados ? dados.materiais_reciclados.vidro : 0,
+      color: materiais[4].corLegenda,
+    },
+    {
+      name: 'Madeira',
+      population: dados ? dados.materiais_reciclados.madeira : 0,
+      color: materiais[5].corLegenda,
+    },
+    {
+      name: 'Eletrônicos',
+      population: dados ? dados.materiais_reciclados.eletronicos : 0,
+      color: materiais[6].corLegenda,
+    },
+  ]
 
   return(
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -59,10 +109,41 @@ export default function Home({navigation}){
         <View style={estilos.pontos}>
           <View style={{flex: 1}}>
             <View style={{alignItems: 'center'}}>
-              <Image source={require('../assets/circ_prog.png')} style={{width: 100, height: 100}} />
+              {
+                materiaisZero ? 
+                  <PieChart 
+                    data={[{name: 'Inicial', population: 1, color: 'black'}]}
+                    width={100}
+                    height={100}
+                    chartConfig={{
+                      color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                    }}
+                    accessor="population"
+                    backgroundColor='transparent'
+                    absolute={true}
+                    hasLegend={false}
+                    center={[25, 0]}
+                  /> :
+
+                  <PieChart 
+                    data={grafico}
+                    width={100}
+                    height={100}
+                    chartConfig={{
+                      color: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                    }}
+                    accessor="population"
+                    backgroundColor='transparent'
+                    absolute={true}
+                    hasLegend={false}
+                    center={[25, 0]}
+                  />
+              }
 
               <View style={estilos.texto_img}>
-                <Text style={{fontWeight: 500, fontSize: 15}}>27,50 kg</Text>
+                <View style={estilos.area_texto}>
+                  <Text style={{fontWeight: 500, fontSize: 15}}>{dados && dados.kg_reciclado} kg</Text>
+                </View>
               </View>
             </View>
 
@@ -70,10 +151,11 @@ export default function Home({navigation}){
               <FlatList
                 data={materiais}
                 keyExtractor={(item)=>item.id}
-                renderItem={({item})=>(
-                  <Legenda corLegenda={item.corLegenda} titulo={item.titulo} />
+                renderItem={({item, index})=>(
+                  <Legenda corLegenda={item.corLegenda} titulo={`${item.titulo} - ${grafico[index].population}kg`} />
                 )}
-                contentContainerStyle={{gap: 7}}
+                contentContainerStyle={{gap: 7, paddingRight: 30}}
+                showsVerticalScrollIndicator={false}
               />
             </View>
           </View>
@@ -85,10 +167,10 @@ export default function Home({navigation}){
               </View>
 
               <View style={{marginTop: 6}}>
-                <Text style={estilos.text_prog}>Você já reciclou 27,50 kg de lixo.</Text>
+                <Text style={estilos.text_prog}>Você já reciclou {dados && dados.kg_reciclado} kg de lixo.</Text>
               </View>
             </View>
-
+                  
             <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
               <View style={estilos.card_pontos}>
                 <View style={estilos.tit_card}>
@@ -97,7 +179,7 @@ export default function Home({navigation}){
 
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
-                    <Text style={{fontSize: 18, fontWeight: 700}}>{pontos}</Text>
+                    <Text style={{fontSize: 18, fontWeight: 700}}>{dados && dados.pontos}</Text>
                     <Text style={{fontWeight: 500}}>pontos</Text>
                   </View>
 
@@ -253,6 +335,18 @@ const estilos = StyleSheet.create({
     width: '100%',
     height: 100,
     alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+  },
+
+  area_texto: {
+    fontWeight: 500, 
+    fontSize: 15, 
+    backgroundColor: 'white',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    borderRadius: 100,
     justifyContent: 'center'
   },
 

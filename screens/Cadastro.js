@@ -1,36 +1,15 @@
-import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
-import {useState, useEffect, useContext} from 'react';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import db from '../config/firebase';
-import { collection, addDoc } from "firebase/firestore";
-//import {UserContext} from '../ContextPerfil';
-
-/* 
-if (!email || !cpf || !username || !confsenha || senha === "" || confsenha != senha){
-  Alert.alert(
-    'Não foi possível realizar o cadastro!',
-    'Preencha todos os campos corretamente!',
-    [
-      {
-        text: 'Ok'
-      }
-    ]
-  );
-} else { 
-    salvar();
-  }
-}
-}
-*/
-
+import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
+import { useState, useEffect, useContext } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { cadastrarUsuarioRepository } from '../repositories/cadastroUsuarioRepository.js';
+import { UserContext } from '../ContextPerfil.js';
 
 export default function Cadastro({navigation}){
-
   const [senhaOculta, setSenhaOculta] = useState(true);
   const [senhaOculta2, setSenhaOculta2] = useState(true);
   const [tecladoVisivel, setTecladoVisivel] = useState(false);  
 
-   useEffect(() => {
+  useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setTecladoVisivel(true);
     });
@@ -44,42 +23,62 @@ export default function Cadastro({navigation}){
     };
   }, []);
 
-  //const {dados, setDados} = useContext(UserContext);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [confsenha, setConfsenha] = useState('');
 
-  /*const salvar = () => {
-    setDados({
-      username,
-      email,
-      cpf,
-      senha,
-    });
-    navigation.navigate('Login');
-  }; */
+  const { setIdUser } = useContext(UserContext);
 
   const realizarCadastro = async () => {
-    try{
-      await addDoc(collection(db, 'usuarios'), {
-        email: email,
-        username: username,
-        cpf: cpf,
-        senha: senha
-      })
-    } 
-    catch(err){
-      Alert.alert(
-        'Não foi possível realizar o cadastro!',
-        'Preencha todos os dados corretamente',
-        [
-          {
-            text: 'Ok'
-          }
-        ]
-      );
+    const materiais = {
+      eletronicos: 0,
+      madeira: 0,
+      metal: 0,
+      papel: 0,
+      papelao: 0,
+      plastico: 0,
+      vidro: 0,
+    };
+    
+    const dados = {
+      username: username,
+      cpf: cpf,
+      email: email.replace(/\s/g, ''),
+      materiais_reciclados: materiais,
+      kg_reciclado: 0,
+      pontos: 0,
+    };
+
+    if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== '' && confsenha === senha){
+      const resposta = await cadastrarUsuarioRepository(dados, senha);
+
+      if(resposta.sucess){
+        Alert.alert('Cadastro realizado com sucesso!');
+        setIdUser(resposta.id);
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {name: 'Rotas'}
+          ]
+        });
+      } else{
+        if(resposta.erro === 'auth/weak-password'){
+          Alert.alert('A senha deve ter pelo menos 6 caracteres!');
+        }
+
+        if(resposta.erro === 'auth/email-already-in-use'){
+          Alert.alert('Este email já está em uso!');
+        }
+
+        if(resposta.erro === 'auth/invalid-email' || resposta.erro === 'auth/missing-email'){
+          Alert.alert('Email inválido!');
+        }
+      }
+    } else{
+      Alert.alert('Preencha todos os campos corretamente!');
     }
   }
 
@@ -99,21 +98,21 @@ export default function Cadastro({navigation}){
             <ImageBackground source={require('../assets/fundo-login.jpg')} style={estilos.img_textura} imageStyle={{borderRadius: 20}}>
               <View style={estilos.campos_card}>
                 <View style={tecladoVisivel ? estilos.area_inputsPeq : estilos.area_inputs}>
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Usuário' onChangeText={setUsername} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={username} placeholder='Usuário' onChangeText={(txt)=>setUsername(txt)} />
 
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='CPF' onChangeText={setCpf} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={cpf} placeholder='CPF' onChangeText={(txt)=>setCpf(txt)} />
     
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' onChangeText={setEmail} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={email} placeholder='Email' onChangeText={(txt)=>setEmail(txt)} />
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Senha' onChangeText={setSenha} secureTextEntry={senhaOculta}/>
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={senha} placeholder='Senha' onChangeText={(txt)=>setSenha(txt)} secureTextEntry={senhaOculta}/>
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta(!senhaOculta))}>
                       <MaterialCommunityIcons name={senhaOculta ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>
                   </View>
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Confirmar Senha' secureTextEntry={senhaOculta2} onChangeText={setConfsenha} />
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={confsenha} placeholder='Confirmar Senha' secureTextEntry={senhaOculta2} onChangeText={(txt)=>setConfsenha(txt)} />
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta2(!senhaOculta2))}>
                       <MaterialCommunityIcons name={senhaOculta2 ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>

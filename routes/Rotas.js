@@ -1,10 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { useContext } from 'react';
-import { UserContext } from '../ContextPerfil';
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyleSheet, View, Image, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 
 import Home from '../screens/Home';
 import Locais from '../screens/Locais';
@@ -20,56 +16,13 @@ import Dados2 from '../screens/Dados2';
 import Dados3 from '../screens/Dados3';
 import Editar from '../screens/EditarPerfil';
 import Cupom from '../screens/Cupom';
+import LocaisProximos from '../screens/LocaisProximos';
 
 const Drawer = createDrawerNavigator();
 
 const Tab = createBottomTabNavigator();
 
-/* 
-   <Drawer.Screen name="Sair" options={{headerShown: false, drawerIcon:()=>(<MaterialCommunityIcons name='exit-to-app' size={50} color='white' />)}} 
-    listeners={{
-    drawerItemPress: (e) => {
-      e.preventDefault(); 
-      if (Platform.OS === 'android') {
-        Alert.alert(
-          'Sair da conta',
-          'Você quer sair da sua conta?',
-          [
-            { text: 'Não', style: 'cancel' },
-            { text: 'Sim', onPress: () => {setDados({
-                  username: 'Pedro_Henrique',
-                  email: 'etectaboaosp@etec.sp.gov.br',
-                  cpf: '015.516.690-47',
-                  senha: 'etec2024',
-                  numero: '11 98457-2561',
-                  usernameMercado: 'Kaçula Supermercados',
-                  emailMercado: 'kaculasuper@gmail.com',
-                  cnpj: '54.839.485/0002-11',
-                  senhaMercado: 'kacula2024',
-                  numeroMercado: '(11) 4701-6181',
-                  descricaoMercado: 'O Kaçula Supermercado é um dos parceiros do nosso aplicativo Novo Ciclo, servindo como ponto de coleta para materiais recicláveis como papel, papelão, metal e vidro.',
-                  site: 'https://www.kacula.com.br/',
-                  enderecoMercado: 'Rua José Milani, 244 - Jardim Irapua, Taboão da Serra - SP, 06766-420',
-                  pontos: 275.5,
-                }); 
-                navigation.reset({
-                  routes: [{ name: 'Inicial' }], 
-                }); 
-              }
-            },
-          ],
-          { cancelable: true }
-        );
-      }
-    },
-  }}/>
-*/
-
-
 function Lateral1() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -105,15 +58,13 @@ function Lateral1() {
       <Drawer.Screen name="Dados3" component={Dados3} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
-
+      
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
 
 function Lateral2() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -150,14 +101,12 @@ function Lateral2() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
 
 function Lateral3() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -194,14 +143,12 @@ function Lateral3() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
 
 function Lateral4() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -238,14 +185,12 @@ function Lateral4() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
 
 function Lateral5() {
-
-  const { setDados } = useContext(UserContext);
-
   return (
     <Drawer.Navigator
       screenOptions={() => ({
@@ -282,27 +227,23 @@ function Lateral5() {
 
       <Drawer.Screen name="Cupom" component={Cupom} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
 
+      <Drawer.Screen name="LocaisProximos" component={LocaisProximos} options={{ drawerItemStyle: { display: 'none' }, headerShown: false }} />
     </Drawer.Navigator>
   )
 }
 
 export default function Rotas() {
   return (
-    <Tab.Navigator initialRouteName='Home' screenOptions={() => ({
-      tabBarLabelStyle: {
-        color: 'black',
-        fontWeight: 500,
-        fontSize: 14,
-        position: 'relative',
-        marginBottom: 4,
-        marginTop: 0,
-      },
-
+    <Tab.Navigator initialRouteName='Home' screenOptions={{
       tabBarStyle: {
         backgroundColor: '#eaeaea',
-        height: 55
-      }
-    })}>
+        height: 87,
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+      },
+    }}>
 
       <Tab.Screen name="Home" component={Lateral1} options={{ headerShown: false, tabBarIcon: ({ focused }) => <View style={focused && estilos.click}><Image source={require('../assets/home.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false }} />
 

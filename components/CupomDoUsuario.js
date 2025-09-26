@@ -1,11 +1,23 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-export default function CupomDoUsuario({ precoTroca, nomeMercado }) {
+export default function CupomDoUsuario({ precoTroca, nomeMercado, descPorc, itens, troca }) {
   return (
     <View style={estilos.card_cupom}>
       <View style={{ alignItems: 'center', marginTop: -20 }}>
+        {
+          troca && 
+            <View style={estilos.trocado}>
+              <MaterialCommunityIcons name='gift-open-outline' color='#31420a' size={30} />
+            </View>
+        }
+
         <Text style={estilos.txt_troca}>Preço de troca: {precoTroca} pontos</Text>
         <Image source={require('../assets/img_cupom.png')} style={estilos.img} />
+
+        <View style={estilos.cobrir}>
+          <Text style={estilos.txt_cobrir}>{descPorc}% DE DESCONTO EM {itens}</Text>
+        </View>
       </View>
 
       <View style={estilos.nome_mercado}><Text style={estilos.texto_mercado}>{nomeMercado}</Text></View>
@@ -45,9 +57,34 @@ const estilos = StyleSheet.create({
     borderBottomRightRadius: 23,
     height: 32
   },
+
   texto_mercado: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 15
-  }
+  },
+
+  cobrir:{
+    position: 'absolute',
+    backgroundColor: '#A9C26F',
+    height: 52,
+    width: 120,
+    top: 70,
+    left: 89,
+    alignContent: 'center',
+    paddingLeft: 10,
+    justifyContent: 'center'
+  },
+
+  txt_cobrir:{
+    textAlign: 'center',
+    fontSize: 13,
+    color: 'white',
+    fontWeight: 700
+  },
+
+  trocado: {
+    position: 'absolute',
+    right: -24,
+  },
 })

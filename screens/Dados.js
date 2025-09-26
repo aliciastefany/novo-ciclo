@@ -116,12 +116,12 @@ const estilos = StyleSheet.create({
 
   btn_voltar:{
     backgroundColor: 'white',
-    position: 'absolute',
+    position: 'relative',
     width: 40,
     zIndex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    top: 10,
+    top: 40,
     left: 7,
     borderRadius: 25
   }

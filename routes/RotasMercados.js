@@ -1,5 +1,5 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {StyleSheet, View, Image} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StyleSheet, View, Image } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -13,22 +13,13 @@ import Editar from '../screens/EditarMercado';
 export default function Rotas2() {
   return (
     <Tab.Navigator initialRouteName='Home' screenOptions={()=>({
-      tabBarLabelStyle: {
-        color: 'black',
-        fontWeight: 500,
-        fontSize: 14,
-        position: 'relative',
-        marginBottom: 4,
-        marginTop: 0,
-      },
-
       tabBarStyle: {
         backgroundColor: '#eaeaea',
-        height: 55
+        height: 87,
       }
     })}>
 
-    <Tab.Screen name="Home" component={Home} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/home.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}} />
+      <Tab.Screen name="Home" component={Home} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/home.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}} />
       
       <Tab.Screen name="Qr Code" component={QrCode} options={{headerShown: false, tabBarIcon: ({focused}) => <View style={focused && estilos.click}><Image source={require('../assets/qrcode.png')} style={estilos.imgs} /></View>, tabBarShowLabel: false}}/>
 
@@ -39,7 +30,6 @@ export default function Rotas2() {
       <Tab.Screen name="Cupons" component={Cupons} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
 
       <Tab.Screen name="Editar Mercado" component={Editar} options={{headerShown: false, tabBarShowLabel: false, tabBarItemStyle: {display: 'none'}}}/>
-    
     </Tab.Navigator>
   );
 }

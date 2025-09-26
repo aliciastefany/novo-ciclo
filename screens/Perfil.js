@@ -1,43 +1,140 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {UserContext} from '../ContextPerfil';
-import {useState, useEffect, useContext} from 'react';
-import {conquistas} from '../data/dadosConquistas';
-import db from '../config/firebase'
-import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, ScrollView, TouchableWithoutFeedback, Alert } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect, useContext } from 'react';
+import { conquistas } from '../data/dadosConquistas';
+import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
-//import { dadosCuponsResgatados } from '../data/dadosCuponsResgatados';
+import { UserContext } from '../ContextPerfil.js';
+import { auth, db, storage } from '../config/firebase';
+import QRCode from 'react-native-qrcode-svg';
+import { signOut } from 'firebase/auth';
+import { ref } from 'firebase/storage';
 
 export default function Perfil({navigation}) {
-
-  const {dados} = useContext(UserContext);
-
-  const [infoUsuario, setInfoUsuario] = useState({});
+  const [infoUsuario, setInfoUsuario] = useState('');
+  const [refsCupons, setRefsCupons] = useState([]);
   const [cuponsUsuario, setCuponsUsuario] = useState([]);
+  const { idUser, setIdUser } = useContext(UserContext);
 
   useEffect(() => {
-    const getInfoUsuarios = async () => {
-      const getInfoUsuario = await getDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'))
-      setInfoUsuario(getInfoUsuario.data());
-    }
-    getInfoUsuarios();
-  }, [])
+    const getInfoUsuario = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
+      try{
+        setInfoUsuario(doc.data());
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
+        
+    return ()=>getInfoUsuario();
+  }, []);
+
 
   useEffect(() => {
-    const getCupons = async () => {
-      const getCuponsUsuario = await getDocs(collection(db, 'cupons'));
-      const cupons = [];
-      getCuponsUsuario.forEach((doc) => {
-        cupons.push({
-          id: doc.id,
-          precoTroca: doc.data().precoTroca,
-          nomeMercado: doc.data().nomeMercado
-        });
-      })
-      setCuponsUsuario(cupons);
+    const getResgatados = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
+      try{
+        if(doc.data().cuponsResgatados){
+          const lista = doc.data().cuponsResgatados.map((item, index)=>({
+            id: item.id,
+            index: index,
+            data_resgate: item.data_resgate,
+            troca: item.troca,
+            data_troca: item.data_troca ? item.data_troca : false,
+          }))
+          setRefsCupons(lista);
+        }
+      }
+      catch(err){
+        console.error(err);
+      }
+    });
+    return ()=>getResgatados();
+  }, []);
+
+  useEffect(() => {
+    const cupons = async () => {
+      try{
+        let array = [];
+        let excluido = false;
+
+        if(refsCupons !== undefined){
+          for(const item of refsCupons){
+              try{
+                const cupom = await getDoc(doc(db, 'cupons', item.id));
+                if(cupom.exists()){
+                  const mercado = await getDoc(cupom.data().mercado);
+                  const nome = mercado.data().nome;
+                  console.log(item.data_troca);
+                  const infos = {
+                    id: cupom.id,
+                    precoTroca: cupom.data().precoTroca,
+                    mercado: nome,
+                    descPorc: cupom.data().descPorc,
+                    itens: cupom.data().itens,
+                    data_resgate: item.data_resgate,
+                    index: item.index,
+                    troca: item.troca,
+                    data_troca: item.data_troca,
+                    id_mercado: mercado.id,
+                  }
+                  array.push(infos);
+                } else{
+                  excluido = true;
+                }
+              }
+              catch(err){
+                console.error(err);
+              }
+          };
+
+          setCuponsUsuario(array);
+
+          if(excluido){
+            try{
+              const atualizar = async () => {
+                await updateDoc(doc(db, 'usuario', idUser), {
+                  mensagemAlteracao: false,
+                })
+              };
+
+              const docUser = await getDoc(doc(db, 'usuario', idUser));
+              if(docUser.data().mensagemAlteracao){
+                Alert.alert(
+                  'Reembolso', 
+                  'Alguns cupons foram excluídos pela empresa. Você teve (ou terá) seus pontos de volta.',
+                  [{text: 'Ok', onPress: () => atualizar()}]
+                );
+              }
+            } catch(err){
+              console.error(err);
+            }
+          }
+        }
+      }
+      catch(err){
+        console.error(err);
+      }
+    } 
+    cupons();
+  }, [refsCupons]);
+
+  const sair = async () => {
+    try{
+      await signOut(auth);
+      Alert.alert('Você saiu da sua conta!');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Inicial'}]
+      });
+      setIdUser(null);
+    } catch(err){
+      Alert.alert(`Ocorreu um erro: ${err}`);
+      console.error(err);
     }
-    getCupons();
-  }, [])
+  }
+
+  const json = JSON.stringify({idCliente: idUser});
+
 
 
   return (
@@ -48,15 +145,14 @@ export default function Perfil({navigation}) {
         </TouchableOpacity>
       </View>
         
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1, width: '100%'}} showsVerticalScrollIndicator={false}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
           <View style={estilos.img_fundo}>
             <Image source={require('../assets/fundo_perfil.jpg')} style={estilos.img} />
         </View>
-
           
         <View style={estilos.area_perfil}>
-          <Image source={dados.img ? {uri: dados.img} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
+          <Image source={infoUsuario.fotoPerfil ? {uri: infoUsuario.fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
         </View>
 
           <View style={estilos.descricao}>
@@ -76,10 +172,12 @@ export default function Perfil({navigation}) {
             </View>
           </View>
 
-          <TouchableOpacity style={estilos.btn_editar} onPress={() => navigation.navigate('Editar Perfil', {
-            infoUsuario
-          })}>
+          <TouchableOpacity style={estilos.btn_editar} onPress={() => navigation.navigate('Editar Perfil', { infoUsuario })}>
             <MaterialCommunityIcons name='pencil' size={35} color='white' />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={estilos.btn_sair} onPress={sair}>
+            <MaterialCommunityIcons name='logout' size={23} color='white' />
           </TouchableOpacity>
 
           <View style={estilos.conquistas}>
@@ -90,9 +188,10 @@ export default function Perfil({navigation}) {
             <View style={{alignItems: 'center', width: '100%'}}>
               <FlatList 
                 style={{width: '100%', marginVertical: 10}}
-                contentContainerStyle={{gap: 20}}
+                contentContainerStyle={{gap: 20, alignItems: 'center'}}
                 data={conquistas}
                 keyExtractor={item => item.id}
+                scrollEnabled={false}
                 renderItem={({item}) => (
                   <View style={estilos.cont_cqst}>
                     <Image source={item.imagem} style={estilos.img_conqs} />
@@ -103,15 +202,17 @@ export default function Perfil({navigation}) {
             </View>
           </View> 
         </View>
+
         <View estilos={estilos.qrCode}>
           <View style={{marginLeft: 25}}>
             <Text style={estilos.txt_cqst}>Seu QR Code</Text>
           </View>
 
           <View style={{width: '100%', alignItems: 'center', marginTop: 15}}>
-            <Image source={require('../assets/qrcode_pg.png')} style={estilos.imgQrCode} />
+            <QRCode value={json} size={200} />
           </View>
         </View>
+
         <View style={estilos.cupons}>
           <View style={{marginLeft: 25}}>
             <Text style={estilos.txt_cqst}>Seus cupons resgatados</Text>
@@ -123,13 +224,14 @@ export default function Perfil({navigation}) {
               style={{width: '100%', marginVertical: 10}}
               contentContainerStyle={{gap: 20, alignItems: 'center'}}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => navigation.navigate('Cupom', {
-                  idCupom: item.id 
-                })}>
-                  <CupomDoUsuario precoTroca={item.precoTroca} nomeMercado={item.nomeMercado}/>
-                </TouchableOpacity>
+                <TouchableWithoutFeedback onPress={() => navigation.navigate('Cupom', { infosCupom: item })}>
+                  <View>
+                    <CupomDoUsuario precoTroca={item.precoTroca} troca={item.troca} itens={item.itens} descPorc={item.descPorc} nomeMercado={item.mercado}/>
+                  </View>
+                </TouchableWithoutFeedback>
               )}
               keyExtractor={(item) => item.id}
+              scrollEnabled={false}
             />
           </View>
         </View> 
@@ -203,6 +305,18 @@ const estilos = StyleSheet.create({
     height: 60,
     right: 27,
     top: '33%',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  btn_sair:{
+    backgroundColor: '#31420a',
+    position: 'absolute',
+    width: 45,
+    height: 45,
+    right: 34,
+    top: '43%',
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center'

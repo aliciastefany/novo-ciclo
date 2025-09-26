@@ -10,7 +10,7 @@ export const materiais = [
     texto3: 'Redução de lixo nos aterros sanitários, diferentes utensílios, menor extração de recursos e emissão de gases tóxicos...',
     kg: 7,
     cor: '#6b803b',
-    corLegenda: '#6545ff',
+    corLegenda: '#31420a',
   },
 
    {
@@ -24,7 +24,7 @@ export const materiais = [
     texto3: 'A reciclagem de papel contribui diretamente para a preservação dos recursos naturais (matéria-prima, energia e água), redução da poluição e da geração de resíduos urbanos sólidos.',
     kg: 8,
     cor: '#31420a',
-    corLegenda: '#6b7f3b'
+    corLegenda: '#89c20f'
   },
 
   {
@@ -38,7 +38,7 @@ export const materiais = [
     texto3: 'É um dos produtos mais utilizados na fabricação de embalagens, estando bastante presente no dia a dia da população. Assim, há vantagens ambientais e para as empresas que o utilizam em seus processos produtivos.',
     kg: 8.5,
     cor: '#6b803b',
-    corLegenda: '#000000'
+    corLegenda: '#2b8016'
   },
 
   {
@@ -52,7 +52,7 @@ export const materiais = [
     texto3: 'Ajuda a conservar recursos preciosos, como ferro, alumínio, cobre e outros, reduzindo a necessidade de extrair novos minérios. AJuda a reduzir emissões de CO2, pois a produção de metais a partir de minérios virgens emite intensivamente.',
     kg: 10,
     cor: '#31420a',
-    corLegenda: '#0000ff'
+    corLegenda: '#8ca331'
   },
 
   {
@@ -80,7 +80,7 @@ export const materiais = [
     texto3: 'Evitar o desmatamento e minimizar os danos causados à natureza: a extração e o descarte indevido da madeira geram impactos negativos no meio ambiente.',
     kg: 17,
     cor: '#31420a',
-    corLegenda: '#ff00ff'
+    corLegenda: '#649e2e'
   },
 
   {
@@ -94,6 +94,6 @@ export const materiais = [
     texto3: 'Reduz a necessidade de produção de novos dispositivos e diminui as emissões de poluentes provenientes da extração e do processamento de matérias-primas. Além disso, evita-se a liberação de gases tóxicos que ocorreriam pelo descarte inadequado.',
     kg: 19,
     cor: '#6b803b',
-    corLegenda: '#ff0000'
+    corLegenda: '#000'
   },
 ];

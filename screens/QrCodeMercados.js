@@ -1,49 +1,29 @@
-import {StyleSheet, SafeAreaView, TouchableOpacity, Text, View, FlatList, TextInput, Alert, Platform, Modal, Image} from 'react-native';
-import {CameraView, useCameraPermissions} from 'expo-camera';
-import {useState, useRef, useContext} from 'react';
-import {UserContext} from '../ContextPerfil';
+import { StyleSheet, SafeAreaView, TouchableOpacity, Text, View, FlatList, TextInput, Alert, Platform, Modal, Image } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useState, useRef } from 'react';
+import { db } from '../config/firebase';
+import { doc, increment, updateDoc } from 'firebase/firestore';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function QrCodeMercados(){
   const itens=[
-    {id: 1, nome: 'Plástico', pontos: 7},
-    {id: 2, nome: 'Papel', pontos: 8},
-    {id: 3, nome: 'Papelão', pontos: 8.5},
-    {id: 4, nome: 'Metal', pontos: 10},
-    {id: 5, nome: 'Vidro', pontos: 15},
-    {id: 6, nome: 'Madeira', pontos: 17},
-    {id: 7, nome: 'Eletrônicos', pontos: 19},
+    {id: 1, nome: 'Plástico', pontos: 7, chave: 'plastico'},
+    {id: 2, nome: 'Papel', pontos: 8, chave: 'papel'},
+    {id: 3, nome: 'Papelão', pontos: 8.5, chave: 'papelao'},
+    {id: 4, nome: 'Metal', pontos: 10, chave: 'metal'},
+    {id: 5, nome: 'Vidro', pontos: 15, chave: 'vidro'},
+    {id: 6, nome: 'Madeira', pontos: 17, chave: 'madeira'},
+    {id: 7, nome: 'Eletrônicos', pontos: 19, chave: 'eletronicos'},
   ];
 
-  const alerta = () => {
-    if (Platform.OS === 'android'){
-      Alert.alert('Pontos enviados!', 'O usuário já pode visualizar seus pontos!',
-        [
-          {text: 'Ok'}
-        ],
-        
-        {cancelable: true}
-      )
+  const [clicado, setClicado] = useState('');
+  const selecionado = (id) => {
+    if(clicado === id){
+      setClicado('');
+    } else{
+      setClicado(id);
     }
-    setEnviarPontos(false);
   }
-
-  const [clicado, setClicado] = useState(Array(itens.length).fill(false));
-  const selecionado = (index) => {
-    setClicado((prev) => {
-      const newClicado = Array(itens.length).fill(false);  // Desmarca todos os checkboxes
-      newClicado[index] = true;  // Marca o checkbox selecionado
-      return newClicado;
-    });
-  };
-
-  const pontos = () => {
-    return itens.reduce((total, item, index) => {
-      if (clicado[index]) {
-        return total + item.pontos * valor;
-      }
-      return total;
-    }, 0);
-  };
 
   const [valor, setValor] = useState(0);
   const mais = () => {
@@ -54,14 +34,50 @@ export default function QrCodeMercados(){
     setValor(prev => prev > 0 ? prev - 1 : 0);
   };
 
-  const [display, setDisplay] = useState(false);
+  const pontos = () => {
+    if(clicado !== ''){
+      const valorFinal = valor * itens[clicado - 1].pontos;
+      return valorFinal;
+    } else{
+      return 0;
+    }
+  };
 
   const enviar = () => {
     if(pontos() !== 0){
-      alerta();
+      atualizarDados();
     } else {
-      Alert.alert("Sem valor", "Não há nenhum valor selecionado!")
+      Alert.alert("Sem valor", "Não há nenhum valor selecionado!");
     }
+  }
+
+  const atualizarDados = async () => {
+    try {
+      await updateDoc(doc(db, 'usuario', clienteId), {
+        pontos: increment(pontos()),
+        kg_reciclado: increment(valor),
+        [`materiais_reciclados.${itens[clicado - 1].chave}`]: increment(valor),
+      });
+
+      setClicado('');
+      setValor(0);
+      alerta();
+    } 
+    catch(err) {
+      console.error(err);
+    }
+  };
+
+  const alerta = () => {
+    if (Platform.OS === 'android'){
+      Alert.alert('Pontos enviados!', 'O usuário já pode visualizar seus pontos!',
+        [
+          {text: 'Ok'},
+        ],
+        {cancelable: true}
+      )
+    }
+    setEnviarPontos(false);
   }
 
   //Sessão QR Code
@@ -75,7 +91,7 @@ export default function QrCodeMercados(){
       const {granted} = await requestPermission();
 
       if(!granted){
-        return Alert.alert("Câmera", "Você precisa habilitar a câmera!")
+        return Alert.alert("Câmera", "Você precisa habilitar a câmera!");
       }
       qrCodeLock.current = false;
       setModalVisible(true);
@@ -84,13 +100,21 @@ export default function QrCodeMercados(){
     }
   }
 
-  function handleQRCodeRead(){
+  const [username, setUsername] = useState('');
+  const [clienteId, setClienteId] = useState('');
+  const handleQRCodeRead = ({data}) => {
+    const json = JSON.parse(data);
+    setClienteId(json.idCliente);
+    setUsername(json.username);
     setModalVisible(false);
     setEnviarPontos(true);
   }
-  //
 
-  const {dados} = useContext(UserContext);
+  const fechar = () => {
+    setEnviarPontos(false);
+    setValor(0);
+    setClicado('');
+  }
 
   return(
     <SafeAreaView style={{flex: 1, zIndex: 0, backgroundColor: 'white'}}>
@@ -120,57 +144,65 @@ export default function QrCodeMercados(){
         </Modal>
       </View>
 
-      <View style={enviarPontos ? estilos.card_pontos : {display: 'none'}}>
-        <View style={{borderWidth: 1}}>
-          <Text style={estilos.tit}>QR Code identificado!</Text>
-        </View>
+      {
+        enviarPontos && (
+          <View style={estilos.card_pontos}>
+            <TouchableOpacity style={estilos.btnFechar} onPress={fechar}>
+              <MaterialCommunityIcons name='close' size={25} />
+            </TouchableOpacity>
+            
+            <View>
+              <Text style={estilos.tit}>QR Code identificado!</Text>
+            </View>
 
-        <View style={{marginTop: 15, gap: 10}}>
-          <Text style={{fontSize: 17}}>Usuário: {dados.username}</Text>
-          <Text style={estilos.txt2}>O que o usuário descartou?</Text>
-        </View>
+            <View style={{marginTop: 30, gap: 10}}>
+              <Text style={{fontSize: 17}}>Usuário: {username}</Text>
+              <Text style={estilos.txt2}>O que o usuário descartou?</Text>
+            </View>
 
-        <View style={{marginTop: 10, paddingHorizontal: 15}}>
-          <FlatList 
-            contentContainerStyle={{gap: 7}}
-            data={itens}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({item, index})=>(
-              <View style={{flexDirection: 'row', gap: 6, alignItems: 'center'}}>
-                <TouchableOpacity onPress={() => selecionado(index)} style={clicado[index] ? estilos.clicado : estilos.checkbox} />
-                <Text style={clicado[index] ? estilos.txt_clicado : {fontSize: 17}}>{item.nome}</Text>
+            <View style={{marginTop: 10, paddingHorizontal: 15}}>
+              <FlatList 
+                contentContainerStyle={{gap: 7}}
+                data={itens}
+                keyExtractor={(item) => item.id}
+                renderItem={({item, index})=>(
+                  <View style={{flexDirection: 'row', gap: 6, alignItems: 'center'}} key={index}>
+                    <TouchableOpacity onPress={() => selecionado(item.id)} style={clicado === item.id ? estilos.clicado : estilos.checkbox} />
+                    <Text style={clicado === item.id ? estilos.txt_clicado : {fontSize: 17}}>{item.nome}</Text>
+                  </View>
+                )}
+              />
+            </View>
+
+            <View style={{marginTop: 10, gap: 6}}>
+              <Text style={estilos.txt2}>Qual foi a quantidade (kg)?</Text>
+
+              <View style={{flexDirection: 'row', gap: 8, justifyContent: 'center'}}>
+                <TouchableOpacity style={estilos.btn_input} onPress={menos}>
+                  <Text style={clicado ? {fontSize: 17} : estilos.txt_clicado}>-</Text>
+                </TouchableOpacity>
+
+                <TextInput style={estilos.input} value={valor.toString()} editable={false} maxLength={2}/>
+
+                <TouchableOpacity style={estilos.btn_input} onPress={mais}>
+                  <Text style={{fontSize: 17}}>+</Text>
+                </TouchableOpacity>
               </View>
-            )}
-          />
-        </View>
+            </View>
 
-        <View style={{marginTop: 10, gap: 6}}>
-          <Text style={estilos.txt2}>Qual foi a quantidade (kg)?</Text>
+            <View style={{marginTop: 10}}>
+              <Text style={estilos.txt2}>Pontos ganhos:</Text>
+              <Text style={estilos.txt_pontos}>{pontos()}</Text>
+            </View>
 
-          <View style={{flexDirection: 'row', gap: 8, justifyContent: 'center'}}>
-            <TouchableOpacity style={estilos.btn_input} onPress={menos}>
-              <Text style={clicado ? {fontSize: 17} : estilos.txt_clicado}>-</Text>
-            </TouchableOpacity>
-
-            <TextInput style={estilos.input} value={valor.toString()} editable={false} maxLength={2}/>
-
-            <TouchableOpacity style={estilos.btn_input} onPress={mais}>
-              <Text style={{fontSize: 17}}>+</Text>
-            </TouchableOpacity>
+            <View style={{marginTop: 15, alignItems: 'center'}}>
+              <TouchableOpacity style={estilos.btn_enviar} onPress={enviar}>
+                <Text style={estilos.txt_btn_enviar}>Enviar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-
-        <View style={{marginTop: 10}}>
-          <Text style={estilos.txt2}>Pontos ganhos:</Text>
-          <Text style={estilos.txt_pontos}>{pontos()}</Text>
-        </View>
-
-        <View style={{marginTop: 15, alignItems: 'center'}}>
-          <TouchableOpacity style={estilos.btn_enviar} onPress={enviar}>
-            <Text style={estilos.txt_btn_enviar}>Enviar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        )
+      }
     </SafeAreaView>
   );
 }
@@ -236,6 +268,12 @@ const estilos = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     zIndex: 1,
+  },
+
+  btnFechar: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
   },
 
   tit:{

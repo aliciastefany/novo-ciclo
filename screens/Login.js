@@ -1,33 +1,17 @@
-import {SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
-import {useState, useEffect, useContext} from 'react';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import db from '../config/firebase'
-import {getDocs, collection, query, where} from 'firebase/firestore';
-//import {UserContext} from '../ContextPerfil';
-
-/* if((username != '' && senha != '' && email != '') && (senha === dados.senha && username === dados.username && email === dados.email)){
-      navigation.navigate('Rotas');
-    } else{
-        Alert.alert(
-      'Não foi possível realizar o login!',
-      'Dados inválidos!',
-      [
-        {
-          text: 'Ok'
-        }
-      ]
-    );
-    }
-    }} */
+import { SafeAreaView, Image, StyleSheet, TouchableOpacity, Text, View, TextInput, ImageBackground, Keyboard, Alert} from 'react-native';
+import { useState, useEffect, useContext } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { UserContext } from '../ContextPerfil.js';
+import { loginUsuarioRepository } from '../repositories/loginUsuarioRepository.js';
+import { emailRedefinirSenha } from '../repositories/RedefinirSenhaRepository.js';
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '../config/firebase.js';
 
 export default function Login({navigation}){
-
   const [senhaOculta, setSenhaOculta] = useState(true);
   const [tecladoVisivel, setTecladoVisivel] = useState(false);
 
-  //const {dados} = useContext(UserContext);
   const [senha, setSenha] = useState('');
-  const [username, setUsername] = useState(''); 
   const [email, setEmail] = useState(''); 
 
   useEffect(() => {
@@ -44,23 +28,70 @@ export default function Login({navigation}){
     };
   }, []);
 
-  const realizarLogin = async () => {
-    const docRef = collection(db, 'usuarios');
-    const queryLogin = query(docRef, where('username', '==', username), where('email', '==', email), where('senha', '==', senha));
-    const resultado = await getDocs(queryLogin);
+  const { setIdUser } = useContext(UserContext);
 
-    if (resultado.size > 0){
-      navigation.navigate('Rotas');
-    }else{
-      Alert.alert(
-        'Não foi possível realizar o login!',
-        'Dados incorretos',
-        [
-          {
-            text: 'Ok'
+  const realizarLogin = async () => {
+    if(senha !== '' && email !== ''){
+      const resposta = await loginUsuarioRepository(email.replace(/\s/g, ''), senha);
+    
+      if(resposta.sucess){
+        try{
+          const documento = await getDoc(doc(db, 'usuario', resposta.id));
+          if(documento.exists()){
+            setIdUser(resposta.id);
+            Alert.alert('Login realizado!');
+            navigation.reset({
+              index: 0,
+              routes: [{
+                name: 'Rotas'
+              }]
+            });
+          } else{
+            Alert.alert('Esta credencial não pertence a um cliente!');
+            return false;
           }
-        ]
-      );
+        } catch(err){
+          console.error(err);
+        }
+      } else{
+        if(resposta.erro === 'auth/invalid-email'){
+          Alert.alert('Email inválido!');
+        }
+
+        if(resposta.erro === 'auth/user-disabled'){
+          Alert.alert('Esta conta foi dsativada!');
+        }
+
+        if(resposta.erro === 'auth/user-not-found'){
+          Alert.alert('Nenhum usuário encontrado!');
+        }
+
+        if(resposta.erro === 'auth/invalid-credential'){
+          Alert.alert('Senha incorreta!');
+        }
+
+        if(resposta.erro === 'auth/too-many-requests'){
+          Alert.alert('Muitas tentativas de acesso!', 'Tente novamente mais tarde');
+        }
+      }
+    } else{
+        Alert.alert('Preencha todos os campos corretamente!');
+    }
+  }
+
+  const esqueciSenha = async () => {
+    const resposta = await emailRedefinirSenha(email);
+
+    if(resposta.sucess){
+      Alert.alert('Email enviado', `Um email foi enviado a ${email} para redefinição da senha. Cheque sua caixa de spam.`);
+    } else{
+      if(resposta.erro === 'auth/invalid-email' || resposta.erro === 'auth/missing-email'){
+        Alert.alert('Email inválido!');
+      }
+
+      if(resposta.erro === 'auth/user-not-found'){
+        Alert.alert('Este email não está cadastrado!');
+      }
     }
   }
 
@@ -80,21 +111,23 @@ export default function Login({navigation}){
             <ImageBackground source={require('../assets/fundo-login.jpg')} style={estilos.img_textura} imageStyle={{borderRadius: 20}}>
               <View style={estilos.campos_card}>
                 <View style={tecladoVisivel ? estilos.area_inputsPeq : estilos.area_inputs}>
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Usuário' onChangeText={setUsername} />  
-    
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' onChangeText={setEmail} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' value={email} onChangeText={(txt)=>setEmail(txt)} />
 
                   <View style={{justifyContent: 'center'}}>
-                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Senha' secureTextEntry={senhaOculta} onChangeText={setSenha}/>
+                    <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Senha' value={senha} secureTextEntry={senhaOculta} onChangeText={(txt)=>setSenha(txt)}/>
                     <TouchableOpacity style={estilos.olho} onPress={()=>(setSenhaOculta(!senhaOculta))}>
                       <MaterialCommunityIcons name={senhaOculta ? 'eye-outline' : 'eye-off'} size={tecladoVisivel ? 20 : 22}/>
                     </TouchableOpacity>
                   </View>
                 </View>
 
-                <View style={tecladoVisivel ? {marginTop: 10, width: '100%'} : {marginTop: 15, width: '100%'}}>
+                <View style={tecladoVisivel ? {marginTop: 10, width: '100%', gap: 3} : {marginTop: 15, width: '100%', gap: 3}}>
                   <TouchableOpacity style={tecladoVisivel ? estilos.btnPeq : estilos.btn} onPress={realizarLogin}>
                     <Text style={tecladoVisivel ? estilos.txtPeq : estilos.txt}>Login</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={esqueciSenha}>
+                    <Text style={tecladoVisivel ? estilos.esqSenhaPeq : estilos.esqSenha}>Esqueci minha senha</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -105,6 +138,7 @@ export default function Login({navigation}){
                     <TouchableOpacity onPress={()=>navigation.navigate('Cadastro')}>
                       <Text style={tecladoVisivel ? estilos.txt_cadastroPeq : estilos.txt_cadastro}>cadastro</Text>
                     </TouchableOpacity> 
+                    
                     <Text style={tecladoVisivel ? estilos.txt2Peq : estilos.txt2}>!</Text>
                   </View>
                 </View>
@@ -165,7 +199,7 @@ const estilos = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+    flex: 0.8,
   },
 
   campos_card:{
@@ -197,6 +231,13 @@ const estilos = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+
+  esqSenha:{
+    textAlign: 'right',
+    color: 'white',
+    fontWeight: 600,
+    textDecorationLine: 'underline',
   },
 
   txt:{
@@ -287,6 +328,14 @@ const estilos = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  esqSenhaPeq:{
+    textAlign: 'right',
+    color: 'white',
+    fontWeight: 600,
+    fontSize: 11,
+    textDecorationLine: 'underline',
   },
 
   txtPeq:{

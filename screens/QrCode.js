@@ -1,7 +1,33 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useEffect, useContext } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { UserContext } from '../ContextPerfil.js';
+import QRCode from 'react-native-qrcode-svg';
+import { db } from '../config/firebase.js';
 
 export default function QrCode({navigation}) {
+  const [username, setUsername] = useState('');
+  const { idUser } = useContext(UserContext);
+
+  useEffect(()=>{
+    const getUser = async () => {
+      try{
+        const usuario = await getDoc(doc(db, 'usuario', idUser));
+        setUsername(usuario.data().username);
+      }
+      catch(err){
+        console.error(err);
+      }
+    };
+    getUser();
+  }, [])
+
+  const json = JSON.stringify({
+    idCliente: idUser,
+    username: username
+  });
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
       <View style={estilos.cabecalho}>
@@ -23,7 +49,7 @@ export default function QrCode({navigation}) {
           </View>
 
           <View style={{width: '100%', alignItems: 'center', marginTop: 15}}>
-            <Image source={require('../assets/qrcode_pg.png')} style={estilos.img} />
+            <QRCode value={json} size={200} />
           </View>
 
           <View style={{width: '100%', marginTop: 24, paddingHorizontal: 20, gap: 7}}>
@@ -33,7 +59,7 @@ export default function QrCode({navigation}) {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 }
 
 const estilos = StyleSheet.create({
@@ -69,5 +95,3 @@ const estilos = StyleSheet.create({
     height: 230
   }
 });
-
-

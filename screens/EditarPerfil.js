@@ -1,69 +1,76 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert} from 'react-native';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
-import {useEffect, useState} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useState, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import db from '../config/firebase'
-import {doc, updateDoc, getDoc} from 'firebase/firestore';
-//import {UserContext} from '../ContextPerfil';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db, storage } from '../config/firebase';
+import { UserContext } from '../ContextPerfil.js';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
-export default function EditarPerfil({route}) {
-
-  const {infoUsuario} = route.params;
-  //const {dados, setDados} = useContext(UserContext);
+export default function EditarPerfil({route, navigation}) {
+  const { infoUsuario } = route.params;
+  const { idUser } = useContext(UserContext);
+  
   const [username, setUsername] = useState(infoUsuario.username);
   const [email, setEmail] = useState(infoUsuario.email);
   const [cpf, setCpf] = useState(infoUsuario.cpf);
-  const [image, setImage] = useState(null);
-  
-  /* const salvar = () => {
-    setDados({
-      username,
-      email,
-      numero,
-      img: image,
-      pontos: 275.5,
-    });
-    navigation.navigate('Perfil');
-  }; */
-
+  const [image, setImage] = useState(infoUsuario.fotoPerfil);
 
   const salvarInfo = async () => {
-    await updateDoc(doc(db, 'usuarios', 'L0VLujsDuTYoBCMXaT4S'), {
-      username: username,
-      email: email,
-      cpf: cpf
-    })
+    try{
+      await updateDoc(doc(db, 'usuario', idUser), {
+        username: username,
+        email: email,
+        cpf: cpf
+      });
 
-    Alert.alert(
-      'Sucesso!',
-      'Os dados foram salvos',
-      [
-        {
-          text: 'Ok'
-        }
-      ]
-    );
+      Alert.alert('Dados atualizados!');
+      navigation.navigate('Perfil');
+    }
+    catch(err){
+      console.error(err);
+    }
   }
-
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.5,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      setImage(result.assets[0].uri)
+      try{
+        const imagem = result.assets[0].uri;
+      
+        const fetchImg = await fetch(imagem);
+        const blob = await fetchImg.blob();
+
+        const referencia = ref(storage, `/perfil-usuarios/${idUser}.jpg`);
+
+        await uploadBytes(referencia, blob);
+
+        const urlFoto = await getDownloadURL(referencia);
+
+        await updateDoc(doc(db, 'usuario', idUser), {
+          fotoPerfil: urlFoto,
+        });
+
+        setImage(urlFoto);
+      } catch(err){
+        console.error(err);
+      }
     }
   };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
         <View style={estilos.cabecalho}>
+          <TouchableOpacity onPress={()=>navigation.goBack()}>
+            <MaterialCommunityIcons name='keyboard-backspace' size={40} color='black' />
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
             <MaterialCommunityIcons name='menu' size={40} color='black' />
           </TouchableOpacity>
@@ -83,18 +90,18 @@ export default function EditarPerfil({route}) {
         <View style={estilos.descricao}>
           <View>
             <Text style={estilos.tit_desc}>Nome do Usuário</Text>
-            <TextInput style={estilos.inputs} placeholder='@nomedeusuario' value={username} onChangeText={setUsername} />
+            <TextInput style={estilos.inputs} placeholder='@nomedeusuario' value={username} onChangeText={(txt)=>setUsername(txt)} />
           </View>
 
           <View>
             <Text style={estilos.tit_desc}>Email</Text>
-            <TextInput style={estilos.inputs} placeholder='emaildousuario@email.com' value={email} onChangeText={setEmail} />
+            <TextInput style={estilos.inputs} placeholder='emaildousuario@email.com' value={email} onChangeText={(txt)=>setEmail(txt)} />
 
           </View>
 
            <View>
             <Text style={estilos.tit_desc}>CPF</Text>
-            <TextInput style={estilos.inputs} placeholder='XXX.XXX.XXX-XX' value={cpf} onChangeText={setCpf} />
+            <TextInput style={estilos.inputs} placeholder='XXX.XXX.XXX-XX' value={cpf} onChangeText={(txt)=>setCpf(txt)} />
           </View>
         </View>
 
@@ -115,7 +122,7 @@ const estilos = StyleSheet.create({
     flex: 0.1,
     flexDirection: 'row',
     alignItems: 'center', 
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     paddingHorizontal: 25,
     position: 'absolute',
     zIndex: 1

@@ -1,15 +1,103 @@
-import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image} from 'react-native';
-
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import StarRating from 'react-native-star-rating-widget';
+import { useEffect, useState, useContext } from 'react';
+import { db } from '../config/firebase';
+import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { getAvaliacao } from '../data/avaliacaoMercado'; 
+import { UserContext } from '../ContextPerfil.js';
 
 export default function DescricaoLocais({route, navigation}) {
-
-  const {mercados} = route.params;
+  const { mercado } = route.params;
+  const [rating, setRating] = useState(0);
+  const [avaliacaoMedia, setAvaliacaoMedia] = useState('');
+  const { idUser } = useContext(UserContext);
 
   const link = () => {
-    const url = mercados.link; 
+    const url = mercado.data().website; 
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
+
+  const nota = getAvaliacao(mercado.id);
+  useEffect(()=>{
+    setAvaliacaoMedia(nota);
+  }, [nota]);
+
+  const addAvaliacao = () => {
+    const avaliacaoUsuario = async () => {
+      try{
+        const docUsuario = await getDoc(doc(db, 'usuario', idUser));
+        const avaliacoes = docUsuario.data().avaliacoes_feitas || [];
+        const mercadoAvaliado = avaliacoes.findIndex(item => item.mercado_avaliado.id === mercado.id);
+
+        if(mercadoAvaliado === -1){
+          try{
+            avaliacoes.push({
+              mercado_avaliado: doc(db, 'mercados', mercado.id),
+              nota: rating
+            });
+
+            await updateDoc(doc(db, 'usuario', idUser), {
+              avaliacoes_feitas: avaliacoes
+            });
+          }
+          catch(err){
+            console.error(err);
+          }
+        } else{
+          avaliacoes[mercadoAvaliado] = {
+            mercado_avaliado: doc(db, 'mercados', mercado.id),
+            nota: rating
+          }
+
+          await updateDoc(doc(db, 'usuario', idUser), {
+            avaliacoes_feitas: avaliacoes
+          });
+        }
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+    avaliacaoUsuario();
+
+    const avaliacaoMercado = async () => {
+      try{
+        const docMercado = await getDoc(doc(db, 'mercados', mercado.id));
+        const avaliacoesRecebidas = docMercado.data().avaliacoes_recebidas || [];
+        const avaliador = avaliacoesRecebidas.findIndex(item => item.avaliador.id === idUser);
+
+        if(avaliador === -1){
+          try{
+            avaliacoesRecebidas.push({
+              avaliador: doc(db, 'usuario', idUser),
+              nota: rating
+            });
+
+            await updateDoc(doc(db, 'mercados', mercado.id), {
+              avaliacoes_recebidas: avaliacoesRecebidas
+            });
+          }
+          catch(err){
+            console.error(err);
+          }
+        } else{
+          avaliacoesRecebidas[avaliador] = {
+            avaliador: doc(db, 'usuario', idUser),
+            nota: rating
+          }
+
+          await updateDoc(doc(db, 'mercados', mercado.id), {
+            avaliacoes_recebidas: avaliacoesRecebidas
+          });
+        }
+      }
+      catch(err){
+        console.error(err);
+      }
+    }
+    avaliacaoMercado();
+  }
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
@@ -27,41 +115,49 @@ export default function DescricaoLocais({route, navigation}) {
 
       <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
         <View style={estilos.titulo}>
-          <Text style={estilos.txt_tit}>{mercados.titulo}</Text>
+          <Text style={estilos.txt_tit}>{mercado.data().nome}</Text>
         </View>
 
         <View style={estilos.area_img}>
           <View style={estilos.cont_img}>
-            <Image source={mercados.logo} style={estilos.img} />
+            <Image source={mercado.data().fotoPerfil ? {uri: mercado.data().fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.img} resizeMode={!mercado.data().fotoPerfil && 'contain'} />
           </View>
         </View>
 
         <View style={estilos.area_infos}>
           <View style={estilos.cont_avaliacao}>
-            <MaterialCommunityIcons name={mercados.e1} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e2} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e3} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e4} size={45} color='#31420a' />
-            <MaterialCommunityIcons name={mercados.e5} size={45} color='#31420a' />
+            <StarRating 
+              rating={rating}
+              onChange={valor => setRating(valor)}
+              starSize={45}
+              color='#31420a'
+              emptyColor='#31420a'
+              onRatingEnd={addAvaliacao}
+            />
+
+            <View style={estilos.areaAvaliacaoMedia}>
+              <Text style={estilos.txt_avaliacao}>Média</Text>
+              <Text style={estilos.txt_avaliacao}>{avaliacaoMedia}</Text>
+            </View>
           </View>
 
           <View style={estilos.infos}>
             <View style={estilos.conts_infos}>
               <Image source={require('../assets/endereco.png')} style={estilos.imgs} />
-              <Text style={estilos.texto_infos}>{mercados.endereco}</Text>
+              <Text style={estilos.texto_infos}>{mercado.data().endereco}</Text>
             </View>
 
             <View style={estilos.conts_infos}>
               <Image source={require('../assets/link.png')} style={estilos.imgs} />
 
               <TouchableOpacity style={estilos.btn_link} onPress={link}>
-                <Text style={estilos.links}>{mercados.link}</Text>
+                <Text style={estilos.links}>{mercado.data().website}</Text>
               </TouchableOpacity>
             </View>
 
             <View style={estilos.conts_infos}>
               <Image source={require('../assets/telefone.png')} style={estilos.imgs} />
-              <Text style={estilos.texto_infos}>{mercados.telefone}</Text>
+              <Text style={estilos.texto_infos}>{mercado.data().numero}</Text>
             </View>
           </View>
         </View>
@@ -69,11 +165,16 @@ export default function DescricaoLocais({route, navigation}) {
         <View style={estilos.linha} />
 
         <View style={estilos.infos_mercado}>
-          <Text style={estilos.txt_infomerc}>{mercados.texto_desc}</Text>
-
-          <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Pontos', {mercados: mercados})}>
-            <Text style={estilos.txt_btn}>Veja os cupons disponiveis</Text>
-          </TouchableOpacity>
+          <View style={{flex: 1}}>
+            <Text style={estilos.txt_infomerc}>{mercado.data().descricao}</Text>
+          </View>
+          
+          <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+            <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: mercado.id })}>
+              <Text style={estilos.txt_btn}>Veja os cupons disponiveis</Text>
+            </TouchableOpacity>
+          </View>
+          
         </View>
       </View>
     </SafeAreaView>
@@ -137,7 +238,19 @@ const estilos = StyleSheet.create({
   },
 
   cont_avaliacao:{
-    flexDirection: 'row',
+    width: 'auto',
+    justifyContent: 'center'
+  },
+
+  areaAvaliacaoMedia: {
+    position: 'absolute',
+    right: -32,
+  },
+
+  txt_avaliacao: {
+    fontSize: 11,
+    fontWeight: 500,
+    textAlign: 'center',
   },
 
   infos:{
@@ -183,12 +296,13 @@ const estilos = StyleSheet.create({
   
   infos_mercado:{
     width: '100%',
-    gap: 10,
+    gap: 20,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 30,
+    paddingVertical: 15,
     flex: 1,
-    marginTop: 1
+    marginTop: 1,
   },
 
   btn_cupons:{
@@ -203,7 +317,7 @@ const estilos = StyleSheet.create({
 
   txt_infomerc:{
     textAlign: 'justify',
-    fontSize: 15
+    fontSize: 15,
   },
 
   txt_btn:{
