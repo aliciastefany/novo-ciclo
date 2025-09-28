@@ -108,7 +108,7 @@ export default function LoginMercados({navigation}){
             </TouchableOpacity>
 
             <View style={tecladoVisivel ? estilos.area_titPeq : estilos.area_tit}>
-              <Text style={tecladoVisivel ? estilos.titPeq : estilos.tit}>Login</Text>
+              <Text style={tecladoVisivel ? estilos.titPeq : estilos.tit}>Login Mercado</Text>
             </View>
           </View>
 

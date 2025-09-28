@@ -103,7 +103,7 @@ export default function CadastroMercados({navigation}){
 
         <View style={{flex: 1, paddingHorizontal: 30, justifyContent: 'center'}}>
           <View style={tecladoVisivel ? estilos.area_titPeq : estilos.area_tit}>
-            <Text style={tecladoVisivel ? estilos.titPeq : estilos.tit}>Cadastrar</Text>
+            <Text style={tecladoVisivel ? estilos.titPeq : estilos.tit}>Cadastrar Mercado</Text>
           </View>
 
           <View style={tecladoVisivel ? estilos.card_loginPeq : estilos.card_login}>
