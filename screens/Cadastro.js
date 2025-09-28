@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { cadastrarUsuarioRepository } from '../repositories/cadastroUsuarioRepository.js';
 import { UserContext } from '../ContextPerfil.js';
+import validarCPF from '../repositories/validarCPF.js';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
@@ -51,7 +52,9 @@ export default function Cadastro({navigation}){
       pontos: 0,
     };
 
-    if(username !== '' && email !== '' && cpf !== '' && senha !== '' && confsenha !== '' && confsenha === senha){
+    const cpfValido = validarCPF(cpf);
+
+    if(username !== '' && email !== '' && cpfValido && senha !== '' && confsenha !== '' && confsenha === senha){
       const resposta = await cadastrarUsuarioRepository(dados, senha);
 
       if(resposta.sucess){
@@ -100,7 +103,7 @@ export default function Cadastro({navigation}){
                 <View style={tecladoVisivel ? estilos.area_inputsPeq : estilos.area_inputs}>
                   <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={username} placeholder='Usuário' onChangeText={(txt)=>setUsername(txt)} />
 
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={cpf} placeholder='CPF' onChangeText={(txt)=>setCpf(txt)} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={cpf} maxLength={11} placeholder='CPF' onChangeText={(txt)=>setCpf(txt)} />
     
                   <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} value={email} placeholder='Email' onChangeText={(txt)=>setEmail(txt)} />
 

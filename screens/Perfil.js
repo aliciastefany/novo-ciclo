@@ -28,47 +28,6 @@ export default function Perfil({navigation}) {
     return ()=>getInfoUsuario();
   }, []);
 
-  useEffect(()=>{
-    if(!idUser){
-      return;
-    }
-
-    let excluido = false;
-
-    const get = async () => {
-      try{
-        const docUser = await getDoc(doc(db, 'usuario', idUser));
-        const cuponsResgatados = docUser.data().cuponsResgatados || [];
-        const lista = cuponsResgatados.map((item)=>(
-          item.cupom
-        ));
-
-        for (const item of lista){ //verificação em sequência para atualizar o msg corretamente
-          try{
-            const docCupom = await getDoc(item);
-            if(!docCupom.exists()){
-              excluido = true;
-              break;
-            }
-          } catch(err){
-            console.error(err);
-          }
-        }
-
-        if(excluido && docUser.data().mensagemAlteracao !== false){
-          Alert.alert('Cupom(ns) excluído(s)', 'Um ou mais cupons já utilizados foram excluídos pelo mercado e, portanto, não sestão mais exibidos na lista de resgatados!');
-          
-          await updateDoc(doc(db, 'usuario', idUser), {
-            mensagemAlteracao: false
-          });
-        }
-      } catch(err){
-        console.error(err);
-      }
-    };
-    get();
-  }, [idUser]);
-
   useEffect(() => {
     const getResgatados = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
       try{
@@ -139,7 +98,7 @@ export default function Perfil({navigation}) {
               if(docUser.data().mensagemAlteracao){
                 Alert.alert(
                   'Reembolso', 
-                  'Alguns cupons foram excluídos pela empresa. Você teve/terá seus pontos de volta.',
+                  'Alguns cupons não utilizados foram excluídos pela empresa. Você teve/terá seus pontos de volta.',
                   [{text: 'Ok', onPress: () => atualizar()}]
                 );
               }

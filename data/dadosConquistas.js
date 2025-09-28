@@ -7,7 +7,7 @@ export const conquistas = [
 
     {
       id: 2,
-      descricao: 'Após 1 ano de uso, você ganhou o selo de usuário verificado.',
+      descricao: 'Após 1 ano de uso, você ganhou o selo de reciclador iniciante.',
       imagem: require('../assets/c2.png'),
     },
 
