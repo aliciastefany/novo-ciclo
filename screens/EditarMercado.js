@@ -42,6 +42,34 @@ export default function EditarMercado({navigation, route}) {
         coordenadas: new GeoPoint(lat, lng),
       });
 
+      if(referenciaImg && blobImg){
+        await uploadBytes(referenciaImg, blobImg);
+
+        const urlFoto = await getDownloadURL(referenciaImg);
+
+        await updateDoc(doc(db, 'mercados', idUser), {
+          fotoPerfil: urlFoto,
+        });
+
+        setImage(urlFoto);
+        setBlobImg(null);
+        setReferenciaImg(null);
+      }
+
+      if(referenciaImgFundo && blobImgFundo){
+        await uploadBytes(referenciaImgFundo, blobImgFundo);
+
+        const urlFoto = await getDownloadURL(referenciaImgFundo);
+
+        await updateDoc(doc(db, 'mercados', idUser), {
+          fundoPerfil: urlFoto,
+        });
+
+        setImageFundo(urlFoto);
+        setBlobImgFundo(null);
+        setReferenciaImgFundo(null);
+      }
+
       Alert.alert('Dados atualizados!');
       navigation.navigate('Perfil');
     }
@@ -52,6 +80,12 @@ export default function EditarMercado({navigation, route}) {
 
   const [image, setImage] = useState(dados.fotoPerfil || null);
   const [imageFundo, setImageFundo] = useState(dados.fundoPerfil || null);
+
+  const [referenciaImg, setReferenciaImg] = useState(null);
+  const [blobImg, setBlobImg] = useState(null);
+
+  const [referenciaImgFundo, setReferenciaImgFundo] = useState(null);
+  const [blobImgFundo, setBlobImgFundo] = useState(null);
 
   const pickImagePerfil = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -69,16 +103,9 @@ export default function EditarMercado({navigation, route}) {
         const blob = await fetchImg.blob();
 
         const referencia = ref(storage, `/perfil-mercados/${idUser}.jpg`);
-
-        await uploadBytes(referencia, blob);
-
-        const urlFoto = await getDownloadURL(referencia);
-
-        await updateDoc(doc(db, 'mercados', idUser), {
-          fotoPerfil: urlFoto,
-        });
-
-        setImage(urlFoto);
+        setReferenciaImg(referencia);
+        setBlobImg(blob);
+        setImage(imagem);
       } catch(err){
         console.error(err);
       }
@@ -102,15 +129,9 @@ export default function EditarMercado({navigation, route}) {
 
         const referencia = ref(storage, `/fundo-mercados/${idUser}.jpg`);
 
-        await uploadBytes(referencia, blob);
-
-        const urlFoto = await getDownloadURL(referencia);
-
-        await updateDoc(doc(db, 'mercados', idUser), {
-          fundoPerfil: urlFoto,
-        });
-
-        setImageFundo(urlFoto);
+        setReferenciaImgFundo(referencia);
+        setBlobImgFundo(blob)
+        setImageFundo(imagem);
       } catch(err){
         console.error(err);
       }
@@ -127,13 +148,13 @@ export default function EditarMercado({navigation, route}) {
 
           <View style={estilos.img_fundo}> 
             <TouchableOpacity onPress={pickImageFundo}>
-              <Image source={imageFundo ? {uri: imageFundo} : require('../assets/kacula_perfil.png')} style={estilos.img} />
+              <Image source={imageFundo ? {uri: imageFundo} : require('../assets/fundo_perfil_mercados.png')} style={estilos.img} />
             </TouchableOpacity>
           </View>
 
           <View style={estilos.area_perfil}>
             <TouchableOpacity onPress={pickImagePerfil}>
-              <Image source={image ? {uri: image} : require('../assets/kacula_perfil.png')} style={estilos.perfil} />
+              <Image source={image ? {uri: image} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
             </TouchableOpacity>
           </View>
 

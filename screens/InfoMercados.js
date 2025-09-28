@@ -31,7 +31,7 @@ export default function InfoMercados({ navigation }) {
   }, []);
 
   const link = () => {
-    const url = dados.website;
+    const url = 'https://www.instagram.com/novo.cicloapp';
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
 
@@ -138,7 +138,8 @@ const estilos = StyleSheet.create({
   txt_tit: {
     fontSize: 30,
     color: '#31420a',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   area_img: {

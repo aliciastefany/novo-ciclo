@@ -24,6 +24,18 @@ export default function EditarPerfil({route, navigation}) {
         cpf: cpf
       });
 
+      if(referenciaImg && blobImg){
+        await uploadBytes(referenciaImg, blobImg);
+
+        const urlFoto = await getDownloadURL(referenciaImg);
+
+        await updateDoc(doc(db, 'usuario', idUser), {
+          fotoPerfil: urlFoto,
+        });
+
+        setImage(urlFoto);
+      }
+
       Alert.alert('Dados atualizados!');
       navigation.navigate('Perfil');
     }
@@ -31,6 +43,9 @@ export default function EditarPerfil({route, navigation}) {
       console.error(err);
     }
   }
+
+  const [referenciaImg, setReferenciaImg] = useState(null);
+  const [blobImg, setBlobImg] = useState(null);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -49,15 +64,9 @@ export default function EditarPerfil({route, navigation}) {
 
         const referencia = ref(storage, `/perfil-usuarios/${idUser}.jpg`);
 
-        await uploadBytes(referencia, blob);
-
-        const urlFoto = await getDownloadURL(referencia);
-
-        await updateDoc(doc(db, 'usuario', idUser), {
-          fotoPerfil: urlFoto,
-        });
-
-        setImage(urlFoto);
+        setReferenciaImg(referencia);
+        setBlobImg(blob);
+        setImage(imagem);
       } catch(err){
         console.error(err);
       }

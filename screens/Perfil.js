@@ -5,10 +5,9 @@ import { conquistas } from '../data/dadosConquistas';
 import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import CupomDoUsuario from '../components/CupomDoUsuario';
 import { UserContext } from '../ContextPerfil.js';
-import { auth, db, storage } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 import QRCode from 'react-native-qrcode-svg';
 import { signOut } from 'firebase/auth';
-import { ref } from 'firebase/storage';
 
 export default function Perfil({navigation}) {
   const [infoUsuario, setInfoUsuario] = useState('');
@@ -29,6 +28,46 @@ export default function Perfil({navigation}) {
     return ()=>getInfoUsuario();
   }, []);
 
+  useEffect(()=>{
+    if(!idUser){
+      return;
+    }
+
+    let excluido = false;
+
+    const get = async () => {
+      try{
+        const docUser = await getDoc(doc(db, 'usuario', idUser));
+        const cuponsResgatados = docUser.data().cuponsResgatados || [];
+        const lista = cuponsResgatados.map((item)=>(
+          item.cupom
+        ));
+
+        for (const item of lista){ //verificação em sequência para atualizar o msg corretamente
+          try{
+            const docCupom = await getDoc(item);
+            if(!docCupom.exists()){
+              excluido = true;
+              break;
+            }
+          } catch(err){
+            console.error(err);
+          }
+        }
+
+        if(excluido && docUser.data().mensagemAlteracao !== false){
+          Alert.alert('Cupom(ns) excluído(s)', 'Um ou mais cupons já utilizados foram excluídos pelo mercado e, portanto, não sestão mais exibidos na lista de resgatados!');
+          
+          await updateDoc(doc(db, 'usuario', idUser), {
+            mensagemAlteracao: false
+          });
+        }
+      } catch(err){
+        console.error(err);
+      }
+    };
+    get();
+  }, [idUser]);
 
   useEffect(() => {
     const getResgatados = onSnapshot(doc(db, 'usuario', idUser), (doc)=>{
@@ -64,7 +103,6 @@ export default function Perfil({navigation}) {
                 if(cupom.exists()){
                   const mercado = await getDoc(cupom.data().mercado);
                   const nome = mercado.data().nome;
-                  console.log(item.data_troca);
                   const infos = {
                     id: cupom.id,
                     precoTroca: cupom.data().precoTroca,
@@ -101,7 +139,7 @@ export default function Perfil({navigation}) {
               if(docUser.data().mensagemAlteracao){
                 Alert.alert(
                   'Reembolso', 
-                  'Alguns cupons foram excluídos pela empresa. Você teve (ou terá) seus pontos de volta.',
+                  'Alguns cupons foram excluídos pela empresa. Você teve/terá seus pontos de volta.',
                   [{text: 'Ok', onPress: () => atualizar()}]
                 );
               }
@@ -134,8 +172,6 @@ export default function Perfil({navigation}) {
   }
 
   const json = JSON.stringify({idCliente: idUser});
-
-
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>

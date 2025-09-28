@@ -47,7 +47,7 @@ export default function Login({navigation}){
               }]
             });
           } else{
-            Alert.alert('Esta credencial não pertence a um cliente!');
+            Alert.alert('Este email não pertence a um cliente!');
             return false;
           }
         } catch(err){
@@ -67,7 +67,7 @@ export default function Login({navigation}){
         }
 
         if(resposta.erro === 'auth/invalid-credential'){
-          Alert.alert('Senha incorreta!');
+          Alert.alert('Email ou senha incorretos!');
         }
 
         if(resposta.erro === 'auth/too-many-requests'){

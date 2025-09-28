@@ -64,10 +64,8 @@ export default function LocaisProximos({navigation}) {
         const geocodificacao = await Geocoder.from(endereco);
         const coordenadas = geocodificacao.results[0].geometry.location;
 
-        const listaMercados = [];
         const docsMercados = await getDocs(collection(db, 'mercados'));
-        docsMercados.forEach((doc)=>{
-          const dados = {
+        const listaMercados = docsMercados.docs.map((doc)=>({
             latitude: doc.data().coordenadas.latitude,
             longitude: doc.data().coordenadas.longitude,
             id: doc.id,
@@ -75,10 +73,8 @@ export default function LocaisProximos({navigation}) {
             nome: doc.data().nome,
             fotoPerfil: doc.data().fotoPerfil,
             doc: doc,
-          }
-          listaMercados.push(dados);
-          setMercDadosPag(listaMercados);
-        });
+        }));
+        setMercDadosPag(listaMercados);
         const listaFormatada = listaMercados.filter((item) => haversineDistanciaKM(coordenadas.lat, coordenadas.lng, item.latitude, item.longitude) <= 50);
         setMercProx(listaFormatada);
       } catch(err){
@@ -181,8 +177,8 @@ export default function LocaisProximos({navigation}) {
                             style={estilos.flatlist}
                             data={mercProx}
                             showsVerticalScrollIndicator={false}
-                            renderItem={({item, index})=>(
-                              <TouchableOpacity style={estilos.lista} onPress={()=>navigation.navigate('Descricao Locais', { mercado: mercDadosPag[index].doc })}> 
+                            renderItem={({item})=>(
+                              <TouchableOpacity style={estilos.lista} onPress={()=>navigation.navigate('Descricao Locais', { mercado: item.doc })}> 
                                 <ImageBackground source={item.fotoPerfil ? {uri: item.fotoPerfil} : require('../assets/semfundo_mercado.png')} style={{height: '100%', width: '100%', justifyContent: 'center'}}>
                                   <View style={estilos.area_textos}>
                                     <Text style={estilos.txt_tit}>{item.nome}</Text>

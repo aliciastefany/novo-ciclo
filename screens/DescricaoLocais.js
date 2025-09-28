@@ -21,6 +21,24 @@ export default function DescricaoLocais({route, navigation}) {
   const nota = getAvaliacao(mercado.id);
   useEffect(()=>{
     setAvaliacaoMedia(nota);
+
+    const getUserAvaliacao = async () => {
+      try{
+        const docUsuario = await getDoc(doc(db, 'usuario', idUser));
+        const avaliacoes = docUsuario.data().avaliacoes_feitas || [];
+        const mercadoAvaliado = avaliacoes.findIndex(item => item.mercado_avaliado.id === mercado.id);
+
+        if(mercadoAvaliado === -1){
+          setRating(nota);
+        } else{
+          const nota = avaliacoes[mercadoAvaliado].nota;
+          setRating(nota);
+        }
+      } catch(err){
+        console.error(err);
+      }
+    }
+    getUserAvaliacao();
   }, [nota]);
 
   const addAvaliacao = () => {
@@ -137,7 +155,7 @@ export default function DescricaoLocais({route, navigation}) {
 
             <View style={estilos.areaAvaliacaoMedia}>
               <Text style={estilos.txt_avaliacao}>Média</Text>
-              <Text style={estilos.txt_avaliacao}>{avaliacaoMedia}</Text>
+              <Text style={estilos.txt_avaliacao}>{avaliacaoMedia ? avaliacaoMedia : 0}</Text>
             </View>
           </View>
 
@@ -170,7 +188,7 @@ export default function DescricaoLocais({route, navigation}) {
           </View>
           
           <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
-            <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: mercado.id })}>
+            <TouchableOpacity style={estilos.btn_cupons} onPress={()=>navigation.navigate('Trocar Pontos', { mercado: mercado.id, fotoPerfil: mercado.data().fotoPerfil })}>
               <Text style={estilos.txt_btn}>Veja os cupons disponiveis</Text>
             </TouchableOpacity>
           </View>
@@ -201,7 +219,8 @@ const estilos = StyleSheet.create({
   txt_tit:{
     fontSize: 28,
     color: '#31420a',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   area_img:{

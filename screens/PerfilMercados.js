@@ -29,7 +29,7 @@ export default function PerfilMercados({navigation}) {
   }, []);
 
   const link = () => {
-    const url = dados.website;
+    const url = 'https://www.instagram.com/novo.cicloapp';
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
 
@@ -38,11 +38,11 @@ export default function PerfilMercados({navigation}) {
       <ScrollView style={{flex: 1, width: '100%'}}>
         <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
           <View style={estilos.img_fundo}>
-            <Image source={dados.fundoPerfil ? {uri: dados.fundoPerfil} : require('../assets/kacula_perfil.png')} style={estilos.img} />
+            <Image source={dados.fundoPerfil ? {uri: dados.fundoPerfil} : require('../assets/fundo_perfil_mercados.png')} style={estilos.img} />
           </View>
 
           <View style={estilos.area_perfil}>
-            <Image source={dados.fotoPerfil ? {uri: dados.fotoPerfil} : require('../assets/kacula_perfil.png')} style={estilos.perfil} />
+            <Image source={dados.fotoPerfil ? {uri: dados.fotoPerfil} : require('../assets/perfil_perfil.png')} style={estilos.perfil} />
           </View>
 
           <View style={estilos.descricao}>

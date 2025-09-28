@@ -13,7 +13,7 @@ export default function Cupom({route, navigation}){
     const [qrcode, setQrcode] = useState(cupom.troca);
     const data = cupom.data_resgate.toDate();
     const troca = cupom.data_troca ? cupom.data_troca.toDate() : null;
-    console.log(cupom.troca, qrcode);
+
     useEffect(() => {
       setQrcode(cupom.troca);
     }, [cupom]);
@@ -79,7 +79,7 @@ export default function Cupom({route, navigation}){
           <CupomDoUsuario precoTroca={cupom.precoTroca} itens={cupom.itens} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
 
           {
-            !qrcode && <QRCode value={json} size={250} />
+            !qrcode && <QRCode value={json} size={220} />
           }
 
           <View style={estilos.areaResgate}>

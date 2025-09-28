@@ -25,6 +25,8 @@ export function getAvaliacao(mercadoId){
                 catch(err){
                     console.error(err);
                 } 
+            } else{
+                setNota(0);
             }
         }); 
 
