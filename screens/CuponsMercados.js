@@ -48,6 +48,17 @@ export default function CuponsMercados({navigation}) {
     }
   }
 
+  const [img, setImg] = useState(null);
+
+  useEffect(()=>{
+    const getImage = async () => {
+      const docUser = await getDoc(doc(db, 'mercados', idUser));
+      const imagem = docUser.data().fotoPerfil;
+      setImg(imagem);
+    }
+    getImage();
+  }, [idUser]);
+
   const deletarCupom = async (id) => {
     const buscarResgateUsuarios = async () => {
       try{
@@ -156,7 +167,7 @@ export default function CuponsMercados({navigation}) {
         </View>
 
         <View style={estilos.area_logo}>
-          <Image source={mercados[0].logo} style={estilos.logo} />
+          <Image source={img ? {uri: img} : require('../assets/perfil_perfil.png')} style={estilos.logo} />
         </View>
 
         <TouchableOpacity style={estilos.btnModal} onPress={()=>(setCardAdd(true))}>

@@ -281,10 +281,10 @@ const estilos = StyleSheet.create({
   cobrir:{
     position: 'absolute',
     backgroundColor: '#A9C26F',
-    height: 52,
-    width: 120,
+    minHeight: 52,
+    width: 130,
     top: 70,
-    left: 89,
+    left: 84,
     alignContent: 'center',
     paddingLeft: 10,
     justifyContent: 'center'
@@ -292,7 +292,7 @@ const estilos = StyleSheet.create({
 
   txt_cobrir:{
     textAlign: 'center',
-    fontSize: 13,
+    fontSize: 12,
     color: 'white',
     fontWeight: 700
   }
