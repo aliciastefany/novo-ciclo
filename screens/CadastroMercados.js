@@ -62,7 +62,7 @@ export default function CadastroMercados({navigation}){
       const valido = await buscarCnpj();
       if(valido){
         const resposta = await cadastrarMercadoRepository(dados, senha);
-        console.log(resposta)
+
         if(resposta.sucess){
           Alert.alert('Cadastro realizado com sucesso!');
           setIdUser(resposta.id);
@@ -86,6 +86,8 @@ export default function CadastroMercados({navigation}){
             Alert.alert('Email inválido!');
           }
         }
+      } else{
+        Alert.alert('Informe um CNPJ válido!');
       }
     } else{
       Alert.alert('Preencha todos os campos corretamente!');
@@ -110,7 +112,7 @@ export default function CadastroMercados({navigation}){
                 <View style={tecladoVisivel ? estilos.area_inputsPeq : estilos.area_inputs}>
                   <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Nome do mercado' value={username} onChangeText={(txt)=>setUsername(txt)} />
 
-                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='CNPJ' value={cnpj} onChangeText={(txt)=>setCnpj(txt)} />
+                  <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='CNPJ' maxLength={14} value={cnpj} onChangeText={(txt)=>setCnpj(txt)} />
     
                   <TextInput style={tecladoVisivel ? estilos.inputsPeq : estilos.inputs} placeholder='Email' value={email} onChangeText={(txt)=>setEmail(txt)} />
 

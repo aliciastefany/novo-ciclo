@@ -4,6 +4,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { cadastrarUsuarioRepository } from '../repositories/cadastroUsuarioRepository.js';
 import { UserContext } from '../ContextPerfil.js';
 import validarCPF from '../repositories/validarCPF.js';
+import { collection, getDocs, where, query } from 'firebase/firestore';
+import { db } from '../config/firebase.js';
 
 export default function Cadastro({navigation}){
   const [senhaOculta, setSenhaOculta] = useState(true);
@@ -54,32 +56,44 @@ export default function Cadastro({navigation}){
 
     const cpfValido = validarCPF(cpf);
 
+    if(!cpfValido){
+      Alert.alert('Insira um CPF válido!');
+      return;
+    }
+
     if(username !== '' && email !== '' && cpfValido && senha !== '' && confsenha !== '' && confsenha === senha){
-      const resposta = await cadastrarUsuarioRepository(dados, senha);
-
-      if(resposta.sucess){
-        Alert.alert('Cadastro realizado com sucesso!');
-        setIdUser(resposta.id);
-
-        navigation.reset({
-          index: 0,
-          routes: [
-            {name: 'Rotas'}
-          ]
-        });
+      const getCpf = await getDocs(query(collection(db, 'usuario'), where('cpf', '==', cpf)));
+    
+      if(!getCpf.empty){
+        Alert.alert('Este CPF já está em uso!');
+        return;
       } else{
-        if(resposta.erro === 'auth/weak-password'){
-          Alert.alert('A senha deve ter pelo menos 6 caracteres!');
-        }
+        const resposta = await cadastrarUsuarioRepository(dados, senha);
 
-        if(resposta.erro === 'auth/email-already-in-use'){
-          Alert.alert('Este email já está em uso!');
-        }
+        if(resposta.sucess){
+          Alert.alert('Cadastro realizado com sucesso!');
+          setIdUser(resposta.id);
 
-        if(resposta.erro === 'auth/invalid-email' || resposta.erro === 'auth/missing-email'){
-          Alert.alert('Email inválido!');
+          navigation.reset({
+            index: 0,
+            routes: [
+              {name: 'Rotas'}
+            ]
+          });
+        } else{
+          if(resposta.erro === 'auth/weak-password'){
+            Alert.alert('A senha deve ter pelo menos 6 caracteres!');
+          }
+
+          if(resposta.erro === 'auth/email-already-in-use'){
+            Alert.alert('Este email já está em uso!');
+          }
+
+          if(resposta.erro === 'auth/invalid-email' || resposta.erro === 'auth/missing-email'){
+            Alert.alert('Email inválido!');
+          }
         }
-      }
+      } 
     } else{
       Alert.alert('Preencha todos os campos corretamente!');
     }

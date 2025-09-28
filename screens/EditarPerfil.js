@@ -6,6 +6,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../config/firebase';
 import { UserContext } from '../ContextPerfil.js';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import validarCPF from '../repositories/validarCPF';
 
 export default function EditarPerfil({route, navigation}) {
   const { infoUsuario } = route.params;
@@ -17,27 +18,33 @@ export default function EditarPerfil({route, navigation}) {
   const [image, setImage] = useState(infoUsuario.fotoPerfil);
 
   const salvarInfo = async () => {
+    const cpfValido = validarCPF(cpf);
+
     try{
-      await updateDoc(doc(db, 'usuario', idUser), {
-        username: username,
-        email: email,
-        cpf: cpf
-      });
-
-      if(referenciaImg && blobImg){
-        await uploadBytes(referenciaImg, blobImg);
-
-        const urlFoto = await getDownloadURL(referenciaImg);
-
+      if(cpfValido){
         await updateDoc(doc(db, 'usuario', idUser), {
-          fotoPerfil: urlFoto,
+          username: username,
+          email: email,
+          cpf: cpf
         });
 
-        setImage(urlFoto);
-      }
+        if(referenciaImg && blobImg){
+          await uploadBytes(referenciaImg, blobImg);
 
-      Alert.alert('Dados atualizados!');
-      navigation.navigate('Perfil');
+          const urlFoto = await getDownloadURL(referenciaImg);
+
+          await updateDoc(doc(db, 'usuario', idUser), {
+            fotoPerfil: urlFoto,
+          });
+
+          setImage(urlFoto);
+        }
+
+        Alert.alert('Dados atualizados!');
+        navigation.navigate('Perfil');
+      } else{
+        Alert.alert('Informe um CPF válido!');
+      }
     }
     catch(err){
       console.error(err);
@@ -110,7 +117,7 @@ export default function EditarPerfil({route, navigation}) {
 
            <View>
             <Text style={estilos.tit_desc}>CPF</Text>
-            <TextInput style={estilos.inputs} placeholder='XXX.XXX.XXX-XX' value={cpf} onChangeText={(txt)=>setCpf(txt)} />
+            <TextInput style={estilos.inputs} maxLength={11} placeholder='XXXXXXXXXXX' value={cpf} onChangeText={(txt)=>setCpf(txt)} />
           </View>
         </View>
 
