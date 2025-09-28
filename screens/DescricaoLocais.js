@@ -14,7 +14,7 @@ export default function DescricaoLocais({route, navigation}) {
   const { idUser } = useContext(UserContext);
 
   const link = () => {
-    const url = mercado.data().website; 
+    const url = 'https://www.instagram.com/novo.cicloapp'; 
     Linking.openURL(url).catch((err) => console.error('Erro ao abrir URL:', err));
   };
 
