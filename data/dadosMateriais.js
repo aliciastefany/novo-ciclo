@@ -94,6 +94,6 @@ export const materiais = [
     texto3: 'Reduz a necessidade de produção de novos dispositivos e diminui as emissões de poluentes provenientes da extração e do processamento de matérias-primas. Além disso, evita-se a liberação de gases tóxicos que ocorreriam pelo descarte inadequado.',
     kg: 19,
     cor: '#6b803b',
-    corLegenda: '#000'
+    corLegenda: '#505050'
   },
 ];
