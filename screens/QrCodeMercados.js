@@ -103,11 +103,22 @@ export default function QrCodeMercados(){
   const [username, setUsername] = useState('');
   const [clienteId, setClienteId] = useState('');
   const handleQRCodeRead = ({data}) => {
-    const json = JSON.parse(data);
-    setClienteId(json.idCliente);
-    setUsername(json.username);
-    setModalVisible(false);
-    setEnviarPontos(true);
+    try{
+      console.log(data);
+      const json = JSON.parse(data);
+      
+      if(json.idCliente && json.username){
+        setClienteId(json.idCliente);
+        setUsername(json.username);
+        setModalVisible(false);
+        setEnviarPontos(true);
+      } else{
+        Alert.alert('QR Code inválido!');
+      }
+    } catch(err){
+      Alert.alert('QR Code inválido!');
+      setModalVisible(false);
+    }
   }
 
   const fechar = () => {
