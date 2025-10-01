@@ -22,8 +22,8 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     gap: 5,
     alignItems: 'center',
-    width: '90%',
-    left: 17,
+    width: '93%',
+    left: 10,
   },
 
   bola_leg:{

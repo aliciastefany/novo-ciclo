@@ -281,7 +281,7 @@ const estilos = StyleSheet.create({
   cobrir:{
     position: 'absolute',
     backgroundColor: '#A9C26F',
-    minHeight: 52,
+    minHeight: 54,
     width: 130,
     top: 70,
     left: 84,

@@ -90,6 +90,7 @@ export default function Pontos({navigation}) {
               )}
               keyExtractor={item => item.id}
               numColumns={2}
+              showsVerticalScrollIndicator={false}
             />
           </View>
         </View>

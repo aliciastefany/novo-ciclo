@@ -319,7 +319,7 @@ const estilos = StyleSheet.create({
   tit_card:{
     backgroundColor: 'white',
     height: '30%',
-    width: '80%',
+    width: '83%',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10

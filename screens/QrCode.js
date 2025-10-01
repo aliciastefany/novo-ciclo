@@ -41,13 +41,13 @@ export default function QrCode({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
-
-      <ScrollView style={{flex: 1, width: '100%'}}>
+      
+      <View style={{marginTop: 25, width: '100%'}}>
+        <Text style={estilos.txt_tit}>SEU QR CODE</Text>
+      </View>
+  
+      <ScrollView style={{flex: 1, width: '100%', marginBottom: 24, marginTop: 20}}>
         <View style={{alignItems: 'center', width: '100%'}}>
-          <View style={{marginTop: 25, paddingLeft: 25, width: '100%'}}>
-            <Text style={estilos.txt_tit}>SEU QR CODE</Text>
-          </View>
-
           <View style={{width: '100%', alignItems: 'center', marginTop: 15}}>
             <QRCode value={json} size={200} />
           </View>
@@ -77,6 +77,7 @@ const estilos = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: '#31420a',
+    textAlign: 'center',
   },
 
   txt_tit2:{

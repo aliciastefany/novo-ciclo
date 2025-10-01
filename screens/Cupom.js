@@ -69,7 +69,7 @@ export default function Cupom({route, navigation}){
       <SafeAreaView style={{flex: 1, backgroundColor: 'white', alignItems: 'center', gap: 10}}>
         <View style={estilos.cabecalho}>
           <TouchableOpacity onPress={()=>navigation.goBack()}>
-            <MaterialCommunityIcons name='keyboard-backspace' size={40} color='black' />
+            <MaterialCommunityIcons name='keyboard-backspace' size={40} color='black' style={{left: 15}} />
           </TouchableOpacity>
           <View style={{marginTop: 12}}>
             <Text style={estilos.txt_tit}>QR CODE DO CUPOM</Text>
@@ -79,7 +79,7 @@ export default function Cupom({route, navigation}){
           <CupomDoUsuario precoTroca={cupom.precoTroca} itens={cupom.itens} descPorc={cupom.descPorc} nomeMercado={cupom.mercado}/>
 
           {
-            !qrcode && <QRCode value={json} size={220} />
+            !qrcode && <QRCode value={json} size={180} />
           }
 
           <View style={estilos.areaResgate}>
@@ -107,13 +107,12 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center', 
     justifyContent: 'space-around',
-    gap: '5%'
   },
   txt_tit:{
     fontSize: 32,
     fontWeight: 'bold',
     color: '#31420a',
-    width: '95%',
+    width: '90%',
     textAlign: 'right'
   },
   cobrir:{

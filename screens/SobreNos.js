@@ -83,7 +83,7 @@ const estilos = StyleSheet.create({
     color: '#31420a',
     fontSize: 25,
     fontWeight: 500,
-    paddingRight: 15,
+    paddingRight: 35,
     textAlign: 'right',
   },
 

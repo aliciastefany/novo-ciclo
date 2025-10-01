@@ -91,7 +91,8 @@ const estilos = StyleSheet.create({
   title: {
     fontSize: 37,
     fontWeight: 'bold',
-    color: '#31420a'
+    color: '#31420a',
+    textAlign: 'center',
   },
 
   area_lista:{
