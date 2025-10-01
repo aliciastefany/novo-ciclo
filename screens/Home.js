@@ -142,7 +142,7 @@ export default function Home({navigation}){
 
               <View style={estilos.texto_img}>
                 <View style={estilos.area_texto}>
-                  <Text style={{fontWeight: 500, fontSize: 15}}>{dados && dados.kg_reciclado} kg</Text>
+                  <Text style={{fontWeight: 500, fontSize: 13}}>{dados && dados.kg_reciclado} kg</Text>
                 </View>
               </View>
             </View>
