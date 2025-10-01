@@ -180,11 +180,11 @@ export default function Home({navigation}){
                 <View style={{gap: 4, width: '70%', alignItems: 'center'}}>
                   <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
                     <Text style={{fontSize: 18, fontWeight: 700}}>{dados && dados.pontos}</Text>
-                    <Text style={{fontWeight: 500}}>pontos</Text>
+                    <Text style={{fontWeight: 500, fontSize: 14}}>pontos</Text>
                   </View>
 
                   <View style={{marginTop: -8}}>
-                    <Text style={{textAlign: 'center', fontWeight: 500}}>com produtos reciclados</Text>
+                    <Text style={{textAlign: 'center', fontWeight: 500, fontSize: 14}}>com produtos reciclados</Text>
                   </View>
                 </View>
               </View>
@@ -301,17 +301,18 @@ const estilos = StyleSheet.create({
 
   text_prog:{
     fontSize: 15,
-    fontWeight: 500
+    fontWeight: 500,
+    textAlign: 'justify',
   },
 
   card_pontos:{
     width: '62%',
-    height: '88%',
+    height: '95%',
     backgroundColor: '#6b803b',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 11,
-    gap: 8,
+    gap: 5,
     paddingVertical: 8,
     marginTop: 7
   },
