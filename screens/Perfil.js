@@ -209,7 +209,7 @@ export default function Perfil({navigation}) {
         </View>
 
         <View style={estilos.cupons}>
-          <View style={{marginLeft: 25}}>
+          <View style={{marginLeft: 15}}>
             <Text style={estilos.txt_cqst}>Seus cupons resgatados</Text>
           </View>
 
