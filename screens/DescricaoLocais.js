@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import StarRating from 'react-native-star-rating-widget';
 import { useEffect, useState, useContext } from 'react';
@@ -142,6 +142,7 @@ export default function DescricaoLocais({route, navigation}) {
           </View>
         </View>
 
+      <ScrollView style={{marginTop: 10, marginBottom: 10}} contentContainerStyle={{alignItems: 'center'}}>
         <View style={estilos.area_infos}>
           <View style={estilos.cont_avaliacao}>
             <StarRating 
@@ -193,7 +194,7 @@ export default function DescricaoLocais({route, navigation}) {
             </TouchableOpacity>
           </View>
           
-        </View>
+        </View></ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -310,7 +311,8 @@ const estilos = StyleSheet.create({
   linha:{
     width: '88%',
     height: 1,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    marginTop: 10,
   },
   
   infos_mercado:{
@@ -325,7 +327,7 @@ const estilos = StyleSheet.create({
   },
 
   btn_cupons:{
-    width: '80%',
+    width: '83%',
     borderWidth: 1,
     alignItems: 'center',
     height: 45,
